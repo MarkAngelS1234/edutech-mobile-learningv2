@@ -1,7 +1,7 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
-
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
+import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
 import kotlinx.coroutines.delay
 import kotlin.math.min
 
@@ -50,33 +51,68 @@ fun ComputerGradesScreen(
 
     // Handle internal lesson navigation
     when (currentLesson) {
-        "Introduction to Computers", "Computer Hardware" -> {
-            IntroductionToComputerScreen(onBackClick = { currentLesson = null })
+        "Introduction to Computers Overview" -> {
+            IntroductionToComputerOverviewScreen(
+                onBackClick = { currentLesson = null },
+                onStartLearningClick = { currentLesson = "Introduction to Computers" }
+            )
+        }
+        "Introduction to Computers" -> {
+            IntroductionToComputerScreen(onBackClick = { currentLesson = "Introduction to Computers Overview" })
+        }
+        
+        "Computer Hardware Overview" -> {
+            ComputerHardwareOverviewScreen(
+                onBackClick = { currentLesson = null },
+                onStartLearningClick = { currentLesson = "Computer Hardware" }
+            )
+        }
+        "Computer Hardware" -> {
+           ComputerHardware(onBackClick = { currentLesson = "Computer Hardware Overview" })
+        }
+        
+        "Computer Software Overview" -> {
+            ComputerSoftwareOverviewScreen(
+                onBackClick = { currentLesson = null },
+                onStartLearningClick = { currentLesson = "Computer Software" }
+            )
         }
         "Computer Software" -> {
-            IntroductionToSoftware(onBackClick = { currentLesson = null })
+            IntroductionToSoftware(onBackClick = { currentLesson = "Computer Software Overview" })
+        }
+        
+        "Internet Basics Overview" -> {
+            InternetBasicsOverviewScreen(
+                onBackClick = { currentLesson = null },
+                onStartLearningClick = { currentLesson = "Internet Basics" }
+            )
         }
         "Internet Basics" -> {
-            InternetBasicsScreen(onBackClick = { currentLesson = null })
+            InternetBasicsScreen(onBackClick = { currentLesson = "Internet Basics Overview" })
+        }
+        
+        "Online Safety Overview" -> {
+            BasicInternetAwarenessAndSafetyOverviewScreen(
+                onBackClick = { currentLesson = null },
+                onStartLearningClick = { currentLesson = "Online Safety Awareness and Safety" }
+            )
         }
         "Online Safety Awareness and Safety" -> {
-            BasicInternetAwarenessAndSafetyScreen(onBackClick = { currentLesson = null })
+            BasicInternetAwarenessAndSafetyScreen(onBackClick = { currentLesson = "Online Safety Overview" })
         }
+        
         else -> {
             // Main Grade List View
             GradeListContent(
                 isPreview = isPreview,
                 onBackClick = onBackClick,
                 onGradeSelected = { grade ->
-                    val subLessons = listOf(
-                        "Introduction to Computers",
-                        "Computer Hardware",
-                        "Computer Software",
-                        "Internet Basics",
-                        "Online Safety Awareness and Safety"
-                    )
-                    if (grade in subLessons) {
-                        currentLesson = grade
+                    when (grade) {
+                        "Introduction to Computers" -> currentLesson = "Introduction to Computers Overview"
+                        "Computer Hardware" -> currentLesson = "Computer Hardware Overview"
+                        "Computer Software" -> currentLesson = "Computer Software Overview"
+                        "Internet Basics" -> currentLesson = "Internet Basics Overview"
+                        "Online Safety Awareness and Safety" -> currentLesson = "Online Safety Overview"
                     }
                     onGradeClick(grade)
                 }
@@ -112,13 +148,66 @@ private fun GradeListContent(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(
-                        Color(0xFF4A90E2), // Primary Blue
-                        Color(0xFF50E3C2)  // Vibrant Teal
+                    listOf(Color(0xFF4A90E2), // Primary Blue
+                        Color(0xFFA173FA)  // Vibrant Teal
                     )
                 )
             )
     ) {
+        // Clean, presentable cloud background decorations inspired by reference photo
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val width = size.width
+            val height = size.height
+
+            // Top Left Cloud (Subtle, soft white)
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 35.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(10.dp.toPx(), 50.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 25.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(40.dp.toPx(), 55.dp.toPx())
+            )
+
+            // Top Right Cloud
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 40.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(width - 15.dp.toPx(), 60.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 30.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(width - 45.dp.toPx(), 70.dp.toPx())
+            )
+
+            // Bottom Left Cloud Puff
+            drawCircle(
+                color = Color.White.copy(alpha = 0.12f),
+                radius = 85.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(0f, height - 10.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.1f),
+                radius = 60.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(55.dp.toPx(), height)
+            )
+
+            // Bottom Right Cloud Puff
+            drawCircle(
+                color = Color.White.copy(alpha = 0.12f),
+                radius = 95.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(width, height - 15.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.1f),
+                radius = 65.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(width - 65.dp.toPx(), height)
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -153,13 +242,8 @@ private fun GradeListContent(
                     }
             ) {
                 Text(
-                    text = "Select your level",
-                    fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.8f),
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = "Computer Grades",
+                    text = "Courses",
+                    fontFamily = Kavoon,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -174,7 +258,7 @@ private fun GradeListContent(
                 "Computer Hardware",
                 "Computer Software",
                 "Internet Basics",
-                "Online Safety Awareness and Safety"
+                "Online Safety Awareness and Good InternetHabits"
             )
             val listState = rememberLazyListState()
 

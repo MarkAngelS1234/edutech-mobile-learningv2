@@ -175,7 +175,7 @@ fun DashboardEntranceScreen(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -337,6 +337,25 @@ fun DashboardEntranceScreen(
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Preview(showBackground = true)
 @Composable

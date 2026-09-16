@@ -1,5 +1,6 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,6 +35,7 @@ fun MainMenuScreen(
     var showOptions by remember { mutableStateOf(false) }
     var showProgress by remember { mutableStateOf(false) }
     var showAbout by remember { mutableStateOf(false) }
+    var showAchievements by remember { mutableStateOf(false) }
 
     when {
         showGames -> GamesScreen(onBackClick = { showGames = false })
@@ -44,12 +46,14 @@ fun MainMenuScreen(
         )
         showProgress -> ProgressScreen(onBackClick = { showProgress = false })
         showAbout -> AboutScreen(onBackClick = { showAbout = false })
+        showAchievements -> AchievementsScreen(onBackClick = { showAchievements = false })
         else -> MainMenuView(
             onCoursesClick = onCoursesClick,
             onGamesClick = { showGames = true },
             onOptionsClick = { showOptions = true },
             onProgressClick = { showProgress = true },
-            onAboutClick = { showAbout = true }
+            onAboutClick = { showAbout = true },
+            onAchievementsClick = { showAchievements = true }
         )
     }
 }
@@ -60,17 +64,72 @@ fun MainMenuView(
     onGamesClick: () -> Unit,
     onOptionsClick: () -> Unit,
     onProgressClick: () -> Unit,
-    onAboutClick: () -> Unit
+    onAboutClick: () -> Unit,
+    onAchievementsClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                 )
             )
     ) {
+        // Clean, presentable cloud background decorations inspired by reference photo
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val width = size.width
+            val height = size.height
+
+            // Top Left Cloud (Subtle, soft white)
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 35.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(10.dp.toPx(), 50.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 25.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(40.dp.toPx(), 55.dp.toPx())
+            )
+
+            // Top Right Cloud
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 40.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(width - 15.dp.toPx(), 60.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 30.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(width - 45.dp.toPx(), 70.dp.toPx())
+            )
+
+            // Bottom Left Cloud Puff
+            drawCircle(
+                color = Color.White.copy(alpha = 0.12f),
+                radius = 85.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(0f, height - 10.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.1f),
+                radius = 60.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(55.dp.toPx(), height)
+            )
+
+            // Bottom Right Cloud Puff
+            drawCircle(
+                color = Color.White.copy(alpha = 0.12f),
+                radius = 95.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(width, height - 15.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.1f),
+                radius = 65.dp.toPx(),
+                center = androidx.compose.ui.geometry.Offset(width - 65.dp.toPx(), height)
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -90,12 +149,48 @@ fun MainMenuView(
 
             val menuItems = remember {
                 listOf(
-                    MenuEntry("Courses", R.drawable.pictur_e, onCoursesClick, width = 155.dp, height = 150.dp),
-                    MenuEntry("Games", R.drawable.edgam_es, onGamesClick, width = 155.dp, height = 150.dp),
-                    MenuEntry("Options", R.drawable.se_t, onOptionsClick, width = 155.dp, height = 150.dp),
-                    MenuEntry("Progress", R.drawable.p_rog, onProgressClick, width = 155.dp, height = 150.dp),
-                    MenuEntry("Shop", R.drawable.a_ch, {}, width = 155.dp, height = 150.dp),
-                    MenuEntry("About", R.drawable.info_o, onAboutClick, width = 155.dp, height = 150.dp)
+                    MenuEntry(
+                        "Courses",
+                        R.drawable.pictur_e,
+                        onCoursesClick,
+                        width = 155.dp,
+                        height = 150.dp
+                    ),
+                    MenuEntry(
+                        "Games",
+                        R.drawable.edgam_es,
+                        onGamesClick,
+                        width = 155.dp,
+                        height = 150.dp
+                    ),
+                    MenuEntry(
+                        "Options",
+                        R.drawable.se_t,
+                        onOptionsClick,
+                        width = 155.dp,
+                        height = 150.dp
+                    ),
+                    MenuEntry(
+                        "Progress",
+                        R.drawable.p_rog,
+                        onProgressClick,
+                        width = 155.dp,
+                        height = 150.dp
+                    ),
+                    MenuEntry(
+                        "Achievements",
+                        R.drawable.a_ch,
+                        onAchievementsClick,
+                        width = 155.dp,
+                        height = 150.dp
+                    ),
+                    MenuEntry(
+                        "About",
+                        R.drawable.info_o,
+                        onAboutClick,
+                        width = 155.dp,
+                        height = 150.dp
+                    )
                 )
             }
 

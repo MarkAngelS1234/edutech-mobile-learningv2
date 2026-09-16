@@ -2,6 +2,7 @@ package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglear
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
@@ -11,9 +12,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -24,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
+import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
 import kotlin.math.absoluteValue
 
 /**
@@ -33,62 +37,117 @@ data class GameItemData(val title: String, val color: Color)
 
 /**
  * GamesScreen - Features a smooth, presentable image carousel with a glassomorphic style.
+ * Refactored to accept initialPage to support previewing different carousel items.
  */
 @Composable
-fun GamesScreen(onBackClick: () -> Unit) {
-    var activeGame by remember { mutableStateOf<String?>(null) }
+fun GamesScreen(onBackClick: () -> Unit, initialPage: Int = 0) {
+    // Preserve active game state across orientation changes
+    var activeGame by rememberSaveable { mutableStateOf<String?>(null) }
 
     when (activeGame) {
         "Word Scramble" -> {
             WordScrambleGameScreen(onBackClick = { activeGame = null })
         }
 
-        "Connect the Pairs" -> {
+        "Match and Learn" -> {
             ConnectThePairsGameScreen(onBackClick = { activeGame = null })
         }
 
-        "Think & Choose" -> {
+        "Think and Choose" -> {
             ThinkAndChooseGameScreen(onBackClick = { activeGame = null })
-        }
-
-        "Fact or Not?" -> {
-            FactOrNotGameScreen(onBackClick = { activeGame = null })
         }
 
         else -> {
             GamesCarouselContent(
                 onBackClick = onBackClick,
-                onGameSelect = { activeGame = it }
+                onGameSelect = { activeGame = it },
+                initialPage = initialPage
             )
         }
     }
 }
 
 /**
- * GamesCarouselContent - The glassomorphic carousel UI.
+ * GamesCarouselContent - Features a carousel with 3D offset block shadows.
  */
 @Composable
-fun GamesCarouselContent(onBackClick: () -> Unit, onGameSelect: (String) -> Unit) {
-    // RENAME YOUR GAMES HERE:
+fun GamesCarouselContent(
+    onBackClick: () -> Unit,
+    onGameSelect: (String) -> Unit,
+    initialPage: Int = 0
+) {
     val carouselItems = listOf(
         GameItemData("Word Scramble", Color(0xFFFFADAD)),
-        GameItemData("Connect the Pairs", Color(0xFFFFD6A5)),
-        GameItemData("Think & Choose", Color(0xFFFDFFB6)),
-        GameItemData("Fact or Not?", Color(0xFFCAFFBF)),
-        GameItemData("Challenge Mode", Color(0xFF9BF6FF))
+        GameItemData("Match and Learn", Color(0xFFFFD6A5)),
+        GameItemData("Think and Choose", Color(0xFFFDFFB6))
     )
 
-    val pagerState = rememberPagerState(pageCount = { carouselItems.size })
+    val pagerState = rememberPagerState(
+        initialPage = initialPage,
+        pageCount = { carouselItems.size }
+    )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                 )
             )
     ) {
+        // Decorative background elements inspired by the reference photo
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val width = size.width
+            val height = size.height
+
+            // Top clouds
+            drawCircle(
+                color = Color.White.copy(alpha = 0.2f),
+                radius = 50.dp.toPx(),
+                center = Offset(0f, 60.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 70.dp.toPx(),
+                center = Offset(20.dp.toPx(), 40.dp.toPx())
+            )
+            
+            drawCircle(
+                color = Color.White.copy(alpha = 0.2f),
+                radius = 60.dp.toPx(),
+                center = Offset(width, 80.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 80.dp.toPx(),
+                center = Offset(width - 30.dp.toPx(), 60.dp.toPx())
+            )
+
+            // Bottom "humps" or bubbles
+            drawCircle(
+                color = Color(0xFFA173FA).copy(alpha = 0.4f),
+                radius = 180.dp.toPx(),
+                center = Offset(40.dp.toPx(), height + 40.dp.toPx())
+            )
+            drawCircle(
+                color = Color(0xFFA173FA).copy(alpha = 0.3f),
+                radius = 120.dp.toPx(),
+                center = Offset(-20.dp.toPx(), height - 20.dp.toPx())
+            )
+
+            drawCircle(
+                color = Color(0xFFA173FA).copy(alpha = 0.4f),
+                radius = 200.dp.toPx(),
+                center = Offset(width - 60.dp.toPx(), height + 60.dp.toPx())
+            )
+            drawCircle(
+                color = Color(0xFFA173FA).copy(alpha = 0.3f),
+                radius = 150.dp.toPx(),
+                center = Offset(width + 20.dp.toPx(), height - 40.dp.toPx())
+            )
+        }
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -108,12 +167,12 @@ fun GamesCarouselContent(onBackClick: () -> Unit, onGameSelect: (String) -> Unit
                         tint = Color.White
                     )
                 }
-                Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = "Learning Games",
                     color = Color.White,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
+                    fontFamily = Kavoon,
+                    fontSize = 29.sp,
+                    fontWeight = FontWeight.Bold,
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Box(modifier = Modifier.size(48.dp))
@@ -125,13 +184,14 @@ fun GamesCarouselContent(onBackClick: () -> Unit, onGameSelect: (String) -> Unit
             HorizontalPager(
                 state = pagerState,
                 contentPadding = PaddingValues(horizontal = 48.dp),
+                beyondViewportPageCount = 1,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(350.dp)
+                    .height(400.dp) // Height increased for the shadow offset
             ) { page ->
                 val item = carouselItems[page]
-                Card(
-                    onClick = { onGameSelect(item.title) },
+                
+                Box(
                     modifier = Modifier
                         .graphicsLayer {
                             val pageOffset = (
@@ -155,43 +215,55 @@ fun GamesCarouselContent(onBackClick: () -> Unit, onGameSelect: (String) -> Unit
                             )
                         }
                         .fillMaxSize()
-                        .padding(8.dp),
-                    shape = RoundedCornerShape(28.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White.copy(alpha = 0.15f)
-                    ),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        brush = Brush.verticalGradient(
-                            listOf(
-                                Color.White.copy(alpha = 0.4f),
-                                Color.White.copy(alpha = 0.1f)
-                            )
-                        )
-                    )
+                        .padding(16.dp)
                 ) {
+                    // Thick Gradient Block Shadow (based on reference photo)
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
+                            .offset(x = 12.dp, y = 12.dp)
                             .background(
-                                Brush.linearGradient(
-                                    colors = listOf(
-                                        item.color.copy(alpha = 0.25f),
-                                        item.color.copy(alpha = 0.05f)
-                                    )
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
+                                brush = Brush.verticalGradient(
+                                    listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
+                                ),
+                                shape = RoundedCornerShape(32.dp)
+                            )
+                    )
+                    
+                    // Main White Card
+                    Card(
+                        onClick = { onGameSelect(item.title) },
+                        modifier = Modifier.fillMaxSize(),
+                        shape = RoundedCornerShape(32.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
+                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
                     ) {
-                        Text(
-                            text = item.title,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color.White.copy(alpha = 0.8f),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.linearGradient(
+                                        colors = listOf(
+                                            item.color.copy(alpha = 0.2f),
+                                            Color.White
+                                        )
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = item.title,
+                                fontFamily = Kavoon,
+                                fontSize = 26.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color(0xFF2D2D2D),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -223,6 +295,7 @@ fun GamesCarouselContent(onBackClick: () -> Unit, onGameSelect: (String) -> Unit
             Text(
                 text = "Swipe to explore!",
                 color = Color.White.copy(alpha = 0.9f),
+                fontFamily = Kavoon,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -230,10 +303,26 @@ fun GamesCarouselContent(onBackClick: () -> Unit, onGameSelect: (String) -> Unit
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Carousel - Word Scramble", device = "id:pixel_5", showSystemUi = true)
 @Composable
-fun GamesPreview() {
+fun PreviewWordScramble() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        GamesScreen(onBackClick = {})
+        GamesScreen(onBackClick = {}, initialPage = 0)
+    }
+}
+
+@Preview(showBackground = true, name = "Carousel - Match and Learn", device = "id:pixel_5", showSystemUi = true)
+@Composable
+fun PreviewMatchAndLearn() {
+    EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
+        GamesScreen(onBackClick = {}, initialPage = 1)
+    }
+}
+
+@Preview(showBackground = true, name = "Carousel - Think and Choose", device = "id:pixel_5", showSystemUi = true)
+@Composable
+fun PreviewThinkAndChoose() {
+    EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
+        GamesScreen(onBackClick = {}, initialPage = 2)
     }
 }
