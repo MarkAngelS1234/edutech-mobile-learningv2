@@ -250,6 +250,7 @@ fun DashboardEntranceScreen(
             Text(
                 text = "Computer Literacy for Young Learners",
                 color = Color.White.copy(alpha = 0.9f),
+
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center
             )

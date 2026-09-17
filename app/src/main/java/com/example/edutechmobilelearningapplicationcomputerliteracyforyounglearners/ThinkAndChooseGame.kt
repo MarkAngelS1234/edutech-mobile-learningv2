@@ -265,6 +265,7 @@ fun ThinkAndChooseGameScreen(
                                 Text(
                                     "Question ${currentIndex + 1}/${questions.size}",
                                     color = Color.White.copy(alpha = 0.8f),
+                                    fontFamily = Kavoon,
                                     fontSize = 18.sp
                                 )
 

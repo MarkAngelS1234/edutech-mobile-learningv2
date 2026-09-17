@@ -930,6 +930,7 @@ fun ScoreResult(
 ) {
     Text(
         text = "Final Score: $score / $maxPoints",
+        fontFamily = Kavoon,
         fontSize = 36.sp,
         color = Color.White,
         fontWeight = FontWeight.Bold,
@@ -1003,7 +1004,7 @@ fun GameOverScreen(score: Int, onRestart: () -> Unit, onBack: () -> Unit) {
                     modifier = Modifier.height(60.dp).width(220.dp), 
                     shape = RoundedCornerShape(30.dp)
                 ) {
-                    Text("Play Again", color = Color(0xFF4A90E2), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                    Text("Play Again", color = Color(0xFFA173FA), fontFamily = Kavoon, fontSize = 22.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(Modifier.height(20.dp))
                 OutlinedButton(
@@ -1012,7 +1013,7 @@ fun GameOverScreen(score: Int, onRestart: () -> Unit, onBack: () -> Unit) {
                     modifier = Modifier.height(60.dp).width(220.dp), 
                     shape = RoundedCornerShape(30.dp)
                 ) {
-                    Text("Back to Menu", color = Color.White, fontSize = 20.sp)
+                    Text("Back to Menu", color = Color.White, fontFamily = Kavoon, fontSize = 20.sp)
                 }
             }
         }
