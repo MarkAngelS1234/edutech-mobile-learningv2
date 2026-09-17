@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -17,8 +18,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +30,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
+
+data class BadgeTheme(
+    val circleColor: Color,
+    val pillColor: Color,
+    val sparkColor: Color
+)
 
 @Composable
 fun AchievementsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
@@ -128,116 +137,170 @@ fun AchievementsScreenContent(
             .fillMaxSize()
             .background(backgroundBrush)
     ) {
-        // Clean, presentable cloud background decorations inspired by reference photo
+        // Playful background clouds inspired by the reference image
         Canvas(modifier = Modifier.fillMaxSize()) {
             val width = size.width
             val height = size.height
 
-            // Top Left Cloud (Subtle, soft white)
+            // Top Left Cloud puff
             drawCircle(
-                color = Color.White.copy(alpha = 0.15f),
+                color = Color.White.copy(alpha = 0.2f),
+                radius = 45.dp.toPx(),
+                center = Offset(20.dp.toPx(), 60.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.2f),
                 radius = 35.dp.toPx(),
-                center = androidx.compose.ui.geometry.Offset(10.dp.toPx(), 50.dp.toPx())
-            )
-            drawCircle(
-                color = Color.White.copy(alpha = 0.15f),
-                radius = 25.dp.toPx(),
-                center = androidx.compose.ui.geometry.Offset(40.dp.toPx(), 55.dp.toPx())
+                center = Offset(60.dp.toPx(), 75.dp.toPx())
             )
 
-            // Top Right Cloud
+            // Top Right Cloud puff
             drawCircle(
-                color = Color.White.copy(alpha = 0.15f),
+                color = Color.White.copy(alpha = 0.2f),
+                radius = 55.dp.toPx(),
+                center = Offset(width - 20.dp.toPx(), 80.dp.toPx())
+            )
+            drawCircle(
+                color = Color.White.copy(alpha = 0.2f),
                 radius = 40.dp.toPx(),
-                center = androidx.compose.ui.geometry.Offset(width - 15.dp.toPx(), 60.dp.toPx())
+                center = Offset(width - 70.dp.toPx(), 95.dp.toPx())
+            )
+
+            // Large bottom cloud accumulation
+            drawCircle(
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 110.dp.toPx(),
+                center = Offset(40.dp.toPx(), height - 10.dp.toPx())
             )
             drawCircle(
                 color = Color.White.copy(alpha = 0.15f),
-                radius = 30.dp.toPx(),
-                center = androidx.compose.ui.geometry.Offset(width - 45.dp.toPx(), 70.dp.toPx())
-            )
-
-            // Bottom Left Cloud Puff
-            drawCircle(
-                color = Color.White.copy(alpha = 0.12f),
-                radius = 85.dp.toPx(),
-                center = androidx.compose.ui.geometry.Offset(0f, height - 10.dp.toPx())
+                radius = 130.dp.toPx(),
+                center = Offset(width - 50.dp.toPx(), height - 5.dp.toPx())
             )
             drawCircle(
-                color = Color.White.copy(alpha = 0.1f),
-                radius = 60.dp.toPx(),
-                center = androidx.compose.ui.geometry.Offset(55.dp.toPx(), height)
-            )
-
-            // Bottom Right Cloud Puff
-            drawCircle(
-                color = Color.White.copy(alpha = 0.12f),
-                radius = 95.dp.toPx(),
-                center = androidx.compose.ui.geometry.Offset(width, height - 15.dp.toPx())
-            )
-            drawCircle(
-                color = Color.White.copy(alpha = 0.1f),
-                radius = 65.dp.toPx(),
-                center = androidx.compose.ui.geometry.Offset(width - 65.dp.toPx(), height)
+                color = Color.White.copy(alpha = 0.15f),
+                radius = 90.dp.toPx(),
+                center = Offset(width / 2, height + 10.dp.toPx())
             )
         }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(horizontal = 16.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Header Row with custom back button and title matching photo
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
+                    .padding(top = 12.dp, bottom = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onBackClick) {
+                Box(
+                    modifier = Modifier
+                        .size(54.dp)
+                        .background(
+                            brush = Brush.verticalGradient(listOf(Color(0xFF7986CB), Color(0xFF5C6BC0))),
+                            shape = CircleShape
+                        )
+                        .border(4.dp, Color.White, CircleShape)
+                        .clickable { onBackClick() },
+                    contentAlignment = Alignment.Center
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.White
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
                     )
                 }
+                
+                Spacer(modifier = Modifier.width(12.dp))
+                
                 Text(
                     text = "My Achievements",
-                    fontSize = 24.sp,
+                    fontSize = 32.sp,
                     fontFamily = Kavoon,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 8.dp)
+                    modifier = Modifier.weight(1f)
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
+            // High fidelity multi-tab capsule container selector
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    .height(58.dp)
+                    .background(Color.White.copy(alpha = 0.25f), shape = RoundedCornerShape(50.dp))
+                    .border(3.dp, Color.White, shape = RoundedCornerShape(50.dp))
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                AchievementTab(
-                    text = "Course",
-                    isSelected = showCourseBadges,
-                    onClick = { showCourseBadges = true },
-                    modifier = Modifier.weight(1f)
-                )
-                AchievementTab(
-                    text = "Games",
-                    isSelected = !showCourseBadges,
-                    onClick = { showCourseBadges = false },
-                    modifier = Modifier.weight(1f)
-                )
+                // Course Tab Button
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(
+                            if (showCourseBadges) Color(0xFF8C52FF) else Color.Transparent,
+                            shape = RoundedCornerShape(50.dp)
+                        )
+                        .border(
+                            width = if (showCourseBadges) 2.dp else 0.dp,
+                            color = if (showCourseBadges) Color.White else Color.Transparent,
+                            shape = RoundedCornerShape(50.dp)
+                        )
+                        .clickable { showCourseBadges = true },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Course",
+                        fontFamily = Kavoon,
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                
+                // Games Tab Button
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(
+                            if (!showCourseBadges) Color(0xFF8C52FF) else Color.Transparent,
+                            shape = RoundedCornerShape(50.dp)
+                        )
+                        .border(
+                            width = if (!showCourseBadges) 2.dp else 0.dp,
+                            color = if (!showCourseBadges) Color.White else Color.Transparent,
+                            shape = RoundedCornerShape(50.dp)
+                        )
+                        .clickable { showCourseBadges = false },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Games",
+                        fontFamily = Kavoon,
+                        color = if (!showCourseBadges) Color.White else Color(0xFFFFFFFF),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Scrollable Grid Layout matching photo proportions perfectly
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.weight(1f)
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+                modifier = Modifier.weight(1f),
+                contentPadding = PaddingValues(bottom = 24.dp)
             ) {
                 items(currentBadges, key = { it.name }) { badge ->
                     BadgeItem(badge)
@@ -248,106 +311,223 @@ fun AchievementsScreenContent(
 }
 
 @Composable
-fun AchievementTab(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val containerColor = remember(isSelected) {
-        if (isSelected) Color.White.copy(alpha = 0.4f) else Color.White.copy(alpha = 0.1f)
-    }
-    
-    Surface(
-        onClick = onClick,
-        modifier = modifier.height(48.dp),
-        shape = RoundedCornerShape(12.dp),
-        color = containerColor,
-        border = if (isSelected) BorderStroke(2.dp, Color.White) else null
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                fontFamily = Kavoon,
-                text = text,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-        }
-    }
-}
-
-@Composable
 fun BadgeItem(badge: Badge) {
     val isCompleted = remember(badge) { badge.requiredPoints > 0 && badge.currentPoints >= badge.requiredPoints }
     val isUnlockedOrCompleted = remember(badge, isCompleted) { badge.isUnlocked || isCompleted }
     val displayedPoints = remember(badge, isCompleted) { if (isCompleted) badge.requiredPoints else badge.currentPoints }
 
+    // Accurate color map exactly mirroring the original design & color scheme of the photo reference
+    val themeColors = remember(badge.name) {
+        when (badge.name) {
+            "Computer Explorer" -> BadgeTheme(
+                circleColor = Color(0xFF5C9DFF),
+                pillColor = Color(0xFF9C71D2),
+                sparkColor = Color(0xFFB392F7)
+            )
+            "Hardware Hero" -> BadgeTheme(
+                circleColor = Color(0xFF00E5A3),
+                pillColor = Color(0xFF55B3FF),
+                sparkColor = Color(0xFF00E5A3)
+            )
+            "Software Specialist" -> BadgeTheme(
+                circleColor = Color(0xFFFA5BBE),
+                pillColor = Color(0xFFF373B4),
+                sparkColor = Color(0xFFFA5BBE)
+            )
+            "Internet Voyager" -> BadgeTheme(
+                circleColor = Color(0xFFFFB72B),
+                pillColor = Color(0xFFFF9E36),
+                sparkColor = Color(0xFFFFB72B)
+            )
+            "Cyber Guard" -> BadgeTheme(
+                circleColor = Color(0xFF8C71FF),
+                pillColor = Color(0xFFB392F7),
+                sparkColor = Color(0xFF8C71FF)
+            )
+            // Game badges dynamic theme
+            "Scramble Wizard" -> BadgeTheme(
+                circleColor = Color(0xFF5C9DFF),
+                pillColor = Color(0xFF9C71D2),
+                sparkColor = Color(0xFFB392F7)
+            )
+            "Logic Master" -> BadgeTheme(
+                circleColor = Color(0xFF00E5A3),
+                pillColor = Color(0xFF55B3FF),
+                sparkColor = Color(0xFF00E5A3)
+            )
+            "Pair Pro" -> BadgeTheme(
+                circleColor = Color(0xFFFA5BBE),
+                pillColor = Color(0xFFF373B4),
+                sparkColor = Color(0xFFFA5BBE)
+            )
+            else -> BadgeTheme(
+                circleColor = Color(0xFF5C9DFF),
+                pillColor = Color(0xFF9C71D2),
+                sparkColor = Color(0xFFB392F7)
+            )
+        }
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(0.9f),
-        shape = RoundedCornerShape(20.dp),
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.2f)
+            containerColor = Color.White
         ),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.3f))
+        border = BorderStroke(3.dp, Color(0xFF8C52FF))
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .background(if (isUnlockedOrCompleted) Color.White.copy(alpha = 0.3f) else Color.Black.copy(alpha = 0.1f))
-                    .border(2.dp, Color.White.copy(alpha = 0.5f), CircleShape),
-                contentAlignment = Alignment.Center
+        Box(modifier = Modifier.fillMaxWidth()) {
+            // Soft white/blue cute cloud decoration at the bottom of the card matching the reference photo
+            Canvas(modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp)
+                .align(Alignment.BottomCenter)
             ) {
-                Text(
-                    text = if (isUnlockedOrCompleted) badge.icon else "🔒",
-                    fontSize = 32.sp
+                val w = size.width
+                val h = size.height
+                drawCircle(
+                    color = Color(0xFFA173FA).copy(alpha = 0.7f),
+                    radius = 24.dp.toPx(),
+                    center = Offset(20.dp.toPx(), h)
+                )
+                drawCircle(
+                    color = Color(0xFFA173FA).copy(alpha = 0.7f),
+                    radius = 32.dp.toPx(),
+                    center = Offset(w - 25.dp.toPx(), h - 5.dp.toPx())
+                )
+                drawCircle(
+                    color = Color(0xFFA173FA).copy(alpha = 0.7f),
+                    radius = 20.dp.toPx(),
+                    center = Offset(w / 2, h + 2.dp.toPx())
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 14.dp, start = 8.dp, end = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Circle Badge Icon with stylized diagonal spark lines on both sides
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                ) {
+                    // Left sparks
+                    Canvas(modifier = Modifier.size(16.dp)) {
+                        val sparkC = themeColors.sparkColor
+                        drawLine(
+                            color = sparkC,
+                            start = Offset(12.dp.toPx(), 4.dp.toPx()),
+                            end = Offset(4.dp.toPx(), 0.dp.toPx()),
+                            strokeWidth = 3.dp.toPx(),
+                            cap = StrokeCap.Round
+                        )
+                        drawLine(
+                            color = sparkC,
+                            start = Offset(14.dp.toPx(), 12.dp.toPx()),
+                            end = Offset(2.dp.toPx(), 14.dp.toPx()),
+                            strokeWidth = 3.dp.toPx(),
+                            cap = StrokeCap.Round
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.width(4.dp))
+                    
+                    // Main circle badge icon with high gloss look
+                    Box(
+                        modifier = Modifier
+                            .size(68.dp)
+                            .clip(CircleShape)
+                            .background(themeColors.circleColor)
+                            .border(3.dp, Color.White, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (isUnlockedOrCompleted) badge.icon else "🔒",
+                            fontSize = 32.sp
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.width(4.dp))
+                    
+                    // Right sparks
+                    Canvas(modifier = Modifier.size(16.dp)) {
+                        val sparkC = themeColors.sparkColor
+                        drawLine(
+                            color = sparkC,
+                            start = Offset(0.dp.toPx(), 4.dp.toPx()),
+                            end = Offset(8.dp.toPx(), 0.dp.toPx()),
+                            strokeWidth = 3.dp.toPx(),
+                            cap = StrokeCap.Round
+                        )
+                        drawLine(
+                            color = sparkC,
+                            start = Offset(2.dp.toPx(), 12.dp.toPx()),
+                            end = Offset(14.dp.toPx(), 14.dp.toPx()),
+                            strokeWidth = 3.dp.toPx(),
+                            cap = StrokeCap.Round
+                        )
+                    }
+                }
 
-            Text(
-                text = badge.name,
-                fontFamily = Kavoon,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
+                // Styled pill shape badge name title matching photo exactly
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(themeColors.pillColor, shape = RoundedCornerShape(50.dp))
+                        .padding(vertical = 6.dp, horizontal = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = badge.name,
+                        fontFamily = Kavoon,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1
+                    )
+                }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = badge.description,
-                fontSize = 12.sp,
-                color = Color.White.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center,
-                lineHeight = 14.sp
-            )
-
-            if (badge.requiredPoints > 0) {
                 Spacer(modifier = Modifier.height(6.dp))
+
+                // Subtitle description under the badge name pill
                 Text(
-                    text = if (isCompleted) "Completed" else "$displayedPoints / ${badge.requiredPoints} pts",
-                    fontSize = 11.sp,
-                    color = if (isCompleted) Color.Yellow else Color.White,
-                    fontWeight = FontWeight.Medium
+                    text = badge.description,
+                    fontSize = 12.sp,
+                    fontFamily = Kavoon,
+                    fontWeight = FontWeight.Normal,
+                    color = Color(0xFF283593),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 14.sp,
+                    modifier = Modifier.padding(horizontal = 2.dp)
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                LinearProgressIndicator(
-                    progress = { (displayedPoints.toFloat() / badge.requiredPoints).coerceIn(0f, 1f) },
-                    modifier = Modifier.fillMaxWidth(0.8f).height(4.dp)
-                )
+
+                // Optional game point progress indicator bar
+                if (badge.requiredPoints > 0) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = if (isCompleted) "Completed" else "$displayedPoints / ${badge.requiredPoints} pts",
+                        fontSize = 11.sp,
+                        color = if (isCompleted) Color(0xFF2E7D32) else Color(0xFF3F51B5),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    LinearProgressIndicator(
+                        progress = { (displayedPoints.toFloat() / badge.requiredPoints).coerceIn(0f, 1f) },
+                        modifier = Modifier
+                            .fillMaxWidth(0.85f)
+                            .height(6.dp)
+                            .clip(RoundedCornerShape(50.dp)),
+                        color = themeColors.circleColor,
+                        trackColor = Color(0xFFE0E0E0)
+                    )
+                }
             }
         }
     }

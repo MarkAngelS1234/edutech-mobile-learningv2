@@ -496,7 +496,7 @@ fun ActiveGameScreen(
                     onClick = { onActionClick() },
                     modifier = Modifier.fillMaxWidth().height(60.dp),
                     shape = RoundedCornerShape(18.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF4A90E2))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF9575CD))
                 ) {
                     val btnText = if (!isAnswerChecked) "CHECK ANSWER" else if (currentIndex < questions.size - 1) "NEXT QUESTION" else "FINISH"
                     Text(btnText, fontFamily = Kavoon, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
@@ -622,7 +622,7 @@ fun ActiveGameScreen(
                         shape = RoundedCornerShape(18.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF4A90E2))
                     ) {
-                        Text("PLAY AGAIN", fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
+                        Text("PLAY AGAIN", fontFamily = Kavoon, fontSize = 20.sp, fontWeight = FontWeight.ExtraBold)
                     }
                     Spacer(modifier = Modifier.height(40.dp))
                 }
