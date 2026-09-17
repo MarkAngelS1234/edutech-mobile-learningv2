@@ -11,6 +11,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -241,7 +243,7 @@ fun GameIntro(onStart: () -> Unit, onBack: () -> Unit) {
                 shape = RoundedCornerShape(30.dp),
                 elevation = ButtonDefaults.buttonElevation(8.dp)
             ) {
-                Text("Start Game", color = Color(0xFF4A90E2), fontWeight = FontWeight.Black, fontSize = 22.sp)
+                Text("Start Game", color = Color(0xFF9575CD), fontWeight = FontWeight.Black, fontFamily = Kavoon, fontSize = 22.sp)
             }
         }
     }
@@ -250,16 +252,24 @@ fun GameIntro(onStart: () -> Unit, onBack: () -> Unit) {
 @Composable
 fun InstructionExpandableButton() {
     var expanded by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    
+    val elevation by animateDpAsState(
+        targetValue = if (isPressed) 0.dp else 12.dp,
+        label = "elevation"
+    )
 
     Surface(
         onClick = { expanded = !expanded },
+        interactionSource = interactionSource,
         shape = RoundedCornerShape(24.dp),
         color = Color.White.copy(alpha = 0.95f),
         border = BorderStroke(4.dp, Color(0xFFFFD700)), // Golden cartoon border
         modifier = Modifier
             .fillMaxWidth(0.6f)
             .animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
-        shadowElevation = 12.dp
+        shadowElevation = elevation
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
@@ -273,7 +283,7 @@ fun InstructionExpandableButton() {
                     text = if (expanded) "Got it! 👍" else "How to Play? 💡",
                     fontFamily = Kavoon,
                     fontSize = 24.sp,
-                    color = Color(0xFF4A90E2)
+                    color = Color(0xFF9575CD)
                 )
             }
 
