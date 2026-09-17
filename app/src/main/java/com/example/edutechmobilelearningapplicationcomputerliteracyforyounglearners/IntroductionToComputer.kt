@@ -142,6 +142,34 @@ fun IntroductionToComputerScreen(onBackClick: () -> Unit, viewModel: CourseViewM
                                 fontFamily = Kavoon
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        ComputerLessonTopic(
+                            title = "What is a Computer?",
+                            description = "A computer is a smart machine that follows instructions to help us learn, create, and solve problems."
+                        )
+
+                        ComputerLessonTopic(
+                            title = "Types of Computers",
+                            description = "Computers come in different shapes and sizes.",
+                            items = listOf(
+                                "• Desktop - stays on a desk",
+                                "• Laptop - easy to carry",
+                                "• Tablet - works with a touch screen",
+                                "• Smartphone - fits in your pocket"
+                            )
+                        )
+
+                        ComputerLessonTopic(
+                            title = "What Can Computers Do?",
+                            description = "Computers can help us write, draw, do math, watch videos, play games, and learn new things."
+                        )
+
+                        ComputerLessonTopic(
+                            title = "Where Are Computers Used?",
+                            description = "You can find computers at home, in schools, hospitals, stores, offices, and many other places."
+                        )
                     }
                 }
             }
@@ -224,6 +252,58 @@ fun VideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
             .height(200.dp)
             .clip(RoundedCornerShape(12.dp))
     )
+}
+
+@Composable
+private fun ComputerLessonTopic(
+    title: String,
+    description: String,
+    items: List<String>? = null
+) {
+    Text(
+        text = title,
+        color = Color.Black,
+        fontSize = 18.sp,
+        fontFamily = Kavoon,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.fillMaxWidth()
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                Brush.horizontalGradient(
+                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                )
+            )
+            .padding(20.dp)
+    ) {
+        Column {
+            Text(
+                text = description,
+                fontSize = 14.sp,
+                color = Color.White.copy(0.9f),
+                lineHeight = 20.sp
+            )
+            if (items != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                items.forEach { item ->
+                    Text(
+                        text = item,
+                        fontSize = 14.sp,
+                        color = Color.White.copy(0.95f),
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    )
+                }
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Preview(showBackground = true)

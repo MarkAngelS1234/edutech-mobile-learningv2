@@ -73,7 +73,7 @@ fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = v
                         )
                     }
                     Text(
-                        text = "Introduction to Internet",
+                        text = "Internet Basics",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontFamily = Kavoon,
@@ -144,22 +144,36 @@ fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = v
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // --- LEARNING GOALS SECTION ---
-                        LessonGradientCard(
-                            title = "Learning Goals:",
+                        LessonTopic(
+                            title = "What is the Internet?",
+                            description = "The Internet is a giant network that lets computers and people share information from all around the world."
+                        )
+
+                        LessonTopic(
+                            title = "Devices That Connect to the Internet",
+                            description = "Phones, tablets, computers, and smart TVs can go online when they are connected to the Internet."
+                        )
+
+                        LessonTopic(
+                            title = "Wi-Fi and Internet Connection",
+                            description = "Wi-Fi is a wireless signal that helps your device connect to the Internet without using a cable."
+                        )
+
+                        LessonTopic(
+                            title = "What Can We Do Online?",
+                            description = "The Internet can help us do many useful and fun things!",
                             items = listOf(
-                                "1. Understand what the Internet is.",
-                                "2. Learn about browsers and websites.",
-                                "3. Discover how to find information online."
+                                "• Search for information",
+                                "• Watch videos",
+                                "• Communicate with others",
+                                "• Learn new things",
+                                "• Play games"
                             )
                         )
 
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // --- OVERVIEW SECTION ---
-                        LessonGradientCard(
-                            title = "Overview",
-                            description = "The Internet is a global network of computers connected together. It allows people to share information and communicate from anywhere in the world!"
+                        LessonTopic(
+                            title = "Basic Internet Use",
+                            description = "Use a browser to visit websites. Ask a trusted adult for help, and never share your name, address, or password online."
                         )
                     }
                 }
@@ -228,14 +242,25 @@ fun InternetVideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
 }
 
 /**
- * Reusable gradient card for content sections.
+ * Reusable topic heading and gradient content card.
  */
 @Composable
-private fun LessonGradientCard(
+private fun LessonTopic(
     title: String,
     description: String? = null,
     items: List<String>? = null
 ) {
+    Text(
+        text = title,
+        color = Color.Black,
+        fontSize = 18.sp,
+        fontFamily = Kavoon,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.fillMaxWidth()
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -248,19 +273,21 @@ private fun LessonGradientCard(
             .padding(20.dp)
     ) {
         Column {
-            Text(text = title, fontSize = 20.sp, fontFamily = Kavoon, color = Color.White)
             if (description != null) {
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(text = description, fontSize = 14.sp, color = Color.White.copy(0.9f), lineHeight = 20.sp)
             }
             if (items != null) {
-                Spacer(modifier = Modifier.height(8.dp))
+                if (description != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
                 items.forEach { point ->
                     Text(text = point, fontSize = 14.sp, color = Color.White.copy(0.95f), modifier = Modifier.padding(vertical = 2.dp))
                 }
             }
         }
     }
+
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Preview(showBackground = true)

@@ -119,7 +119,7 @@ fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel = viewM
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(40.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
                         // Assessment Button
                         Button(
@@ -141,6 +141,46 @@ fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel = viewM
                                 fontFamily = Kavoon
                             )
                         }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        HardwareLessonTopic(
+                            title = "What is Computer Hardware?",
+                            description = "Hardware is the physical part of a computer that you can see and touch."
+                        )
+
+                        HardwareLessonTopic(
+                            title = "Input Devices",
+                            description = "Input devices help us give information and instructions to the computer.",
+                            items = listOf(
+                                "• Keyboard - types letters and numbers",
+                                "• Mouse - points, clicks, and selects"
+                            )
+                        )
+
+                        HardwareLessonTopic(
+                            title = "Output Devices",
+                            description = "Output devices show us the computer's work.",
+                            items = listOf(
+                                "• Monitor - shows pictures and words",
+                                "• Speakers - play sounds",
+                                "• Printer - puts work on paper"
+                            )
+                        )
+
+                        HardwareLessonTopic(
+                            title = "Processing",
+                            description = "The CPU is like the computer's brain. It follows instructions and helps the computer work quickly.",
+                            items = listOf(
+                                "• CPU - processes information",
+                                "• System unit - holds important computer parts"
+                            )
+                        )
+
+                        HardwareLessonTopic(
+                            title = "Other Common Computer Parts",
+                            description = "Webcams, microphones, headphones, and storage devices are other parts that help a computer do more."
+                        )
                     }
                 }
             }
@@ -212,6 +252,58 @@ fun VideoPlayerHardware(videoResId: Int, onVideoFinished: () -> Unit) {
             .height(200.dp)
             .clip(RoundedCornerShape(12.dp))
     )
+}
+
+@Composable
+private fun HardwareLessonTopic(
+    title: String,
+    description: String,
+    items: List<String>? = null
+) {
+    Text(
+        text = title,
+        color = Color.Black,
+        fontSize = 18.sp,
+        fontFamily = Kavoon,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.fillMaxWidth()
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                Brush.horizontalGradient(
+                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                )
+            )
+            .padding(20.dp)
+    ) {
+        Column {
+            Text(
+                text = description,
+                fontSize = 14.sp,
+                color = Color.White.copy(0.9f),
+                lineHeight = 20.sp
+            )
+            if (items != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                items.forEach { item ->
+                    Text(
+                        text = item,
+                        fontSize = 14.sp,
+                        color = Color.White.copy(0.95f),
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    )
+                }
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Preview(showBackground = true)

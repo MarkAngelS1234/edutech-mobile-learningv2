@@ -142,59 +142,39 @@ fun BasicInternetAwarenessAndSafetyScreen(onBackClick: () -> Unit, viewModel: Co
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // --- LEARNING GOALS SECTION ---
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(
-                                    Brush.horizontalGradient(
-                                        listOf(Color(0xFF4A90E2).copy(0.1f), Color(0xFF50E3C2).copy(0.1f))
-                                    )
-                                )
-                                .padding(20.dp)
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Learning Goals:",
-                                    color = Color(0xFF4A90E2),
-                                    fontFamily = Kavoon,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                listOf(
-                                    "1. Understand how to stay safe online.",
-                                    "2. Learn smart safety rules for kids.",
-                                    "3. Protect your personal information."
-                                ).forEach { goal ->
-                                    Text(
-                                        text = goal,
-                                        fontSize = 13.sp,
-                                        color = Color.DarkGray,
-                                        modifier = Modifier.padding(top = 4.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        // --- OVERVIEW SECTION ---
-                        Text(
-                            text = "Overview",
-                            color = Color(0xFF4A90E2),
-                            fontSize = 22.sp,
-                            fontFamily = Kavoon,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.fillMaxWidth()
+                        SafetyLessonTopic(
+                            title = "Be Kind Online",
+                            description = "Use friendly words online, just as you would in person. Never tease, bully, or hurt someone's feelings."
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "The internet is a wonderful place to learn and play, but it's important to know how to stay safe. Just like in the real world, there are rules to follow online to keep you and your family safe.",
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                            lineHeight = 20.sp,
-                            modifier = Modifier.fillMaxWidth()
+
+                        SafetyLessonTopic(
+                            title = "Take Breaks",
+                            description = "Give your eyes, brain, and body a rest from screens. Stand up, stretch, or play outside for a while."
+                        )
+
+                        SafetyLessonTopic(
+                            title = "Think Before You Post",
+                            description = "Pause before sharing. Do not post private information, photos, or messages that could upset someone."
+                        )
+
+                        SafetyLessonTopic(
+                            title = "Don't Believe Everything You See Online",
+                            description = "Some things online can be wrong or made up. Ask a trusted adult when something seems strange or confusing."
+                        )
+
+                        SafetyLessonTopic(
+                            title = "Ask Before You Download or Buy",
+                            description = "Always ask a parent, teacher, or trusted adult before downloading an app, clicking a link, or buying something."
+                        )
+
+                        SafetyLessonTopic(
+                            title = "Good Internet Habits",
+                            description = "Smart choices help keep you safe and happy online.",
+                            items = listOf(
+                                "• Keep passwords private",
+                                "• Tell an adult if something feels wrong",
+                                "• Balance screen time with other activities"
+                            )
                         )
                     }
                 }
@@ -260,6 +240,58 @@ fun SafetyVideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
             .height(200.dp)
             .clip(RoundedCornerShape(12.dp))
     )
+}
+
+@Composable
+private fun SafetyLessonTopic(
+    title: String,
+    description: String,
+    items: List<String>? = null
+) {
+    Text(
+        text = title,
+        color = Color.Black,
+        fontSize = 18.sp,
+        fontFamily = Kavoon,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.fillMaxWidth()
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                Brush.horizontalGradient(
+                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                )
+            )
+            .padding(20.dp)
+    ) {
+        Column {
+            Text(
+                text = description,
+                fontSize = 14.sp,
+                color = Color.White.copy(0.9f),
+                lineHeight = 20.sp
+            )
+            if (items != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                items.forEach { item ->
+                    Text(
+                        text = item,
+                        fontSize = 14.sp,
+                        color = Color.White.copy(0.95f),
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    )
+                }
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Preview(showBackground = true)

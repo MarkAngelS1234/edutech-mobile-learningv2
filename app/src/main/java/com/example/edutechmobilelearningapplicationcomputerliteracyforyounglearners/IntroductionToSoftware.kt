@@ -131,42 +131,6 @@ fun IntroductionToSoftware(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        // --- LEARNING GOALS SECTION ---
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(20.dp))
-                                .background(
-                                    Brush.horizontalGradient(
-                                        listOf(Color(0xFF4A90E2).copy(alpha = 0.1f), Color(0xFF50E3C2).copy(alpha = 0.1f))
-                                    )
-                                )
-                                .padding(20.dp)
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Learning Goals:",
-                                    color = Color(0xFF4A90E2),
-                                    fontFamily = Kavoon,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                listOf(
-                                    "1. Understand what software is.",
-                                    "2. Learn how software helps hardware.",
-                                    "3. Discover apps you use every day."
-                                ).forEach { goal ->
-                                    Text(
-                                        text = goal,
-                                        fontSize = 13.sp,
-                                        color = Color.DarkGray,
-                                        modifier = Modifier.padding(top = 4.dp))
-                                }
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
                         // Assessment Button
                         Button(
                             onClick = { showAssessment = true },
@@ -189,6 +153,34 @@ fun IntroductionToSoftware(
                         }
 
                         Spacer(modifier = Modifier.height(24.dp))
+
+                        SoftwareLessonTopic(
+                            title = "What is Computer Software?",
+                            description = "Software is the set of programs and apps that tells a computer what to do."
+                        )
+
+                        SoftwareLessonTopic(
+                            title = "Types and Examples of Software",
+                            description = "Different apps help us do different jobs.",
+                            items = listOf(
+                                "• Writing and document apps - make stories and reports",
+                                "• Web browsers - visit websites",
+                                "• Communication apps - send messages and talk",
+                                "• Video apps - watch shows and clips",
+                                "• Learning apps - practice new skills",
+                                "• Games - play and have fun"
+                            )
+                        )
+
+                        SoftwareLessonTopic(
+                            title = "Hardware vs. Software",
+                            description = "Hardware is the computer parts you can touch, like the screen and keyboard. Software is the apps and programs you use."
+                        )
+
+                        SoftwareLessonTopic(
+                            title = "How Hardware and Software Work Together",
+                            description = "Software gives instructions, and hardware does the work. For example, a drawing app tells the screen what picture to show."
+                        )
                     }
                 }
             }
@@ -253,6 +245,58 @@ fun SoftwareVideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
             .height(200.dp)
             .clip(RoundedCornerShape(12.dp))
     )
+}
+
+@Composable
+private fun SoftwareLessonTopic(
+    title: String,
+    description: String,
+    items: List<String>? = null
+) {
+    Text(
+        text = title,
+        color = Color.Black,
+        fontSize = 18.sp,
+        fontFamily = Kavoon,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.fillMaxWidth()
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                Brush.horizontalGradient(
+                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                )
+            )
+            .padding(20.dp)
+    ) {
+        Column {
+            Text(
+                text = description,
+                fontSize = 14.sp,
+                color = Color.White.copy(0.9f),
+                lineHeight = 20.sp
+            )
+            if (items != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                items.forEach { item ->
+                    Text(
+                        text = item,
+                        fontSize = 14.sp,
+                        color = Color.White.copy(0.95f),
+                        modifier = Modifier.padding(vertical = 2.dp)
+                    )
+                }
+            }
+        }
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Preview(showBackground = true)
