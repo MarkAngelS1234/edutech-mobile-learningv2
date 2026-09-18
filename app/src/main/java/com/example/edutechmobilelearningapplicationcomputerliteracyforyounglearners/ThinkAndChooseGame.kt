@@ -347,13 +347,14 @@ fun ThinkAndChooseGameScreen(
                                     shape = RoundedCornerShape(16.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Color.White,
-                                        contentColor = Color(0xFF2575FC)
+                                        contentColor = Color(0xFFFFFFFF)
                                     ),
                                     enabled = if (!showFeedback) selectedOption != null else true
                                 ) {
                                     Text(
                                         text = if (!showFeedback) "Submit Answer" else if (currentIndex < questions.size - 1) "Next Question" else "Finish",
                                         fontSize = 18.sp,
+                                        fontFamily = Kavoon,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }

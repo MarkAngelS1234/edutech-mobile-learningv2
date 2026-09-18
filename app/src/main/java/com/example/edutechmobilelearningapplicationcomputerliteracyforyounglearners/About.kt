@@ -1,11 +1,11 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -13,29 +13,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
 
 /**
- * AboutScreen refactored to incorporate cloud decorations inspired by the reference image.
- * The background vertical gradient hex colors are kept exactly as requested without alteration.
- *
- * @param onBackClick Callback for the back navigation button.
- * @param appName Customizable application name.
- * @param version Customizable version string.
- * @param footerText Customizable footer copyright text.
+ * AboutScreen refactored to match the reference image layout.
+ * Includes a vertical gradient background, decorative clouds, and a logo with a soft blob background.
  */
 @Composable
 fun AboutScreen(
     onBackClick: () -> Unit,
     appName: String = "EduTech Mobile Learning",
     version: String = "Version 1.0",
-    footerText: String = "@2026 EduTech Mobile"
+    footerText: String = "@2026 EduTech Mobile",
+    logoSize: Dp = 180.dp
 ) {
     val backgroundBrush = remember {
         Brush.verticalGradient(
@@ -43,9 +42,8 @@ fun AboutScreen(
         )
     }
 
-    val logoSurfaceColor = remember { Color.White.copy(alpha = 0.2f) }
-    val versionTextColor = remember { Color.White.copy(alpha = 0.7f) }
-    val footerTextColor = remember { Color.White.copy(alpha = 0.6f) }
+    val versionTextColor = Color.White.copy(alpha = 0.9f)
+    val footerTextColor = Color.White.copy(alpha = 0.8f)
 
     Box(
         modifier = Modifier
@@ -61,21 +59,19 @@ fun AboutScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header at the very top
+            // Header at the top
             AboutHeader(onBackClick)
 
-            // Pushes the main content to the center, but slightly upward
-            Spacer(modifier = Modifier.weight(0.8f))
+            Spacer(modifier = Modifier.weight(1f))
 
-            // Main Content Area: Icon, Circle, and Info Text (Grouped and Centered)
+            // Main Content Area: Icon and Info Text
             AboutMainContent(
                 appName = appName,
                 version = version,
-                logoSurfaceColor = logoSurfaceColor,
-                versionTextColor = versionTextColor
+                versionTextColor = versionTextColor,
+                logoSize = logoSize
             )
 
-            // More weight here to push the content "upward a bit"
             Spacer(modifier = Modifier.weight(1.2f))
 
             // Footer at the bottom
@@ -88,7 +84,7 @@ fun AboutScreen(
 }
 
 /**
- * Sub-composable for the About screen header, centering the text "About" perfectly at the center of the header row.
+ * Sub-composable for the About screen header.
  */
 @Composable
 fun AboutHeader(onBackClick: () -> Unit) {
@@ -124,28 +120,20 @@ fun AboutHeader(onBackClick: () -> Unit) {
 fun AboutMainContent(
     appName: String,
     version: String,
-    logoSurfaceColor: Color,
-    versionTextColor: Color
+    versionTextColor: Color,
+    logoSize: Dp = 200.dp
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        // App Logo Icon inside a Circular Surface
-        Surface(
-            modifier = Modifier.size(200.dp),
-            shape = CircleShape,
-            color = logoSurfaceColor
-        ) {
-            Icon(
-                imageVector = Icons.Default.Info,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(32.dp)
-                    .fillMaxSize(),
-                tint = Color.White
-            )
-        }
+        // App Logo Icon - Circular Surface removed
+        Image(
+            painter = painterResource(id = R.drawable.orbb_y),
+            contentDescription = null,
+            modifier = Modifier.size(logoSize),
+            contentScale = ContentScale.Fit
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -160,9 +148,9 @@ fun AboutMainContent(
             lineHeight = 35.sp
         )
     }
-    
+
     Spacer(modifier = Modifier.height(8.dp))
-    
+
     // Version Text
     Text(
         fontFamily = Kavoon,

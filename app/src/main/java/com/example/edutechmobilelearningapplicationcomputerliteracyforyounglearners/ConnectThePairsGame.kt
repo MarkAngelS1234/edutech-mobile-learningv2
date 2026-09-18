@@ -252,24 +252,16 @@ fun GameIntro(onStart: () -> Unit, onBack: () -> Unit) {
 @Composable
 fun InstructionExpandableButton() {
     var expanded by remember { mutableStateOf(false) }
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-    
-    val elevation by animateDpAsState(
-        targetValue = if (isPressed) 0.dp else 12.dp,
-        label = "elevation"
-    )
 
     Surface(
         onClick = { expanded = !expanded },
-        interactionSource = interactionSource,
         shape = RoundedCornerShape(24.dp),
         color = Color.White.copy(alpha = 0.95f),
-        border = BorderStroke(4.dp, Color(0xFFFFD700)), // Golden cartoon border
+        border = BorderStroke(4.dp, Color(0xFF9575CD)), // Golden cartoon border
         modifier = Modifier
             .fillMaxWidth(0.6f)
             .animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
-        shadowElevation = elevation
+        shadowElevation = 0.dp
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
@@ -413,9 +405,9 @@ fun LineMatchingView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(screenTitle, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 22.sp)
-            Text("Timer: ${timeLeft}s", color = if (timeLeft < 3) Color.Red else Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
-            Text("Score: $score", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text(screenTitle, color = Color.White, fontFamily = Kavoon, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+            Text("Timer: ${timeLeft}s", color = if (timeLeft < 3) Color.Red else Color.White, fontFamily = Kavoon, fontSize = 22.sp, fontWeight = FontWeight.Black)
+            Text("Score: $score", color = Color.White, fontFamily = Kavoon, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         }
 
         Box(modifier = Modifier.weight(1f).fillMaxWidth().pointerInput(activeIdx) {
@@ -621,9 +613,9 @@ fun DragDropView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text(screenTitle, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 22.sp)
-            Text("Timer: ${timeLeft}s", color = if (timeLeft < 3) Color.Red else Color.White, fontSize = 22.sp, fontWeight = FontWeight.Black)
-            Text("Score: $score", color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text(screenTitle, color = Color.White, fontWeight = FontWeight.Bold, fontFamily = Kavoon, fontSize = 22.sp)
+            Text("Timer: ${timeLeft}s", color = if (timeLeft < 3) Color.Red else Color.White, fontFamily = Kavoon,fontSize = 22.sp, fontWeight = FontWeight.Black)
+            Text("Score: $score", color = Color.White, fontSize = 22.sp, fontFamily = Kavoon, fontWeight = FontWeight.Bold)
         }
 
         Row(modifier = Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {

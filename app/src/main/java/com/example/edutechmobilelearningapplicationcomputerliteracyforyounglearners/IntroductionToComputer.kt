@@ -36,12 +36,25 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
  * IntroductionToComputerScreen - Detailed lesson content for the "Introduction to Computer" topic.
  */
 @Composable
-fun IntroductionToComputerScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
+fun IntroductionToComputerScreen(
+    onBackClick: () -> Unit,
+    viewModel: CourseViewModel? = null
+) {
+    // Avoid initializing the real ViewModel during Compose Preview as it triggers database access
+    val actualViewModel: CourseViewModel? = if (LocalInspectionMode.current) {
+        null
+    } else {
+        viewModel ?: viewModel()
+    }
+
     var showAssessment by remember { mutableStateOf(false) }
     var isVideoFinished by remember { mutableStateOf(false) }
 
     if (showAssessment) {
-        IntroductionToComputerAssessmentScreen(onBackClick = { showAssessment = false })
+        IntroductionToComputerAssessmentScreen(
+            onBackClick = { showAssessment = false },
+            viewModel = actualViewModel
+        )
     } else {
         Box(
             modifier = Modifier
@@ -115,7 +128,7 @@ fun IntroductionToComputerScreen(onBackClick: () -> Unit, viewModel: CourseViewM
                                 videoResId = R.raw.introductiontocomputer,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    viewModel.markCourseCompleted(ProgressTracker.COURSE_INTRO)
+                                    actualViewModel?.markCourseCompleted(ProgressTracker.COURSE_INTRO)
                                 }
                             )
                         }

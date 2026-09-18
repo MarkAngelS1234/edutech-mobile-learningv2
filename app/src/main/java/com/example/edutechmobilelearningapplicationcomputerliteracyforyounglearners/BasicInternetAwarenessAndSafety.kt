@@ -36,12 +36,25 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
  * BasicInternetAwarenessAndSafetyScreen - Detailed lesson content for "Basic Internet Awareness and Safety".
  */
 @Composable
-fun BasicInternetAwarenessAndSafetyScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
+fun BasicInternetAwarenessAndSafetyScreen(
+    onBackClick: () -> Unit,
+    viewModel: CourseViewModel? = null
+) {
+    // Avoid initializing the real ViewModel during Compose Preview as it triggers database access
+    val actualViewModel: CourseViewModel? = if (LocalInspectionMode.current) {
+        null
+    } else {
+        viewModel ?: viewModel()
+    }
+
     var showAssessment by remember { mutableStateOf(false) }
     var isVideoFinished by remember { mutableStateOf(false) }
 
     if (showAssessment) {
-        BasicInternetAwarenessAndSafetyAssessmentScreen(onBackClick = { showAssessment = false })
+        BasicInternetAwarenessAndSafetyAssessmentScreen(
+            onBackClick = { showAssessment = false },
+            viewModel = actualViewModel
+        )
     } else {
         Box(
             modifier = Modifier
@@ -112,7 +125,7 @@ fun BasicInternetAwarenessAndSafetyScreen(onBackClick: () -> Unit, viewModel: Co
                                 videoResId = R.raw.onlinesafety,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    viewModel.markCourseCompleted(ProgressTracker.COURSE_SAFETY)
+                                    actualViewModel?.markCourseCompleted(ProgressTracker.COURSE_SAFETY)
                                 }
                             )
                         }

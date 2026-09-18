@@ -36,12 +36,22 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
  * ComputerHardware - Detailed lesson content for the "Computer Hardware" topic.
  */
 @Composable
-fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
+fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel? = null) {
+    // Avoid initializing the real ViewModel during Compose Preview as it triggers database access
+    val actualViewModel: CourseViewModel? = if (LocalInspectionMode.current) {
+        null
+    } else {
+        viewModel ?: viewModel()
+    }
+
     var showAssessment by remember { mutableStateOf(false) }
     var isVideoFinished by remember { mutableStateOf(false) }
 
     if (showAssessment) {
-        ComputerHardwareAssessmentScreen(onBackClick = { showAssessment = false })
+        ComputerHardwareAssessmentScreen(
+            onBackClick = { showAssessment = false },
+            viewModel = actualViewModel
+        )
     } else {
         Box(
             modifier = Modifier
@@ -114,7 +124,7 @@ fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel = viewM
                                 videoResId = R.raw.computerhardware,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    viewModel.markCourseCompleted(ProgressTracker.COURSE_HARDWARE)
+                                    actualViewModel?.markCourseCompleted(ProgressTracker.COURSE_HARDWARE)
                                 }
                             )
                         }

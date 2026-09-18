@@ -58,11 +58,11 @@ private object ScrambleRepository {
         ScrambleQuestion("MONITOR", "NOMTIOR"),
         ScrambleQuestion("PRINTER", "RIPNTER"),
         ScrambleQuestion("KEYS", "KYES"),
-        ScrambleQuestion("DESK", "DSEK"),
+        ScrambleQuestion("DESKTOP", "TOPDESK"),
         ScrambleQuestion("GAMES", "EGAMS")
     )
     private val normal = listOf(
-        ScrambleQuestion("DESKTOP", "DSEKTOP"),
+        ScrambleQuestion("DESK", "DSEK"),
         ScrambleQuestion("KEYBOARD", "YEKBOARD"),
         ScrambleQuestion("SPEAKERS", "SPEKAERS"),
         ScrambleQuestion("HARDWARE", "RAHDAWRE"),

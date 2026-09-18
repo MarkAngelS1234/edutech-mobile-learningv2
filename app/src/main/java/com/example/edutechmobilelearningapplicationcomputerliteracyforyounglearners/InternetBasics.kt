@@ -36,12 +36,21 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
  * InternetBasicsScreen - Detailed lesson content for "Internet Basics".
  */
 @Composable
-fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
+fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel? = null) {
+    val actualViewModel: CourseViewModel? = if (LocalInspectionMode.current) {
+        null
+    } else {
+        viewModel ?: viewModel()
+    }
+
     var showAssessment by remember { mutableStateOf(false) }
     var isVideoFinished by remember { mutableStateOf(false) }
 
     if (showAssessment) {
-        InternetBasicsAssessmentScreen(onBackClick = { showAssessment = false })
+        InternetBasicsAssessmentScreen(
+            onBackClick = { showAssessment = false },
+            viewModel = actualViewModel
+        )
     } else {
         Box(
             modifier = Modifier
@@ -114,7 +123,7 @@ fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = v
                                 videoResId = R.raw.internetbacis,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    viewModel.markCourseCompleted(ProgressTracker.COURSE_INTERNET)
+                                    actualViewModel?.markCourseCompleted(ProgressTracker.COURSE_INTERNET)
                                 }
                             )
                         }
