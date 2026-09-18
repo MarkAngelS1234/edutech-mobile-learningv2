@@ -1,11 +1,15 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
@@ -17,6 +21,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -215,13 +222,43 @@ fun BasicInternetAwarenessAndSafetyContent(
 }
 
 /**
- * SafetyVideoPlayer - Reusable Media3 ExoPlayer component.
+ * SafetyVideoPlayer - Reusable Media3 ExoPlayer component with landscape fullscreen support.
  */
 @Composable
 fun SafetyVideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
     val context = LocalContext.current
     val isInspectionMode = LocalInspectionMode.current
     val currentOnVideoFinished by rememberUpdatedState(onVideoFinished)
+
+    var isFullscreen by remember { mutableStateOf(false) }
+
+    // Handle orientation and system UI changes
+    DisposableEffect(isFullscreen) {
+        val activity = context as? Activity
+        val window = activity?.window
+        if (activity != null && window != null) {
+            val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+            if (isFullscreen) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                insetsController.hide(WindowInsetsCompat.Type.systemBars())
+                insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            } else {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                insetsController.show(WindowInsetsCompat.Type.systemBars())
+            }
+        }
+        onDispose {
+            if (isFullscreen) {
+                val activityDispose = context as? Activity
+                val windowDispose = activityDispose?.window
+                activityDispose?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                if (windowDispose != null) {
+                    WindowCompat.getInsetsController(windowDispose, windowDispose.decorView)
+                        .show(WindowInsetsCompat.Type.systemBars())
+                }
+            }
+        }
+    }
 
     if (isInspectionMode) {
         Box(
@@ -258,19 +295,39 @@ fun SafetyVideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
         }
     }
 
-    AndroidView(
-        factory = {
-            PlayerView(context).apply {
-                player = exoPlayer
-                useController = true
-                setBackgroundColor(android.graphics.Color.BLACK)
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .clip(RoundedCornerShape(12.dp))
-    )
+    Box(
+        modifier = if (isFullscreen) {
+            Modifier.fillMaxSize().background(Color.Black)
+        } else {
+            Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(12.dp))
+        }
+    ) {
+        AndroidView(
+            factory = {
+                PlayerView(context).apply {
+                    player = exoPlayer
+                    useController = true
+                    setBackgroundColor(android.graphics.Color.BLACK)
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        )
+
+        IconButton(
+            onClick = { isFullscreen = !isFullscreen },
+            modifier = Modifier.align(Alignment.TopEnd).padding(if (isFullscreen) 16.dp else 8.dp)
+        ) {
+            Icon(
+                imageVector = if (isFullscreen) {
+                    Icons.Default.FullscreenExit
+                } else {
+                    Icons.Default.Fullscreen
+                },
+                contentDescription = if (isFullscreen) "Exit Fullscreen" else "Enter Fullscreen",
+                tint = Color.White
+            )
+        }
+    }
 }
 
 @Composable

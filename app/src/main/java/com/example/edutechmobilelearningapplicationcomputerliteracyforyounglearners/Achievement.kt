@@ -120,10 +120,10 @@ fun AchievementsScreenContent(
             ),
             Badge(
                 name = "Logic Master",
-                description = "Score 15 pts in Think & Choose",
+                description = "Score 15 pts in Find the Right One",
                 icon = "💡",
-                isUnlocked = gameProgressMap["Think & Choose"]?.isUnlocked ?: false,
-                currentPoints = gameProgressMap["Think & Choose"]?.score ?: 0,
+                isUnlocked = gameProgressMap["Find the Right One"]?.isUnlocked ?: false,
+                currentPoints = gameProgressMap["Find the Right One"]?.score ?: 0,
                 requiredPoints = 15
             ),
             Badge(

@@ -60,10 +60,10 @@ fun GameBadgesContent(onBackClick: () -> Unit, gameProgressList: List<GameProgre
             ),
             Badge(
                 name = "Logic Master",
-                description = "Score 15 pts in Think and Choose",
+                description = "Score 15 pts in Find the Right One",
                 icon = "💡",
-                isUnlocked = gameProgressMap["Think and Choose"]?.isUnlocked ?: false,
-                currentPoints = gameProgressMap["Think and Choose"]?.score ?: 0,
+                isUnlocked = gameProgressMap["Find the Right One"]?.isUnlocked ?: false,
+                currentPoints = gameProgressMap["Find the Right One"]?.score ?: 0,
                 requiredPoints = 15
             ),
             Badge(

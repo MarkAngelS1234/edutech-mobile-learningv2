@@ -77,7 +77,7 @@ class CourseViewModel(application: Application) : AndroidViewModel(application) 
             // Required thresholds for unlocking badges
             val required = when (gameName) {
                 "Word Scramble" -> 30
-                "Think and Choose" -> 15
+                "Find the Right One" -> 15
                 "Match and Learn" -> 25
                 else -> 10
             }

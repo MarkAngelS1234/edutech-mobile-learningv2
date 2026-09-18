@@ -337,7 +337,7 @@ fun ThinkAndChooseGameScreen(
                                             } else {
                                                 gameState = GameState.GAME_OVER
                                                 // Save progress when game finishes
-                                                realViewModel?.updateGameScore("Think & Choose", score)
+                                                realViewModel?.updateGameScore("Find the Right One", score)
                                             }
                                         }
                                     },
