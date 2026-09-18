@@ -1,8 +1,10 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -10,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.*
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
 import kotlinx.coroutines.delay
@@ -245,6 +249,21 @@ private fun GradeListContent(
             )
         }
 
+        // Add orbby_yy.json at the bottom-left corner of the screen, below the course cards.
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.orbby_yy))
+        val progress by animateLottieCompositionAsState(
+            composition = composition,
+            iterations = LottieConstants.IterateForever
+        )
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .offset(x = (-129).dp, y = 85.dp)
+                .size(370.dp)
+        )
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -269,21 +288,36 @@ private fun GradeListContent(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Screen Titles
+            // Screen Titles - Centered with customization functionality
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .graphicsLayer {
                         alpha = headerProgress.value
                         translationY = (1f - headerProgress.value) * 40f
-                    }
+                    },
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = "Courses",
                     fontFamily = Kavoon,
-                    fontSize = 28.sp,
+                    fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = Color.White,
+                    // Functionality customization: Clickable modifier for interaction
+                    modifier = Modifier
+                        .padding(vertical = 8.dp)
+                        .clickable { 
+                            // Add custom functionality here (e.g., search, filter, or refresh)
+                        }
+                )
+                
+                // Optional customization: decorative underline
+                Box(
+                    modifier = Modifier
+                        .width(70.dp)
+                        .height(4.dp)
+                        .background(Color.White.copy(alpha = 0.6f), RoundedCornerShape(2.dp))
                 )
             }
 
@@ -295,7 +329,7 @@ private fun GradeListContent(
                 "Computer Hardware",
                 "Computer Software",
                 "Internet Basics",
-                "Online Safety Awareness and Good InternetHabits"
+                "Online Safety Awareness and Good Internet Habits"
             )
             val listState = rememberLazyListState()
 
@@ -343,7 +377,6 @@ private fun GradeListContent(
 
                     GradeListItem(
                         grade = grade,
-                        subtitle = "Computer Literacy Basics",
                         animProgress = combinedProgress,
                         onClick = { onGradeSelected(grade) }
                     )
@@ -359,7 +392,6 @@ private fun GradeListContent(
 @Composable
 fun GradeListItem(
     grade: String,
-    subtitle: String,
     animProgress: Float,
     onClick: () -> Unit
 ) {
@@ -367,32 +399,43 @@ fun GradeListItem(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(84.dp)
             .graphicsLayer {
                 alpha = animProgress
                 translationY = (1f - animProgress) * 40f
             },
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(12.dp),
         color = Color.White,
+        border = BorderStroke(3.dp, Color(0xFF6C5CE7)),
         shadowElevation = (4 * animProgress).dp
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 5.dp),
+                .padding(horizontal = 15.dp),
             verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = grade,
+                fontFamily = Kavoon,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.DarkGray
+                color = Color(0xFF6C5CE7)
             )
-            Text(
-                text = subtitle,
-                fontSize = 13.sp,
-                color = Color.Gray
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = null,
+                    tint = Color(0xFF6C5CE7),
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "+1 Multimedia",
+                    fontSize = 13.sp,
+                    color = Color.Gray
+                )
+            }
         }
     }
 }

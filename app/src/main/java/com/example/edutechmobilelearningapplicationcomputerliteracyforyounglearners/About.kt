@@ -34,7 +34,7 @@ fun AboutScreen(
     appName: String = "EduTech Mobile Learning",
     version: String = "Version 1.0",
     footerText: String = "@2026 EduTech Mobile",
-    logoSize: Dp = 180.dp
+    logoSize: Dp = 200.dp
 ) {
     val backgroundBrush = remember {
         Brush.verticalGradient(
@@ -125,13 +125,15 @@ fun AboutMainContent(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = Modifier.padding(horizontal = 25.dp)
     ) {
         // App Logo Icon - Circular Surface removed
         Image(
-            painter = painterResource(id = R.drawable.orbb_y),
+            painter = painterResource(id = R.drawable.or_b),
             contentDescription = null,
-            modifier = Modifier.size(logoSize),
+            modifier = Modifier
+                .size(logoSize)
+                .offset(x = 10.dp),
             contentScale = ContentScale.Fit
         )
 
