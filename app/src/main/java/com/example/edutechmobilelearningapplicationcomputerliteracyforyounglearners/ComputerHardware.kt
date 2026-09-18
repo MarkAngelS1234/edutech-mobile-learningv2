@@ -36,21 +36,35 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
  * ComputerHardware - Detailed lesson content for the "Computer Hardware" topic.
  */
 @Composable
-fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel? = null) {
-    // Avoid initializing the real ViewModel during Compose Preview as it triggers database access
-    val actualViewModel: CourseViewModel? = if (LocalInspectionMode.current) {
-        null
-    } else {
-        viewModel ?: viewModel()
-    }
+fun ComputerHardware(
+    onBackClick: () -> Unit,
+    viewModel: CourseViewModel? = if (LocalInspectionMode.current) null else viewModel()
+) {
+    ComputerHardwareContent(
+        onBackClick = onBackClick,
+        onMarkCompleted = {
+            viewModel?.markCourseCompleted(ProgressTracker.COURSE_HARDWARE)
+        },
+        viewModel = viewModel
+    )
+}
 
+/**
+ * ComputerHardwareContent - Stateless version for previews and testing.
+ */
+@Composable
+fun ComputerHardwareContent(
+    onBackClick: () -> Unit, 
+    onMarkCompleted: () -> Unit,
+    viewModel: CourseViewModel? = null
+) {
     var showAssessment by remember { mutableStateOf(false) }
     var isVideoFinished by remember { mutableStateOf(false) }
 
     if (showAssessment) {
         ComputerHardwareAssessmentScreen(
             onBackClick = { showAssessment = false },
-            viewModel = actualViewModel
+            viewModel = viewModel
         )
     } else {
         Box(
@@ -58,7 +72,7 @@ fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel? = null
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                        listOf(Color(0xFF7B6FE8), Color(0xFFA173FA))
                     )
                 )
         ) {
@@ -115,7 +129,7 @@ fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel? = null
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(
                                     Brush.horizontalGradient(
-                                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                                        listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                                     )
                                 )
                                 .padding(16.dp)
@@ -124,7 +138,7 @@ fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel? = null
                                 videoResId = R.raw.computerhardware,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    actualViewModel?.markCourseCompleted(ProgressTracker.COURSE_HARDWARE)
+                                    onMarkCompleted()
                                 }
                             )
                         }
@@ -136,7 +150,7 @@ fun ComputerHardware(onBackClick: () -> Unit, viewModel: CourseViewModel? = null
                             onClick = { showAssessment = true },
                             enabled = isVideoFinished,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4A90E2),
+                                containerColor = Color(0xFF8E6CCB),
                                 disabledContainerColor = Color(0xFFB0BEC5)
                             ),
                             shape = RoundedCornerShape(12.dp),
@@ -287,7 +301,7 @@ private fun HardwareLessonTopic(
             .clip(RoundedCornerShape(24.dp))
             .background(
                 Brush.horizontalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                 )
             )
             .padding(20.dp)
@@ -320,6 +334,6 @@ private fun HardwareLessonTopic(
 @Composable
 fun ComputerHardwarePreview() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        ComputerHardware(onBackClick = {})
+        ComputerHardwareContent(onBackClick = {}, onMarkCompleted = {})
     }
 }

@@ -36,20 +36,32 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
  * InternetBasicsScreen - Detailed lesson content for "Internet Basics".
  */
 @Composable
-fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel? = null) {
-    val actualViewModel: CourseViewModel? = if (LocalInspectionMode.current) {
-        null
-    } else {
-        viewModel ?: viewModel()
-    }
+fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
+    InternetBasicsContent(
+        onBackClick = onBackClick,
+        onMarkCompleted = {
+            viewModel.markCourseCompleted(ProgressTracker.COURSE_INTERNET)
+        },
+        viewModel = viewModel
+    )
+}
 
+/**
+ * InternetBasicsContent - Stateless version of the screen for easier testing and previews.
+ */
+@Composable
+fun InternetBasicsContent(
+    onBackClick: () -> Unit, 
+    onMarkCompleted: () -> Unit,
+    viewModel: CourseViewModel? = null
+) {
     var showAssessment by remember { mutableStateOf(false) }
     var isVideoFinished by remember { mutableStateOf(false) }
 
     if (showAssessment) {
         InternetBasicsAssessmentScreen(
             onBackClick = { showAssessment = false },
-            viewModel = actualViewModel
+            viewModel = viewModel
         )
     } else {
         Box(
@@ -57,7 +69,7 @@ fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel? = 
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                        listOf(Color(0xFF7B6FE8), Color(0xFFA173FA))
                     )
                 )
         ) {
@@ -114,7 +126,7 @@ fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel? = 
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(
                                     Brush.horizontalGradient(
-                                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                                        listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                                     )
                                 )
                                 .padding(16.dp)
@@ -123,7 +135,7 @@ fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel? = 
                                 videoResId = R.raw.internetbacis,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    actualViewModel?.markCourseCompleted(ProgressTracker.COURSE_INTERNET)
+                                    onMarkCompleted()
                                 }
                             )
                         }
@@ -135,7 +147,7 @@ fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel? = 
                             onClick = { showAssessment = true },
                             enabled = isVideoFinished,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4A90E2),
+                                containerColor = Color(0xFF8E6CCB),
                                 disabledContainerColor = Color(0xFFB0BEC5)
                             ),
                             shape = RoundedCornerShape(12.dp),
@@ -276,7 +288,7 @@ private fun LessonTopic(
             .clip(RoundedCornerShape(24.dp))
             .background(
                 Brush.horizontalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                 )
             )
             .padding(20.dp)
@@ -303,6 +315,6 @@ private fun LessonTopic(
 @Composable
 fun InternetBasicsPreview() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        InternetBasicsScreen(onBackClick = {})
+        InternetBasicsContent(onBackClick = {}, onMarkCompleted = {})
     }
 }

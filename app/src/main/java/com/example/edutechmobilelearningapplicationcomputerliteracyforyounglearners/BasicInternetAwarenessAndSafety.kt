@@ -38,22 +38,33 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun BasicInternetAwarenessAndSafetyScreen(
     onBackClick: () -> Unit,
+    viewModel: CourseViewModel? = if (LocalInspectionMode.current) null else viewModel()
+) {
+    BasicInternetAwarenessAndSafetyContent(
+        onBackClick = onBackClick,
+        onMarkCompleted = {
+            viewModel?.markCourseCompleted(ProgressTracker.COURSE_SAFETY)
+        },
+        viewModel = viewModel
+    )
+}
+
+/**
+ * BasicInternetAwarenessAndSafetyContent - Stateless version for previews and testing.
+ */
+@Composable
+fun BasicInternetAwarenessAndSafetyContent(
+    onBackClick: () -> Unit, 
+    onMarkCompleted: () -> Unit,
     viewModel: CourseViewModel? = null
 ) {
-    // Avoid initializing the real ViewModel during Compose Preview as it triggers database access
-    val actualViewModel: CourseViewModel? = if (LocalInspectionMode.current) {
-        null
-    } else {
-        viewModel ?: viewModel()
-    }
-
     var showAssessment by remember { mutableStateOf(false) }
     var isVideoFinished by remember { mutableStateOf(false) }
 
     if (showAssessment) {
         BasicInternetAwarenessAndSafetyAssessmentScreen(
             onBackClick = { showAssessment = false },
-            viewModel = actualViewModel
+            viewModel = viewModel
         )
     } else {
         Box(
@@ -61,7 +72,10 @@ fun BasicInternetAwarenessAndSafetyScreen(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                        listOf(
+                            Color(0xFF7B6FE8),
+                            Color(0xFFA173FA)
+                        )
                     )
                 )
         ) {
@@ -116,7 +130,7 @@ fun BasicInternetAwarenessAndSafetyScreen(
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(
                                     Brush.horizontalGradient(
-                                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                                        listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                                     )
                                 )
                                 .padding(16.dp)
@@ -125,7 +139,7 @@ fun BasicInternetAwarenessAndSafetyScreen(
                                 videoResId = R.raw.onlinesafety,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    actualViewModel?.markCourseCompleted(ProgressTracker.COURSE_SAFETY)
+                                    onMarkCompleted()
                                 }
                             )
                         }
@@ -137,7 +151,7 @@ fun BasicInternetAwarenessAndSafetyScreen(
                             onClick = { showAssessment = true },
                             enabled = isVideoFinished,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4A90E2),
+                                containerColor = Color(0xFF8E6CCB),
                                 disabledContainerColor = Color(0xFFB0BEC5)
                             ),
                             shape = RoundedCornerShape(12.dp),
@@ -278,7 +292,7 @@ private fun SafetyLessonTopic(
             .clip(RoundedCornerShape(24.dp))
             .background(
                 Brush.horizontalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                 )
             )
             .padding(20.dp)
@@ -311,6 +325,6 @@ private fun SafetyLessonTopic(
 @Composable
 fun BasicInternetAwarenessAndSafetyPreview() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        BasicInternetAwarenessAndSafetyScreen(onBackClick = {})
+        BasicInternetAwarenessAndSafetyContent(onBackClick = {}, onMarkCompleted = {})
     }
 }

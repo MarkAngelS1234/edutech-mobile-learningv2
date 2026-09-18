@@ -58,7 +58,7 @@ fun IntroductionToSoftware(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                        listOf(Color(0xFF7B6FE8), Color(0xFFA173FA))
                     )
                 )
         ) {
@@ -115,7 +115,7 @@ fun IntroductionToSoftware(
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(
                                     Brush.horizontalGradient(
-                                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                                        listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                                     )
                                 )
                                 .padding(16.dp)
@@ -136,7 +136,7 @@ fun IntroductionToSoftware(
                             onClick = { showAssessment = true },
                             enabled = isVideoFinished,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4A90E2),
+                                containerColor = Color(0xFF8E6CCB),
                                 disabledContainerColor = Color(0xFFB0BEC5)
                             ),
                             shape = RoundedCornerShape(12.dp),
@@ -270,7 +270,7 @@ private fun SoftwareLessonTopic(
             .clip(RoundedCornerShape(24.dp))
             .background(
                 Brush.horizontalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                 )
             )
             .padding(20.dp)

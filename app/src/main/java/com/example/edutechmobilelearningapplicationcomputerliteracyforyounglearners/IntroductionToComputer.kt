@@ -38,22 +38,33 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun IntroductionToComputerScreen(
     onBackClick: () -> Unit,
+    viewModel: CourseViewModel? = if (LocalInspectionMode.current) null else viewModel()
+) {
+    IntroductionToComputerContent(
+        onBackClick = onBackClick,
+        onMarkCompleted = {
+            viewModel?.markCourseCompleted(ProgressTracker.COURSE_INTRO)
+        },
+        viewModel = viewModel
+    )
+}
+
+/**
+ * IntroductionToComputerContent - Stateless version of the screen for previews and testing.
+ */
+@Composable
+fun IntroductionToComputerContent(
+    onBackClick: () -> Unit, 
+    onMarkCompleted: () -> Unit,
     viewModel: CourseViewModel? = null
 ) {
-    // Avoid initializing the real ViewModel during Compose Preview as it triggers database access
-    val actualViewModel: CourseViewModel? = if (LocalInspectionMode.current) {
-        null
-    } else {
-        viewModel ?: viewModel()
-    }
-
     var showAssessment by remember { mutableStateOf(false) }
     var isVideoFinished by remember { mutableStateOf(false) }
 
     if (showAssessment) {
         IntroductionToComputerAssessmentScreen(
             onBackClick = { showAssessment = false },
-            viewModel = actualViewModel
+            viewModel = viewModel
         )
     } else {
         Box(
@@ -61,7 +72,7 @@ fun IntroductionToComputerScreen(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                        listOf(Color(0xFF7B6FE8), Color(0xFF50E3C2))
                     )
                 )
         ) {
@@ -119,7 +130,7 @@ fun IntroductionToComputerScreen(
                                 .clip(RoundedCornerShape(20.dp))
                                 .background(
                                     Brush.horizontalGradient(
-                                        listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                                        listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                                     )
                                 )
                                 .padding(16.dp)
@@ -128,7 +139,7 @@ fun IntroductionToComputerScreen(
                                 videoResId = R.raw.introductiontocomputer,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    actualViewModel?.markCourseCompleted(ProgressTracker.COURSE_INTRO)
+                                    onMarkCompleted()
                                 }
                             )
                         }
@@ -140,7 +151,7 @@ fun IntroductionToComputerScreen(
                             onClick = { showAssessment = true },
                             enabled = isVideoFinished,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4A90E2),
+                                containerColor = Color(0xFF48E6CCB),
                                 disabledContainerColor = Color(0xFFB0BEC5)
                             ),
                             shape = RoundedCornerShape(12.dp),
@@ -290,7 +301,7 @@ private fun ComputerLessonTopic(
             .clip(RoundedCornerShape(24.dp))
             .background(
                 Brush.horizontalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                 )
             )
             .padding(20.dp)
@@ -323,6 +334,6 @@ private fun ComputerLessonTopic(
 @Composable
 fun IntroToComputerPreview() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        IntroductionToComputerScreen(onBackClick = {})
+        IntroductionToComputerContent(onBackClick = {}, onMarkCompleted = {})
     }
 }
