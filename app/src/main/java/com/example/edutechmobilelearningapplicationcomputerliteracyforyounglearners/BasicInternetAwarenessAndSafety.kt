@@ -38,10 +38,12 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun BasicInternetAwarenessAndSafetyScreen(
     onBackClick: () -> Unit,
+    onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = if (LocalInspectionMode.current) null else viewModel()
 ) {
     BasicInternetAwarenessAndSafetyContent(
         onBackClick = onBackClick,
+        onCheckProgressClick = onCheckProgressClick,
         onMarkCompleted = {
             viewModel?.markCourseCompleted(ProgressTracker.COURSE_SAFETY)
         },
@@ -55,6 +57,7 @@ fun BasicInternetAwarenessAndSafetyScreen(
 @Composable
 fun BasicInternetAwarenessAndSafetyContent(
     onBackClick: () -> Unit, 
+    onCheckProgressClick: () -> Unit = {},
     onMarkCompleted: () -> Unit,
     viewModel: CourseViewModel? = null
 ) {
@@ -64,6 +67,7 @@ fun BasicInternetAwarenessAndSafetyContent(
     if (showAssessment) {
         BasicInternetAwarenessAndSafetyAssessmentScreen(
             onBackClick = { showAssessment = false },
+            onCheckProgressClick = onCheckProgressClick,
             viewModel = viewModel
         )
     } else {

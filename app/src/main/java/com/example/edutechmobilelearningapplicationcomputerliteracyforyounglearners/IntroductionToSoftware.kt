@@ -38,6 +38,7 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun IntroductionToSoftware(
     onBackClick: () -> Unit,
+    onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = null
 ) {
     // Avoid initializing the real ViewModel during Compose Preview as it triggers database access
@@ -51,7 +52,11 @@ fun IntroductionToSoftware(
     var isVideoFinished by remember { mutableStateOf(false) }
 
     if (showAssessment) {
-        IntroductionToSoftwareAssessmentScreen(onBackClick = { showAssessment = false }, viewModel = actualViewModel)
+        IntroductionToSoftwareAssessmentScreen(
+            onBackClick = { showAssessment = false },
+            onCheckProgressClick = onCheckProgressClick,
+            viewModel = actualViewModel
+        )
     } else {
         Box(
             modifier = Modifier

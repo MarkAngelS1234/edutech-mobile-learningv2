@@ -36,9 +36,14 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
  * InternetBasicsScreen - Detailed lesson content for "Internet Basics".
  */
 @Composable
-fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
+fun InternetBasicsScreen(
+    onBackClick: () -> Unit, 
+    onCheckProgressClick: () -> Unit = {},
+    viewModel: CourseViewModel = viewModel()
+) {
     InternetBasicsContent(
         onBackClick = onBackClick,
+        onCheckProgressClick = onCheckProgressClick,
         onMarkCompleted = {
             viewModel.markCourseCompleted(ProgressTracker.COURSE_INTERNET)
         },
@@ -52,6 +57,7 @@ fun InternetBasicsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = v
 @Composable
 fun InternetBasicsContent(
     onBackClick: () -> Unit, 
+    onCheckProgressClick: () -> Unit = {},
     onMarkCompleted: () -> Unit,
     viewModel: CourseViewModel? = null
 ) {
@@ -61,6 +67,7 @@ fun InternetBasicsContent(
     if (showAssessment) {
         InternetBasicsAssessmentScreen(
             onBackClick = { showAssessment = false },
+            onCheckProgressClick = onCheckProgressClick,
             viewModel = viewModel
         )
     } else {

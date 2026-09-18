@@ -48,9 +48,16 @@ fun ComputerGradesScreen(
 
     // Internal state to manage which lesson is currently being displayed
     var currentLesson by remember { mutableStateOf<String?>(null) }
+    // Remembers where we were before going to the Progress screen
+    var previousLesson by remember { mutableStateOf<String?>(null) }
 
     // Handle internal lesson navigation
     when (currentLesson) {
+        "Progress" -> {
+            ProgressScreen(
+                onBackClick = { currentLesson = previousLesson }
+            )
+        }
         "Introduction to Computers Overview" -> {
             IntroductionToComputerOverviewScreen(
                 onBackClick = { currentLesson = null },
@@ -58,7 +65,13 @@ fun ComputerGradesScreen(
             )
         }
         "Introduction to Computers" -> {
-            IntroductionToComputerScreen(onBackClick = { currentLesson = "Introduction to Computers Overview" })
+            IntroductionToComputerScreen(
+                onBackClick = { currentLesson = "Introduction to Computers Overview" },
+                onCheckProgressClick = { 
+                    previousLesson = "Introduction to Computers"
+                    currentLesson = "Progress" 
+                }
+            )
         }
         
         "Computer Hardware Overview" -> {
@@ -68,7 +81,13 @@ fun ComputerGradesScreen(
             )
         }
         "Computer Hardware" -> {
-           ComputerHardware(onBackClick = { currentLesson = "Computer Hardware Overview" })
+           ComputerHardware(
+               onBackClick = { currentLesson = "Computer Hardware Overview" },
+               onCheckProgressClick = {
+                   previousLesson = "Computer Hardware"
+                   currentLesson = "Progress"
+               }
+           )
         }
         
         "Computer Software Overview" -> {
@@ -78,7 +97,13 @@ fun ComputerGradesScreen(
             )
         }
         "Computer Software" -> {
-            IntroductionToSoftware(onBackClick = { currentLesson = "Computer Software Overview" })
+            IntroductionToSoftware(
+                onBackClick = { currentLesson = "Computer Software Overview" },
+                onCheckProgressClick = {
+                    previousLesson = "Computer Software"
+                    currentLesson = "Progress"
+                }
+            )
         }
         
         "Internet Basics Overview" -> {
@@ -88,7 +113,13 @@ fun ComputerGradesScreen(
             )
         }
         "Internet Basics" -> {
-            InternetBasicsScreen(onBackClick = { currentLesson = "Internet Basics Overview" })
+            InternetBasicsScreen(
+                onBackClick = { currentLesson = "Internet Basics Overview" },
+                onCheckProgressClick = {
+                    previousLesson = "Internet Basics"
+                    currentLesson = "Progress"
+                }
+            )
         }
         
         "Online Safety Overview" -> {
@@ -98,7 +129,13 @@ fun ComputerGradesScreen(
             )
         }
         "Online Safety Awareness and Safety" -> {
-            BasicInternetAwarenessAndSafetyScreen(onBackClick = { currentLesson = "Online Safety Overview" })
+            BasicInternetAwarenessAndSafetyScreen(
+                onBackClick = { currentLesson = "Online Safety Overview" },
+                onCheckProgressClick = {
+                    previousLesson = "Online Safety Awareness and Safety"
+                    currentLesson = "Progress"
+                }
+            )
         }
         
         else -> {

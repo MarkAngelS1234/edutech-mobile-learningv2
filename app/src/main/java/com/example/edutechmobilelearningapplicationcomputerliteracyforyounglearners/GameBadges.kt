@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,7 +35,12 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 
 @Composable
 fun GameBadgesScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
-    val gameProgressList by viewModel.allGameProgress.collectAsState(initial = emptyList())
+    val isInspection = LocalInspectionMode.current
+    val gameProgressList by if (isInspection) {
+        remember { mutableStateOf(emptyList<GameProgress>()) }
+    } else {
+        viewModel.allGameProgress.collectAsState(initial = emptyList())
+    }
     GameBadgesContent(onBackClick = onBackClick, gameProgressList = gameProgressList)
 }
 

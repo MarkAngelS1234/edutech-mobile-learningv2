@@ -38,10 +38,12 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun ComputerHardware(
     onBackClick: () -> Unit,
+    onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = if (LocalInspectionMode.current) null else viewModel()
 ) {
     ComputerHardwareContent(
         onBackClick = onBackClick,
+        onCheckProgressClick = onCheckProgressClick,
         onMarkCompleted = {
             viewModel?.markCourseCompleted(ProgressTracker.COURSE_HARDWARE)
         },
@@ -55,6 +57,7 @@ fun ComputerHardware(
 @Composable
 fun ComputerHardwareContent(
     onBackClick: () -> Unit, 
+    onCheckProgressClick: () -> Unit = {},
     onMarkCompleted: () -> Unit,
     viewModel: CourseViewModel? = null
 ) {
@@ -64,6 +67,7 @@ fun ComputerHardwareContent(
     if (showAssessment) {
         ComputerHardwareAssessmentScreen(
             onBackClick = { showAssessment = false },
+            onCheckProgressClick = onCheckProgressClick,
             viewModel = viewModel
         )
     } else {

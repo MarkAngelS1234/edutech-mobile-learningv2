@@ -1,5 +1,6 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,7 +44,10 @@ val hardwareQuestions = listOf(
 @Composable
 fun ComputerHardwareAssessmentScreen(
     onBackClick: () -> Unit,
-    viewModel: CourseViewModel? = null
+    onCheckProgressClick: () -> Unit = {},
+    viewModel: CourseViewModel? = null,
+    isFinishedPreview: Boolean = false,
+    scorePreview: Int = 0
 ) {
     val realViewModel: CourseViewModel? = if (LocalInspectionMode.current) null else {
         viewModel ?: viewModel()
@@ -52,8 +56,8 @@ fun ComputerHardwareAssessmentScreen(
     var currentQuestionIndex by remember { mutableIntStateOf(0) }
     var selectedAnswerIndex by remember { mutableIntStateOf(-1) }
     var showFeedback by remember { mutableStateOf(false) }
-    var score by remember { mutableIntStateOf(0) }
-    var isAssessmentFinished by remember { mutableStateOf(false) }
+    var score by remember { mutableIntStateOf(scorePreview) }
+    var isAssessmentFinished by remember { mutableStateOf(isFinishedPreview) }
 
     val currentQuestion = hardwareQuestions[currentQuestionIndex]
 
@@ -133,6 +137,19 @@ fun ComputerHardwareAssessmentScreen(
                             .height(56.dp)
                     ) {
                         Text(text = "Back to Lesson", fontFamily = Kavoon, color = Color.White, fontSize = 18.sp)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedButton(
+                        onClick = onCheckProgressClick,
+                        border = BorderStroke(2.dp, primaryPurple),
+                        shape = RoundedCornerShape(25.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                    ) {
+                        Text(text = "Check Progress", fontFamily = Kavoon, color = primaryPurple, fontSize = 18.sp)
                     }
                 }
             } else {
@@ -317,5 +334,17 @@ fun ComputerHardwareAssessmentScreen(
 fun ComputerHardwareAssessmentPreview() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
         ComputerHardwareAssessmentScreen(onBackClick = {})
+    }
+}
+
+@Preview(showBackground = true, name = "Assessment Result")
+@Composable
+fun ComputerHardwareAssessmentResultPreview() {
+    EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
+        ComputerHardwareAssessmentScreen(
+            onBackClick = {},
+            isFinishedPreview = true,
+            scorePreview = 7
+        )
     }
 }

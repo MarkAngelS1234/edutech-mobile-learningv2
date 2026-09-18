@@ -22,6 +22,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,8 +40,20 @@ data class BadgeTheme(
 
 @Composable
 fun AchievementsScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
-    val progressList by viewModel.allProgress.collectAsState(initial = emptyList())
-    val gameProgressList by viewModel.allGameProgress.collectAsState(initial = emptyList())
+    // Avoid initializing the real ViewModel during Compose Preview as it triggers database access
+    val isInspection = LocalInspectionMode.current
+    
+    val progressList by if (isInspection) {
+        remember { mutableStateOf(emptyList<CourseProgress>()) }
+    } else {
+        viewModel.allProgress.collectAsState(initial = emptyList())
+    }
+    
+    val gameProgressList by if (isInspection) {
+        remember { mutableStateOf(emptyList<GameProgress>()) }
+    } else {
+        viewModel.allGameProgress.collectAsState(initial = emptyList())
+    }
     
     AchievementsScreenContent(
         onBackClick = onBackClick,
