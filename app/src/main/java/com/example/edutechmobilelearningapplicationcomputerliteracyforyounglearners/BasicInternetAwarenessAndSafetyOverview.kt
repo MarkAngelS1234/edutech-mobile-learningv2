@@ -1,6 +1,7 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,14 +28,17 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun BasicInternetAwarenessAndSafetyOverviewScreen(
     onBackClick: () -> Unit,
-    onStartLearningClick: () -> Unit
+    onStartLearningClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(
+                        Color(0xFF7B6FE8),
+                        Color(0xFFA173FA)
+                    )
                 )
             )
     ) {
@@ -43,7 +48,12 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
+                    .padding(
+                        top = 40.dp,
+                        start = 20.dp,
+                        end = 20.dp,
+                        bottom = 20.dp
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(
@@ -56,6 +66,7 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
                         tint = Color.White
                     )
                 }
+
                 Text(
                     text = "Topic Overview",
                     color = Color.White,
@@ -70,7 +81,10 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                shape = RoundedCornerShape(
+                    topStart = 32.dp,
+                    topEnd = 32.dp
+                ),
                 color = Color.White,
                 shadowElevation = 8.dp
             ) {
@@ -81,15 +95,19 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start
+                    ) {
                         Spacer(modifier = Modifier.height(20.dp))
-                        
+
                         Image(
-                            painter = painterResource(id = R.drawable.computer_1),
+                            painter = painterResource(id = R.drawable.basic_internet_awareness_and_safety),
                             contentDescription = "Online Safety Overview",
                             modifier = Modifier
                                 .size(200.dp)
-                                .clip(RoundedCornerShape(20.dp)),
+                                .clip(RoundedCornerShape(20.dp))
+                                .align(Alignment.CenterHorizontally),
                             contentScale = ContentScale.Fit
                         )
 
@@ -97,20 +115,24 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
 
                         Text(
                             text = "Online Safety Awareness",
-                            fontSize = 24.sp,
+                            fontSize = 22.sp,
                             fontFamily = Kavoon,
-                            color = Color(0xFF4A90E2),
-                            textAlign = TextAlign.Center
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF8E6CCB),
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.fillMaxWidth()
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
                             text = "Staying safe online is very important! In this lesson, we will learn how to protect ourselves while using the internet. We'll talk about keeping personal information private and how to be a kind digital citizen.",
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center,
-                            lineHeight = 24.sp
+                            fontSize = 15.sp,
+                            fontFamily = FontFamily.SansSerif,
+                            color = Color(0xFF37474F),
+                            textAlign = TextAlign.Start,
+                            lineHeight = 22.sp,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
 
@@ -118,17 +140,25 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
                         onClick = onStartLearningClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
+                            .padding(horizontal = 12.dp)
+                            .height(64.dp),
+                        shape = RoundedCornerShape(32.dp),
+                        border = BorderStroke(
+                            2.dp,
+                            Color(0xFF8E6CCB)
+                        ),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4A90E2)
+                            containerColor = Color.White
+                        ),
+                        elevation = ButtonDefaults.buttonElevation(
+                            defaultElevation = 4.dp
                         )
                     ) {
                         Text(
                             text = "START LEARNING",
                             fontSize = 18.sp,
                             fontFamily = Kavoon,
-                            color = Color.White
+                            color = Color(0xFF8E6CCB)
                         )
                     }
                 }

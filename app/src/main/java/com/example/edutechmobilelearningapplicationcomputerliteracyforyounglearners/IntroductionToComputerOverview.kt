@@ -30,26 +30,35 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 fun IntroductionToComputerOverviewScreen(
     onBackClick: () -> Unit,
     onStartLearningClick: () -> Unit,
-    // Add customization parameter for the gap between text and button
-    contentToButtonSpacing: Dp = 40.dp
+    // Controls the gap between the description and button
+    contentToButtonSpacing: Dp = 40.dp,
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(
+                        Color(0xFF7B6FE8),
+                        Color(0xFFA173FA)
+                    )
                 )
             )
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
+
             // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
+                    .padding(
+                        top = 40.dp,
+                        start = 20.dp,
+                        end = 20.dp,
+                        bottom = 20.dp
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(
@@ -62,6 +71,7 @@ fun IntroductionToComputerOverviewScreen(
                         tint = Color.White
                     )
                 }
+
                 Text(
                     text = "Topic Overview",
                     color = Color.White,
@@ -77,7 +87,10 @@ fun IntroductionToComputerOverviewScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                shape = RoundedCornerShape(
+                    topStart = 32.dp,
+                    topEnd = 32.dp
+                ),
                 color = Color.White,
                 shadowElevation = 8.dp
             ) {
@@ -85,69 +98,82 @@ fun IntroductionToComputerOverviewScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(24.dp)
-                        // Added scrolling to ensure button is visible on small screens
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    // Changed from SpaceBetween to Top to allow custom spacing
                     verticalArrangement = Arrangement.Top
                 ) {
-                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Spacer(
+                        modifier = Modifier.height(20.dp)
+                    )
 
                     Image(
-                        painter = painterResource(id = R.drawable.computer_1),
+                        painter = painterResource(
+                            id = R.drawable.introduction_to_computer
+                        ),
                         contentDescription = "Introduction to Computer Overview",
                         modifier = Modifier
                             .size(200.dp)
-                            .clip(RoundedCornerShape(20.dp)),
+                            .clip(
+                                RoundedCornerShape(20.dp)
+                            ),
                         contentScale = ContentScale.Fit
                     )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(
+                        modifier = Modifier.height(32.dp)
+                    )
 
                     Text(
                         text = "Introduction to Computer",
                         fontSize = 24.sp,
                         fontFamily = Kavoon,
-                        color = Color(0xFF4A90E2),
+                        color = Color(0xFF8E6CCB),
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(
+                        modifier = Modifier.height(16.dp)
+                    )
 
                     Text(
-                        text = "Welcome to the first lesson of Introduction To Computers!.  In this lesson you will learn what a Computer is " +
+                        text = "Welcome to the first lesson of Introduction To Computers!. In this lesson you will learn what a Computer is " +
                                 "Different types of Computers, ",
-
                         fontSize = 16.sp,
-                        color = Color.Gray,
+                        color = Color(0xFF37474F),
                         textAlign = TextAlign.Center,
                         lineHeight = 24.sp
                     )
 
-                    // This Spacer controls how high the button is.
-                    // Adjust 'contentToButtonSpacing' to move it up or down.
-                    Spacer(modifier = Modifier.height(contentToButtonSpacing))
+                    // Controls the distance between description and button
+                    Spacer(
+                        modifier = Modifier.height(contentToButtonSpacing)
+                    )
 
                     Button(
                         onClick = onStartLearningClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
+                            .height(64.dp),
+                        shape = RoundedCornerShape(32.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4A90E2)
-                        )
+                            containerColor = Color.White,
+                            contentColor = Color(0xFF8E6CCB)
+                        ),
+                        border = ButtonDefaults.outlinedButtonBorder(enabled = true)
                     ) {
                         Text(
                             text = "START LEARNING",
                             fontSize = 18.sp,
                             fontFamily = Kavoon,
-                            color = Color.White
+                            color = Color(0xFF8E6CCB)
                         )
                     }
 
-                    // Optional bottom padding for the scrollable area
-                    Spacer(modifier = Modifier.height(20.dp))
+                    // Bottom padding for scrollable area
+                    Spacer(
+                        modifier = Modifier.height(20.dp)
+                    )
                 }
             }
         }
@@ -161,7 +187,7 @@ fun IntroductionToComputerOverviewPreview() {
         IntroductionToComputerOverviewScreen(
             onBackClick = {},
             onStartLearningClick = {},
-            contentToButtonSpacing = 60.dp // Example of customizing the height
+            contentToButtonSpacing = 60.dp
         )
     }
 }

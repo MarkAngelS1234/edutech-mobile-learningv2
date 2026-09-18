@@ -26,24 +26,34 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun ComputerSoftwareOverviewScreen(
     onBackClick: () -> Unit,
-    onStartLearningClick: () -> Unit
+    onStartLearningClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF4A90E2), Color(0xFF50E3C2))
+                    listOf(
+                        Color(0xFF7B6FE8),
+                        Color(0xFFA173FA)
+                    )
                 )
             )
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
+
+            // Header
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
+                    .padding(
+                        top = 40.dp,
+                        start = 20.dp,
+                        end = 20.dp,
+                        bottom = 20.dp
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(
@@ -56,6 +66,7 @@ fun ComputerSoftwareOverviewScreen(
                         tint = Color.White
                     )
                 }
+
                 Text(
                     text = "Topic Overview",
                     color = Color.White,
@@ -66,11 +77,15 @@ fun ComputerSoftwareOverviewScreen(
                 )
             }
 
+            // Main Content
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
-                shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+                shape = RoundedCornerShape(
+                    topStart = 32.dp,
+                    topEnd = 32.dp
+                ),
                 color = Color.White,
                 shadowElevation = 8.dp
             ) {
@@ -81,54 +96,71 @@ fun ComputerSoftwareOverviewScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Spacer(modifier = Modifier.height(20.dp))
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Spacer(
+                            modifier = Modifier.height(20.dp)
+                        )
 
                         Image(
-                            painter = painterResource(id = R.drawable.computer_1),
+                            painter = painterResource(
+                                id = R.drawable.computer_software
+                            ),
                             contentDescription = "Computer Software Overview",
                             modifier = Modifier
                                 .size(200.dp)
-                                .clip(RoundedCornerShape(20.dp)),
+                                .clip(
+                                    RoundedCornerShape(20.dp)
+                                ),
                             contentScale = ContentScale.Fit
                         )
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(
+                            modifier = Modifier.height(32.dp)
+                        )
 
                         Text(
                             text = "Computer Software",
                             fontSize = 24.sp,
                             fontFamily = Kavoon,
-                            color = Color(0xFF4A90E2),
+                            color = Color(0xFF8E6CCB),
                             textAlign = TextAlign.Center
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(
+                            modifier = Modifier.height(16.dp)
+                        )
 
                         Text(
                             text = "Software are the programs and instructions that tell the computer what to do. In this lesson, we'll learn about operating systems and different types of apps that help us write, draw, and learn.",
                             fontSize = 16.sp,
-                            color = Color.Gray,
+                            color = Color(0xFF37474F),
                             textAlign = TextAlign.Center,
                             lineHeight = 24.sp
                         )
                     }
 
+                    // Start Learning Button
                     Button(
                         onClick = onStartLearningClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(16.dp),
+                            .height(64.dp),
+                        shape = RoundedCornerShape(32.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4A90E2)
-                        )
+                            containerColor = Color.White,
+                            contentColor = Color(0xFF8E6CCB)
+                        ),
+                        border = ButtonDefaults.outlinedButtonBorder(enabled = true)
                     ) {
                         Text(
                             text = "START LEARNING",
                             fontSize = 18.sp,
                             fontFamily = Kavoon,
-                            color = Color.White
+                            color = Color(0xFF8E6CCB)
                         )
                     }
                 }
