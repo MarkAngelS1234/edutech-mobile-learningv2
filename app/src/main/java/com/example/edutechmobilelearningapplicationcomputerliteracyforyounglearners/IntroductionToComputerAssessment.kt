@@ -9,8 +9,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -66,26 +64,25 @@ fun IntroductionToComputerAssessmentScreen(
 
     Scaffold(
         topBar = {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp, start = 8.dp, end = 16.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
             ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color(0xFF2D3436)
-                    )
-                }
+                EduTechBackButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
                 Text(
                     text = "Quick Quiz",
                     fontSize = 22.sp,
                     fontFamily = Kavoon,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF2D3436),
-                    modifier = Modifier.padding(start = 8.dp)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 110.dp)
                 )
             }
         },
@@ -94,9 +91,11 @@ fun IntroductionToComputerAssessmentScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            contentAlignment = Alignment.TopCenter
         ) {
-            if (isAssessmentFinished) {
+            Box(modifier = Modifier.widthIn(max = 850.dp).fillMaxWidth().fillMaxHeight()) {
+                if (isAssessmentFinished) {
                 LaunchedEffect(Unit) {
                     realViewModel?.updateAssessmentScore(
                         ProgressTracker.COURSE_INTRO,
@@ -311,6 +310,7 @@ fun IntroductionToComputerAssessmentScreen(
             }
         }
     }
+}
 }
 
 @Preview(showBackground = true)

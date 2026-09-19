@@ -4,9 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,29 +43,26 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
             )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxHeight()
+                .widthIn(max = 850.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
                         top = 40.dp,
-                        start = 20.dp,
-                        end = 20.dp,
+                        start = 16.dp,
+                        end = 16.dp,
                         bottom = 20.dp
-                    ),
-                contentAlignment = Alignment.Center
+                    )
             ) {
-                IconButton(
+                EduTechBackButton(
                     onClick = onBackClick,
                     modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Navigate back",
-                        tint = Color.White
-                    )
-                }
+                )
 
                 Text(
                     text = "Topic Overview",
@@ -73,7 +70,10 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
                     fontSize = 20.sp,
                     fontFamily = Kavoon,
                     fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 110.dp)
                 )
             }
 
@@ -91,9 +91,10 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(24.dp),
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.Top
                 ) {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -136,6 +137,8 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
                         )
                     }
 
+                    Spacer(modifier = Modifier.height(40.dp))
+
                     Button(
                         onClick = onStartLearningClick,
                         modifier = Modifier
@@ -161,6 +164,8 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
                             color = Color(0xFF8E6CCB)
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }

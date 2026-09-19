@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,17 +26,17 @@ fun LoadingComponent(progress: Float, modifier: Modifier = Modifier) {
         Text(
             text = "Loading",
             fontFamily = Kavoon,
-            fontSize = 27.sp,
+            fontSize = 32.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color.White
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         LinearProgressIndicator(
             progress = { progress },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(17.dp),
-            color = Color.White,
+                .height(12.dp),
+            color = Color(0xFFA173FA),
             trackColor = Color.White.copy(alpha = 0.3f)
         )
     }
@@ -60,10 +61,20 @@ fun LoadingScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF4A90E2)), // Darker background to see white text in standalone screen
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF7B6FE8),
+                        Color(0xFFA173FA)
+                    )
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
-        LoadingComponent(progress = progress)
+        LoadingComponent(
+            progress = progress,
+            modifier = Modifier.widthIn(max = 600.dp).fillMaxWidth()
+        )
     }
 }
 

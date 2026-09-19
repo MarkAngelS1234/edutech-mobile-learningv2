@@ -6,8 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -80,31 +79,29 @@ fun OptionsScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .widthIn(max = 800.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
                 .padding(24.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 16.dp)
+            // Standardized Header
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                contentAlignment = Alignment.Center
             ) {
-                IconButton(
+                EduTechBackButton(
                     onClick = onBackClick,
-                    modifier = Modifier
-                        .shadow(4.dp, CircleShape)
-                        .background(Color.White.copy(alpha = 0.3f), CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
-                Spacer(modifier = Modifier.width(20.dp))
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
+
                 Text(
                     text = "Options",
                     style = TextStyle(
                         fontFamily = Kavoon,
-                        fontSize = 36.sp,
+                        fontSize = 32.sp, // Slightly adjusted to fit better in header row
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         shadow = Shadow(
@@ -112,11 +109,13 @@ fun OptionsScreen(
                             offset = androidx.compose.ui.geometry.Offset(4f, 4f),
                             blurRadius = 8f
                         )
-                    )
+                    ),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
 
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(100.dp))
 
             // BGM Section - Cartoonized
             Column(modifier = Modifier.padding(horizontal = 8.dp)) {

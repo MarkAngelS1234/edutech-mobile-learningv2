@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -266,59 +265,57 @@ private fun GradeListContent(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .widthIn(max = 850.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header: Back navigation
-            Row(
+            // Standardized Header
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 40.dp),
-                verticalAlignment = Alignment.CenterVertically
+                contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Navigate back",
-                        tint = Color.White
+                EduTechBackButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
+
+                // Screen Titles - Centered with customization functionality
+                Column(
+                    modifier = Modifier
+                        .graphicsLayer {
+                            alpha = headerProgress.value
+                            translationY = (1f - headerProgress.value) * 40f
+                        }
+                        .align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Courses",
+                        fontFamily = Kavoon,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        // Functionality customization: Clickable modifier for interaction
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .clickable {
+                                // Add custom functionality here (e.g., search, filter, or refresh)
+                            }
+                    )
+
+                    // Optional customization: decorative underline
+                    Box(
+                        modifier = Modifier
+                            .width(70.dp)
+                            .height(4.dp)
+                            .background(Color.White.copy(alpha = 0.6f), RoundedCornerShape(2.dp))
                     )
                 }
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Screen Titles - Centered with customization functionality
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .graphicsLayer {
-                        alpha = headerProgress.value
-                        translationY = (1f - headerProgress.value) * 40f
-                    },
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Courses",
-                    fontFamily = Kavoon,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    // Functionality customization: Clickable modifier for interaction
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .clickable { 
-                            // Add custom functionality here (e.g., search, filter, or refresh)
-                        }
-                )
-                
-                // Optional customization: decorative underline
-                Box(
-                    modifier = Modifier
-                        .width(70.dp)
-                        .height(4.dp)
-                        .background(Color.White.copy(alpha = 0.6f), RoundedCornerShape(2.dp))
-                )
             }
 
             Spacer(modifier = Modifier.height(29.dp))

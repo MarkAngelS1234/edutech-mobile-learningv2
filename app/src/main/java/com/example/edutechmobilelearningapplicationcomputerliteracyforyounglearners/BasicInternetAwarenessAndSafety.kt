@@ -10,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -90,31 +89,33 @@ fun BasicInternetAwarenessAndSafetyContent(
                     )
                 )
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .widthIn(max = 950.dp) // Slightly wider to accommodate longer title
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter)
+            ) {
                 // Header with Centered Title
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 40.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
-                    contentAlignment = Alignment.Center
+                        .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 20.dp)
                 ) {
-                    IconButton(
+                    EduTechBackButton(
                         onClick = onBackClick,
                         modifier = Modifier.align(Alignment.CenterStart)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate back",
-                            tint = Color.White
-                        )
-                    }
+                    )
                     Text(
                         text = "Internet Awareness & Safety",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontFamily = Kavoon,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(horizontal = 110.dp)
                     )
                 }
 
@@ -144,7 +145,8 @@ fun BasicInternetAwarenessAndSafetyContent(
                                         listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                                     )
                                 )
-                                .padding(16.dp)
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             SafetyVideoPlayer(
                                 videoResId = R.raw.onlinesafety,
@@ -262,7 +264,7 @@ fun SafetyVideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
 
     if (isInspectionMode) {
         Box(
-            modifier = Modifier.fillMaxWidth().height(200.dp).background(Color.Black.copy(0.6f)),
+            modifier = Modifier.widthIn(max = 750.dp).fillMaxWidth().aspectRatio(16 / 9f).background(Color.Black.copy(0.6f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(Icons.Default.PlayArrow, null, tint = Color.White, modifier = Modifier.size(64.dp))
@@ -299,7 +301,7 @@ fun SafetyVideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
         modifier = if (isFullscreen) {
             Modifier.fillMaxSize().background(Color.Black)
         } else {
-            Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(12.dp))
+            Modifier.widthIn(max = 750.dp).fillMaxWidth().aspectRatio(16 / 9f).clip(RoundedCornerShape(12.dp))
         }
     ) {
         AndroidView(

@@ -10,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -88,32 +87,32 @@ fun ComputerHardwareContent(
                 )
         ) {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .widthIn(max = 900.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter)
             ) {
                 // Header with Centered Title
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 40.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
-                    contentAlignment = Alignment.Center
+                        .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 20.dp)
                 ) {
-                    IconButton(
+                    EduTechBackButton(
                         onClick = onBackClick,
                         modifier = Modifier.align(Alignment.CenterStart)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate back",
-                            tint = Color.White
-                        )
-                    }
+                    )
                     Text(
                         text = "Introduction to Hardware",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontFamily = Kavoon,
                         fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(horizontal = 110.dp)
                     )
                 }
 
@@ -143,7 +142,8 @@ fun ComputerHardwareContent(
                                         listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                                     )
                                 )
-                                .padding(16.dp)
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             VideoPlayerHardware(
                                 videoResId = R.raw.computerhardware,
@@ -267,8 +267,9 @@ fun VideoPlayerHardware(videoResId: Int, onVideoFinished: () -> Unit) {
     if (isInspectionMode) {
         Box(
             modifier = Modifier
+                .widthIn(max = 750.dp)
                 .fillMaxWidth()
-                .height(200.dp)
+                .aspectRatio(16 / 9f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color.Black.copy(alpha = 0.6f)),
             contentAlignment = Alignment.Center
@@ -314,8 +315,9 @@ fun VideoPlayerHardware(videoResId: Int, onVideoFinished: () -> Unit) {
                 .background(Color.Black)
         } else {
             Modifier
+                .widthIn(max = 750.dp)
                 .fillMaxWidth()
-                .height(200.dp)
+                .aspectRatio(16 / 9f)
                 .clip(RoundedCornerShape(12.dp))
         }
     ) {

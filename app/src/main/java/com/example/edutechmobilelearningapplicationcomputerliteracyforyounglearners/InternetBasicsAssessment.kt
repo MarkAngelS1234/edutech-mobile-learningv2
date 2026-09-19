@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -64,26 +63,23 @@ fun InternetBasicsAssessmentScreen(
 
     Scaffold(
         topBar = {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 40.dp, start = 8.dp, end = 16.dp, bottom = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color(0xFF2D3436)
-                    )
-                }
+                EduTechBackButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
                 Text(
                     text = "Quick Quiz",
                     fontSize = 22.sp,
                     fontFamily = Kavoon,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF2D3436),
-                    modifier = Modifier.padding(start = 8.dp)
+                    textAlign = TextAlign.Center
                 )
             }
         },
@@ -92,9 +88,11 @@ fun InternetBasicsAssessmentScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            contentAlignment = Alignment.TopCenter
         ) {
-            if (isAssessmentFinished) {
+            Box(modifier = Modifier.widthIn(max = 850.dp).fillMaxWidth().fillMaxHeight()) {
+                if (isAssessmentFinished) {
                 LaunchedEffect(Unit) {
                     realViewModel?.updateAssessmentScore(
                         ProgressTracker.COURSE_INTERNET,
@@ -324,6 +322,7 @@ fun InternetBasicsAssessmentScreen(
             }
         }
     }
+}
 }
 
 @Preview(showBackground = true)

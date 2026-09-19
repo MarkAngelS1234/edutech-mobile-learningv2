@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -46,7 +44,11 @@ fun IntroductionToComputerOverviewScreen(
             )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxHeight()
+                .widthIn(max = 850.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         ) {
 
             // Header
@@ -55,22 +57,15 @@ fun IntroductionToComputerOverviewScreen(
                     .fillMaxWidth()
                     .padding(
                         top = 40.dp,
-                        start = 20.dp,
-                        end = 20.dp,
+                        start = 16.dp,
+                        end = 16.dp,
                         bottom = 20.dp
-                    ),
-                contentAlignment = Alignment.Center
+                    )
             ) {
-                IconButton(
+                EduTechBackButton(
                     onClick = onBackClick,
                     modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Navigate back",
-                        tint = Color.White
-                    )
-                }
+                )
 
                 Text(
                     text = "Topic Overview",
@@ -78,7 +73,10 @@ fun IntroductionToComputerOverviewScreen(
                     fontSize = 20.sp,
                     fontFamily = Kavoon,
                     fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 110.dp)
                 )
             }
 

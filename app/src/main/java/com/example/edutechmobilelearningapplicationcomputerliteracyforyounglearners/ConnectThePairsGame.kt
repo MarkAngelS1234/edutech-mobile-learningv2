@@ -205,7 +205,11 @@ fun ConnectThePairsGameScreen(
 @Composable
 fun GameIntro(onStart: () -> Unit, onBack: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier
+            .fillMaxHeight()
+            .widthIn(max = 900.dp)
+            .fillMaxWidth()
+            .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -401,7 +405,12 @@ fun LineMatchingView(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp).onGloballyPositioned { containerPos = it.positionInRoot() },
+        modifier = Modifier
+            .fillMaxHeight()
+            .widthIn(max = 1100.dp)
+            .fillMaxWidth()
+            .padding(16.dp)
+            .onGloballyPositioned { containerPos = it.positionInRoot() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -609,7 +618,12 @@ fun DragDropView(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp).onGloballyPositioned { containerPos = it.positionInRoot() },
+        modifier = Modifier
+            .fillMaxHeight()
+            .widthIn(max = 1100.dp)
+            .fillMaxWidth()
+            .padding(16.dp)
+            .onGloballyPositioned { containerPos = it.positionInRoot() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
@@ -968,7 +982,10 @@ fun GameOverScreen(score: Int, onRestart: () -> Unit, onBack: () -> Unit) {
     )
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxHeight()
+            .widthIn(max = 900.dp)
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

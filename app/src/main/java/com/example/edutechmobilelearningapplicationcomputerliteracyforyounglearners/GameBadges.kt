@@ -11,8 +11,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -142,31 +140,30 @@ fun GameBadgesContent(onBackClick: () -> Unit, gameProgressList: List<GameProgre
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .widthIn(max = 950.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp)
-                    .padding(horizontal = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 40.dp, start = 16.dp, end = 16.dp),
+                contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
+                EduTechBackButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
                 Text(
                     text = "Game Badges",
                     fontFamily = Kavoon,
                     fontSize = 24.sp,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 8.dp)
+                    textAlign = TextAlign.Center
                 )
             }
 

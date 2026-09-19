@@ -164,33 +164,32 @@
             }
 
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .widthIn(max = 1000.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Header with navigation
-                Row(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 40.dp)
-                        .padding(horizontal = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(top = 40.dp, start = 20.dp, end = 20.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate back",
-                            tint = Color.White
-                        )
-                    }
+                    EduTechBackButton(
+                        onClick = onBackClick,
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    )
                     Text(
                         text = "Learning Games",
                         color = Color.White,
                         fontFamily = Kavoon,
-                        fontSize = 29.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.weight(1f))
-                    Box(modifier = Modifier.size(48.dp))
                 }
 
                 Spacer(modifier = Modifier.height(48.dp))

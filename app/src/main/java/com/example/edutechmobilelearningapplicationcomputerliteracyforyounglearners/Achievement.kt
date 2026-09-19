@@ -11,8 +11,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -199,45 +197,33 @@ fun AchievementsScreenContent(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .widthIn(max = 950.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
                 .padding(horizontal = 16.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header Row with custom back button and title matching photo
-            Row(
+            // Header Row with standardized back button and centered title
+            // Header with standardized back button and centered title
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 12.dp, bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(top = 20.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(54.dp)
-                        .background(
-                            brush = Brush.verticalGradient(listOf(Color(0xFF7986CB), Color(0xFF5C6BC0))),
-                            shape = CircleShape
-                        )
-                        .border(4.dp, Color.White, CircleShape)
-                        .clickable { onBackClick() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-                
-                Spacer(modifier = Modifier.width(12.dp))
+                EduTechBackButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
                 
                 Text(
                     text = "My Achievements",
-                    fontSize = 32.sp,
+                    fontSize = 24.sp,
                     fontFamily = Kavoon,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
 

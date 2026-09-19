@@ -204,37 +204,35 @@ fun ThinkAndChooseGameScreen(
         
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .widthIn(max = 900.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header (Back button stays at the top)
-            Row(
+            // Standardized Header
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                contentAlignment = Alignment.Center
             ) {
-                IconButton(
+                EduTechBackButton(
                     onClick = onBackClick,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .background(Color.White, CircleShape)
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color(0xFFA173FA)
-                    )
-                }
-            }
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
 
-            // Title "Find the One" at the Top Center
-            ThinkAndChooseTitle(
-                text = "Find the Right One",
-                modifier = Modifier.padding(top = 18.dp, bottom = 14.dp),
-                lineHeight = titleLineHeight
-            )
+                Text(
+                    text = "Find the Right One",
+                    color = Color.White,
+                    fontFamily = Kavoon,
+                    fontSize = 24.sp, // Adjusted to fit better in header row
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
 
             // Main Content area
             Box(

@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -99,7 +98,10 @@ fun ProgressScreen(onBackClick: () -> Unit, viewModel: CourseViewModel? = null) 
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .widthIn(max = 800.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
                 .verticalScroll(scrollState)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -109,22 +111,17 @@ fun ProgressScreen(onBackClick: () -> Unit, viewModel: CourseViewModel? = null) 
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(
+                EduTechBackButton(
                     onClick = onBackClick,
                     modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color.White
-                    )
-                }
+                )
                 Text(
                     text = "Your Progress",
                     fontFamily = Kavoon,
                     fontSize = 29.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = Color.White,
+                    textAlign = TextAlign.Center
                 )
             }
 

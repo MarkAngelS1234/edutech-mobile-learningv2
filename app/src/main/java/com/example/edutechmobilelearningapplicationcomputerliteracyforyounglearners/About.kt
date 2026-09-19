@@ -3,9 +3,10 @@ package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglear
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -55,14 +56,18 @@ fun AboutScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
+                .fillMaxHeight()
+                .widthIn(max = 800.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header at the top
             AboutHeader(onBackClick)
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Main Content Area: Icon and Info Text
             AboutMainContent(
@@ -72,7 +77,7 @@ fun AboutScreen(
                 logoSize = logoSize
             )
 
-            Spacer(modifier = Modifier.weight(1.2f))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Footer at the bottom
             AboutFooter(
@@ -92,20 +97,14 @@ fun AboutHeader(onBackClick: () -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        IconButton(
+        EduTechBackButton(
             onClick = onBackClick,
             modifier = Modifier.align(Alignment.CenterStart)
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.White
-            )
-        }
+        )
         Text(
             fontFamily = Kavoon,
             text = "About",
-            fontSize = 24.sp,
+            fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
             textAlign = TextAlign.Center
@@ -137,7 +136,7 @@ fun AboutMainContent(
             contentScale = ContentScale.Fit
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Application Name Text
         Text(
@@ -151,7 +150,7 @@ fun AboutMainContent(
         )
     }
 
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(4.dp))
 
     // Version Text
     Text(

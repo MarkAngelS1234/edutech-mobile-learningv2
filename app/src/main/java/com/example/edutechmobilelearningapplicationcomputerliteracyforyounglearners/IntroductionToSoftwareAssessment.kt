@@ -96,9 +96,11 @@ fun IntroductionToSoftwareAssessmentScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            contentAlignment = Alignment.TopCenter
         ) {
-            if (isAssessmentFinished) {
+            Box(modifier = Modifier.widthIn(max = 850.dp).fillMaxWidth().fillMaxHeight()) {
+                if (isAssessmentFinished) {
                 LaunchedEffect(Unit) {
                     actualViewModel?.updateAssessmentScore(
                         ProgressTracker.COURSE_SOFTWARE,
@@ -313,6 +315,7 @@ fun IntroductionToSoftwareAssessmentScreen(
             }
         }
     }
+}
 }
 
 @Preview(showBackground = true)

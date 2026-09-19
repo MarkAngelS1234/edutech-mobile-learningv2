@@ -4,9 +4,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,29 +42,26 @@ fun ComputerHardwareOverviewScreen(
             )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxHeight()
+                .widthIn(max = 850.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
                         top = 40.dp,
-                        start = 20.dp,
-                        end = 20.dp,
+                        start = 16.dp,
+                        end = 16.dp,
                         bottom = 20.dp
-                    ),
-                contentAlignment = Alignment.Center
+                    )
             ) {
-                IconButton(
+                EduTechBackButton(
                     onClick = onBackClick,
                     modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Navigate back",
-                        tint = Color.White
-                    )
-                }
+                )
 
                 Text(
                     text = "Topic Overview",
@@ -72,7 +69,10 @@ fun ComputerHardwareOverviewScreen(
                     fontSize = 20.sp,
                     fontFamily = Kavoon,
                     fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 110.dp)
                 )
             }
 
@@ -90,44 +90,43 @@ fun ComputerHardwareOverviewScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(24.dp),
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.Top
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                        Image(
-                            painter = painterResource(id = R.drawable.computer_hardware),
-                            contentDescription = "Computer Hardware Overview",
-                            modifier = Modifier
-                                .size(200.dp)
-                                .clip(RoundedCornerShape(20.dp)),
-                            contentScale = ContentScale.Fit
-                        )
+                    Image(
+                        painter = painterResource(id = R.drawable.computer_hardware),
+                        contentDescription = "Computer Hardware Overview",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(RoundedCornerShape(20.dp)),
+                        contentScale = ContentScale.Fit
+                    )
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                        Text(
-                            text = "Computer Hardware",
-                            fontSize = 24.sp,
-                            fontFamily = Kavoon,
-                            color = Color(0xFF8E6CCB),
-                            textAlign = TextAlign.Center
-                        )
+                    Text(
+                        text = "Computer Hardware",
+                        fontSize = 24.sp,
+                        fontFamily = Kavoon,
+                        color = Color(0xFF8E6CCB),
+                        textAlign = TextAlign.Center
+                    )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = "In this lesson, you will learn about the physical parts of a computer that you can touch. We'll look at the system unit, monitor, keyboard, mouse, and other important parts that make the computer work.",
-                            fontSize = 16.sp,
-                            color = Color(0xFF37474F),
-                            textAlign = TextAlign.Center,
-                            lineHeight = 24.sp
-                        )
-                    }
+                    Text(
+                        text = "In this lesson, you will learn about the physical parts of a computer that you can touch. We'll look at the system unit, monitor, keyboard, mouse, and other important parts that make the computer work.",
+                        fontSize = 16.sp,
+                        color = Color(0xFF37474F),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(40.dp))
 
                     Button(
                         onClick = onStartLearningClick,
@@ -154,6 +153,8 @@ fun ComputerHardwareOverviewScreen(
                             color = Color(0xFF8E6CCB)
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }

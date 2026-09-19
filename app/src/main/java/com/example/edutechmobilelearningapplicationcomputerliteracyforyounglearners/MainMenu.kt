@@ -132,7 +132,10 @@ fun MainMenuView(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .widthIn(max = 800.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -140,7 +143,7 @@ fun MainMenuView(
             
             Text(
                 text = "What would you like to learn today?",
-                fontSize = 18.sp,
+                fontSize = 24.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Medium
             )
@@ -153,43 +156,43 @@ fun MainMenuView(
                         "Courses",
                         R.drawable.pictur_e,
                         onCoursesClick,
-                        width = 155.dp,
-                        height = 150.dp
+                        width = 185.dp,
+                        height = 180.dp
                     ),
                     MenuEntry(
                         "Games",
                         R.drawable.edgam_es,
                         onGamesClick,
-                        width = 155.dp,
-                        height = 150.dp
+                        width = 185.dp,
+                        height = 180.dp
                     ),
                     MenuEntry(
                         "Options",
                         R.drawable.se_t,
                         onOptionsClick,
-                        width = 155.dp,
-                        height = 150.dp
+                        width = 185.dp,
+                        height = 180.dp
                     ),
                     MenuEntry(
                         "Progress",
                         R.drawable.p_rog,
                         onProgressClick,
-                        width = 155.dp,
-                        height = 150.dp
+                        width = 185.dp,
+                        height = 180.dp
                     ),
                     MenuEntry(
                         "Achievements",
                         R.drawable.a_ch,
                         onAchievementsClick,
-                        width = 155.dp,
-                        height = 150.dp
+                        width = 185.dp,
+                        height = 180.dp
                     ),
                     MenuEntry(
                         "About",
                         R.drawable.info_o,
                         onAboutClick,
-                        width = 155.dp,
-                        height = 150.dp
+                        width = 185.dp,
+                        height = 180.dp
                     )
                 )
             }

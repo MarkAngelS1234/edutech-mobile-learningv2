@@ -10,7 +10,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -88,7 +87,11 @@ fun InternetBasicsContent(
                 )
         ) {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .widthIn(max = 900.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter)
             ) {
                 // --- HEADER SECTION ---
                 Box(
@@ -97,16 +100,10 @@ fun InternetBasicsContent(
                         .padding(top = 40.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    IconButton(
+                    EduTechBackButton(
                         onClick = onBackClick,
                         modifier = Modifier.align(Alignment.CenterStart)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Navigate back",
-                            tint = Color.White
-                        )
-                    }
+                    )
                     Text(
                         text = "Internet Basics",
                         color = Color.White,
@@ -143,7 +140,8 @@ fun InternetBasicsContent(
                                         listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
                                     )
                                 )
-                                .padding(16.dp)
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             InternetVideoPlayer(
                                 videoResId = R.raw.internetbacis,
@@ -258,7 +256,7 @@ fun InternetVideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
 
     if (isInspectionMode) {
         Box(
-            modifier = Modifier.fillMaxWidth().height(200.dp).background(Color.Black.copy(0.6f)),
+            modifier = Modifier.widthIn(max = 750.dp).fillMaxWidth().aspectRatio(16 / 9f).background(Color.Black.copy(0.6f)),
             contentAlignment = Alignment.Center
         ) {
             Icon(Icons.Default.PlayArrow, null, tint = Color.White, modifier = Modifier.size(64.dp))
@@ -295,7 +293,7 @@ fun InternetVideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
         modifier = if (isFullscreen) {
             Modifier.fillMaxSize().background(Color.Black)
         } else {
-            Modifier.fillMaxWidth().height(200.dp).clip(RoundedCornerShape(12.dp))
+            Modifier.widthIn(max = 750.dp).fillMaxWidth().aspectRatio(16 / 9f).clip(RoundedCornerShape(12.dp))
         }
     ) {
         AndroidView(

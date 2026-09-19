@@ -183,6 +183,10 @@ fun DashboardEntranceScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
+                .fillMaxHeight()
+                .widthIn(max = 800.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center)
                 .padding(32.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center
@@ -246,7 +250,7 @@ fun DashboardEntranceScreen(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Computer Literacy for Young Learners",
                 color = Color.White.copy(alpha = 0.9f),
@@ -254,7 +258,7 @@ fun DashboardEntranceScreen(
                 fontSize = 18.sp,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Requirement 3, 4, 6: Transition between Loading and Button
             AnimatedContent(

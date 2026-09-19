@@ -3,9 +3,9 @@ package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglear
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,7 +41,11 @@ fun ComputerSoftwareOverviewScreen(
             )
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxHeight()
+                .widthIn(max = 850.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
         ) {
 
             // Header
@@ -56,16 +60,10 @@ fun ComputerSoftwareOverviewScreen(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(
+                EduTechBackButton(
                     onClick = onBackClick,
                     modifier = Modifier.align(Alignment.CenterStart)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Navigate back",
-                        tint = Color.White
-                    )
-                }
+                )
 
                 Text(
                     text = "Topic Overview",
@@ -92,56 +90,56 @@ fun ComputerSoftwareOverviewScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(24.dp),
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.Top
                 ) {
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    Spacer(
+                        modifier = Modifier.height(20.dp)
+                    )
 
-                        Spacer(
-                            modifier = Modifier.height(20.dp)
-                        )
-
-                        Image(
-                            painter = painterResource(
-                                id = R.drawable.computer_software
+                    Image(
+                        painter = painterResource(
+                            id = R.drawable.computer_software
+                        ),
+                        contentDescription = "Computer Software Overview",
+                        modifier = Modifier
+                            .size(200.dp)
+                            .clip(
+                                RoundedCornerShape(20.dp)
                             ),
-                            contentDescription = "Computer Software Overview",
-                            modifier = Modifier
-                                .size(200.dp)
-                                .clip(
-                                    RoundedCornerShape(20.dp)
-                                ),
-                            contentScale = ContentScale.Fit
-                        )
+                        contentScale = ContentScale.Fit
+                    )
 
-                        Spacer(
-                            modifier = Modifier.height(32.dp)
-                        )
+                    Spacer(
+                        modifier = Modifier.height(32.dp)
+                    )
 
-                        Text(
-                            text = "Computer Software",
-                            fontSize = 24.sp,
-                            fontFamily = Kavoon,
-                            color = Color(0xFF8E6CCB),
-                            textAlign = TextAlign.Center
-                        )
+                    Text(
+                        text = "Computer Software",
+                        fontSize = 24.sp,
+                        fontFamily = Kavoon,
+                        color = Color(0xFF8E6CCB),
+                        textAlign = TextAlign.Center
+                    )
 
-                        Spacer(
-                            modifier = Modifier.height(16.dp)
-                        )
+                    Spacer(
+                        modifier = Modifier.height(16.dp)
+                    )
 
-                        Text(
-                            text = "Software are the programs and instructions that tell the computer what to do. In this lesson, we'll learn about operating systems and different types of apps that help us write, draw, and learn.",
-                            fontSize = 16.sp,
-                            color = Color(0xFF37474F),
-                            textAlign = TextAlign.Center,
-                            lineHeight = 24.sp
-                        )
-                    }
+                    Text(
+                        text = "Software are the programs and instructions that tell the computer what to do. In this lesson, we'll learn about operating systems and different types of apps that help us write, draw, and learn.",
+                        fontSize = 16.sp,
+                        color = Color(0xFF37474F),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 24.sp
+                    )
+
+                    Spacer(
+                        modifier = Modifier.height(40.dp)
+                    )
 
                     // Start Learning Button
                     Button(
@@ -163,6 +161,10 @@ fun ComputerSoftwareOverviewScreen(
                             color = Color(0xFF8E6CCB)
                         )
                     }
+
+                    Spacer(
+                        modifier = Modifier.height(20.dp)
+                    )
                 }
             }
         }

@@ -157,18 +157,19 @@ fun DifficultySelectionScreen(onBackClick: () -> Unit, onSelect: (Difficulty) ->
         ScrambleCloud(Modifier.align(Alignment.BottomStart).offset(x = (-50).dp, y = 40.dp).scale(1.8f))
         ScrambleCloud(Modifier.align(Alignment.BottomEnd).offset(x = 50.dp, y = 30.dp).scale(1.6f))
 
-        IconButton(
+        EduTechBackButton(
             onClick = onBackClick,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 16.dp, start = 16.dp)
-        ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-        }
+        )
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .widthIn(max = 800.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
                 .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -415,16 +416,19 @@ fun ActiveGameScreen(
         ScrambleCloud(Modifier.align(Alignment.BottomEnd).offset(x = 50.dp, y = 30.dp).scale(1.6f))
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+            modifier = Modifier
+                .fillMaxHeight()
+                .widthIn(max = 850.dp)
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header
             Box(
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             ) {
-                IconButton(onClick = onBackClick, modifier = Modifier.align(Alignment.CenterStart)) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                }
+                EduTechBackButton(onClick = onBackClick, modifier = Modifier.align(Alignment.CenterStart))
             }
 
             if (!isGameOver) {
