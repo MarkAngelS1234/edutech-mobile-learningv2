@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,8 +33,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.*
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
-import kotlinx.coroutines.delay
-import kotlin.math.min
 
 /**
  * ComputerGradesScreen - A screen that displays a list of computer literacy grade levels.
@@ -140,14 +139,14 @@ fun ComputerGradesScreen(
         }
         
         "Online Safety Overview" -> {
-            BasicInternetAwarenessAndSafetyOverviewScreen(
+            OnlineSafetyAndGoodInternetHabitsOverviewScreen(
                 onBackClick = { currentLesson = null },
                 onStartLearningClick = { currentLesson = "Online Safety Awareness and Safety" }
             )
         }
         "Online Safety Awareness and Safety" -> {
-            BasicInternetAwarenessAndSafetyScreen(
-                onBackClick = { currentLesson = null },
+            OnlineSafetyAndGoodInternetHabitsScreen(
+                onBackClick = { currentLesson = "Online Safety Overview" },
                 onCheckProgressClick = {
                     previousLesson = "Online Safety Awareness and Safety"
                     currentLesson = "Progress"
@@ -332,6 +331,7 @@ private fun GradeListContent(
                         .clickable {
                             // Add custom functionality here (e.g., search, filter, or refresh)
                         }
+                    modifier = Modifier.clickable { /* Future enhancement: Sort courses */ }
                 )
 
                 // Optional customization: decorative underline
@@ -356,7 +356,7 @@ private fun GradeListContent(
             val progressMap = remember(progressList) { progressList.associateBy { it.courseName } }
 
             val listState = rememberLazyListState()
-
+git
             LazyColumn(
                 state = listState,
                 contentPadding = PaddingValues(bottom = 32.dp),
@@ -403,11 +403,15 @@ private fun GradeListContent(
                     val combinedProgress = entranceProgress.value * scrollAlpha
 
                     GradeListItem(
+                itemsIndexed(grades) { index, grade ->
+                    GradeItemCard(
                         grade = grade,
                         animProgress = combinedProgress,
                         isLocked = !isUnlocked,
                         isCompleted = isCompleted,
                         onClick = { if (isUnlocked) onGradeSelected(grade) }
+                        index = index,
+                        onGradeSelected = onGradeSelected
                     )
                 }
             }
@@ -416,30 +420,47 @@ private fun GradeListContent(
 }
 
 /**
- * GradeListItem - A single card component representing a grade level.
+ * GradeItemCard - Individual card for each grade/course.
  */
 @Composable
-fun GradeListItem(
+private fun GradeItemCard(
     grade: String,
     animProgress: Float,
     isLocked: Boolean,
     isCompleted: Boolean,
     onClick: () -> Unit
+    index: Int,
+    onGradeSelected: (String) -> Unit
 ) {
     Surface(
         onClick = onClick,
         enabled = !isLocked,
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.96f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "scale"
+    )
+
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(84.dp)
+            .height(100.dp)
             .graphicsLayer {
-                alpha = animProgress
-                translationY = (1f - animProgress) * 40f
+                scaleX = scale
+                scaleY = scale
+            }
+            .clickable {
+                isPressed = true
+                onGradeSelected(grade)
             },
         shape = RoundedCornerShape(12.dp),
         color = Color.White,
         border = BorderStroke(3.dp, if (isLocked) Color.LightGray else Color(0xFF6C5CE7)),
         shadowElevation = if (isLocked) 0.dp else (4 * animProgress).dp
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
             modifier = Modifier
@@ -491,6 +512,37 @@ fun GradeListItem(
                     contentDescription = "Locked",
                     tint = Color.Gray,
                     modifier = Modifier.size(24.dp)
+                .padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Level ${index + 1}",
+                    fontSize = 12.sp,
+                    color = Color(0xFF4A90E2),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = grade,
+                    fontSize = 18.sp,
+                    fontFamily = Kavoon,
+                    color = Color(0xFF333333)
+                )
+            }
+
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = Color(0xFF4A90E2).copy(alpha = 0.1f),
+                border = BorderStroke(1.dp, Color(0xFF4A90E2))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = "Start Lesson",
+                    tint = Color(0xFF4A90E2),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(24.dp)
                 )
             }
         }

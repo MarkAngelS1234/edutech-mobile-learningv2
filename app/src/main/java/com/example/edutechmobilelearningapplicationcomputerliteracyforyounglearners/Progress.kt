@@ -15,6 +15,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Lock
@@ -278,74 +280,60 @@ fun ProgressScreen(onBackClick: () -> Unit, viewModel: CourseViewModel? = null) 
                             Box(
                                 modifier = Modifier
                                     .background(
-                                        brush = Brush.horizontalGradient(colors = gradientColors),
+                                        brush = Brush.horizontalGradient(gradientColors),
                                         shape = RoundedCornerShape(50)
                                     )
-                                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                                    .padding(horizontal = 24.dp, vertical = 12.dp),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    if (!allCompleted) {
-                                        Icon(
-                                            imageVector = Icons.Default.Lock,
-                                            contentDescription = "Locked",
-                                            tint = Color.White,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                    }
-                                    Text(
-                                        text = "Generate E-Certificate",
-                                        color = Color.White,
-                                        fontFamily = Kavoon,
-                                        fontSize = 14.sp
-                                    )
-                                }
+                                Text(
+                                    text = "Claim Certificate",
+                                    color = Color.White,
+                                    fontFamily = Kavoon,
+                                    fontSize = 16.sp
+                                )
                             }
                         }
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(40.dp))
-            Text(
-                text = "@EduTechMobile 2026",
-                color = Color.White.copy(alpha = 0.9f),
-                fontFamily = Kavoon,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(32.dp))
         }
-    }
 
-    if (showGeneratorDialog) {
-        Dialog(onDismissRequest = { showGeneratorDialog = false }) {
-            ECertificateGeneratorContent(
-                userName = userName,
-                onUserNameChange = { userName = it },
-                onGenerate = {
-                    showGeneratorDialog = false
-                    showCertificateDialog = true
-                },
-                onDismiss = { showGeneratorDialog = false }
-            )
+        // Dialog for entering learner's name
+        if (showGeneratorDialog) {
+            Dialog(
+                onDismissRequest = { showGeneratorDialog = false },
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                ECertificateGeneratorContent(
+                    userName = userName,
+                    onUserNameChange = { userName = it },
+                    onGenerate = {
+                        showGeneratorDialog = false
+                        showCertificateDialog = true
+                    },
+                    onDismiss = { showGeneratorDialog = false }
+                )
+            }
         }
-    }
 
-    if (showCertificateDialog) {
-        Dialog(
-            onDismissRequest = { showCertificateDialog = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            ECertificateContent(
-                userName = userName,
-                onClose = { showCertificateDialog = false }
-            )
+        // Dialog for certificate preview and saving
+        if (showCertificateDialog) {
+            Dialog(
+                onDismissRequest = { showCertificateDialog = false },
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
+                ECertificateContent(
+                    userName = userName,
+                    onClose = { showCertificateDialog = false }
+                )
+            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ECertificateGeneratorContent(
     userName: String,
@@ -355,47 +343,63 @@ fun ECertificateGeneratorContent(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+            .fillMaxWidth(0.85f)
+            .widthIn(max = 450.dp)
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 24.dp)
     ) {
         Column(
             modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(28.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "E-Certificate Generator",
+                text = "Congratulations!",
                 fontFamily = Kavoon,
-                fontSize = 22.sp,
-                color = Color(0xFF4A90E2),
+                fontSize = 26.sp,
+                color = Color(0xFF5E35B1),
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Congratulations on completing all the courses! Enter your name below to generate your official E-Certificate.",
+                text = "You've successfully completed all courses! Enter your name to generate your E-Certificate.",
                 fontSize = 14.sp,
-                color = Color.DarkGray,
-                textAlign = TextAlign.Center
+                color = Color.Gray,
+                textAlign = TextAlign.Center,
+                lineHeight = 20.sp
             )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+
             OutlinedTextField(
                 value = userName,
                 onValueChange = onUserNameChange,
-                label = { Text("Your Name", fontFamily = Kavoon) },
-                textStyle = TextStyle(fontFamily = Kavoon, fontSize = 16.sp),
-                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Your Full Name", fontSize = 14.sp) },
                 singleLine = true,
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF4A90E2),
+                    unfocusedBorderColor = Color.LightGray
+                )
             )
-            Spacer(modifier = Modifier.height(24.dp))
+
+            Spacer(modifier = Modifier.height(28.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                TextButton(onClick = onDismiss) {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    shape = RoundedCornerShape(50),
+                    border = BorderStroke(1.5.dp, Color.Gray),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp)
+                ) {
                     Text("Cancel", color = Color.Gray, fontFamily = Kavoon)
                 }
                 Button(
