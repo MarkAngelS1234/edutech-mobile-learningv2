@@ -56,6 +56,14 @@ fun IntroductionToComputerAssessmentScreen(
     var score by remember { mutableIntStateOf(scorePreview) }
     var isAssessmentFinished by remember { mutableStateOf(isFinishedPreview) }
 
+    // BGM Management: Assessment Mode
+    DisposableEffect(Unit) {
+        BGMManager.setForcedSilence(true)
+        onDispose {
+            BGMManager.setForcedSilence(false)
+        }
+    }
+
     val currentQuestion = introToComputerQuestions[currentQuestionIndex]
 
     val primaryPurple = Color(0xFF6C5CE7)

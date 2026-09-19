@@ -70,6 +70,14 @@ fun IntroductionToComputerContent(
     var showAssessment by remember { mutableStateOf(false) }
     var isVideoFinished by remember { mutableStateOf(false) }
 
+    // BGM Management: Lesson Mode
+    DisposableEffect(Unit) {
+        BGMManager.setLessonMode(true)
+        onDispose {
+            BGMManager.setLessonMode(false)
+        }
+    }
+
     if (showAssessment) {
         IntroductionToComputerAssessmentScreen(
             onBackClick = { showAssessment = false },
@@ -287,8 +295,16 @@ fun VideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
         }
     }
 
+    // BGM Management: Video Playback & Fullscreen
+    val isPlaying = remember { mutableStateOf(false) }
+    
     DisposableEffect(exoPlayer) {
         val listener = object : Player.Listener {
+            override fun onIsPlayingChanged(playing: Boolean) {
+                isPlaying.value = playing
+                BGMManager.setForcedSilence(playing || isFullscreen)
+            }
+            
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
                     currentOnVideoFinished()
@@ -299,7 +315,12 @@ fun VideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
         onDispose {
             exoPlayer.removeListener(listener)
             exoPlayer.release()
+            BGMManager.setForcedSilence(false)
         }
+    }
+
+    LaunchedEffect(isFullscreen) {
+        BGMManager.setForcedSilence(isPlaying.value || isFullscreen)
     }
 
     Box(

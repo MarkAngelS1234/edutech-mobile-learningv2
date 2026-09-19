@@ -1,6 +1,5 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
-import android.media.MediaPlayer
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -26,12 +25,15 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
 import kotlinx.coroutines.delay
@@ -42,30 +44,32 @@ import kotlin.math.PI
 @Composable
 fun DashboardAppNavigator() {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     // --- CONFIGURATION (EDITABLE) ---
-    var bgmVolume by remember { mutableStateOf(0.8f) } // Shared BGM Volume State
     val loadingTime = 4000L // Editable duration for the loading screen in ms
     // --------------------------------
 
-    // Initialize MediaPlayer for wreckitralph.mp3
-    val mediaPlayer = remember {
-        MediaPlayer.create(context, R.raw.wreckitralph).apply {
-            isLooping = true // The music will repeat after it ends
-            setVolume(bgmVolume, bgmVolume)
+    // Initialize BGMManager
+    DisposableEffect(Unit) {
+        BGMManager.initialize(context.applicationContext)
+        onDispose {
+            BGMManager.release()
         }
     }
-    // Sync MediaPlayer volume whenever bgmVolume state changes
-    LaunchedEffect(bgmVolume) {
-        mediaPlayer.setVolume(bgmVolume, bgmVolume)
-    }
 
-    // Automatically play music when the navigator starts and release it when it's closed
-    DisposableEffect(Unit) {
-        mediaPlayer.start()
+    // Handle App Lifecycle for BGM
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> BGMManager.setAppBackgrounded(false)
+                Lifecycle.Event.ON_PAUSE -> BGMManager.setAppBackgrounded(true)
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            mediaPlayer.stop()
-            mediaPlayer.release()
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
@@ -85,8 +89,8 @@ fun DashboardAppNavigator() {
                 onStartClick = { screenState = "main_menu" }
             )
             "main_menu" -> MainMenuScreen(
-                bgmVolume = bgmVolume,
-                onBgmVolumeChange = { bgmVolume = it },
+                bgmVolume = BGMManager.baseVolume,
+                onBgmVolumeChange = { BGMManager.baseVolume = it; BGMManager.applyVolume() },
                 onCoursesClick = { screenState = "computer_grades" }
             )
             "computer_grades" -> ComputerGradesScreen(
