@@ -33,6 +33,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.*
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
+import kotlinx.coroutines.delay
+import kotlin.math.min
 
 /**
  * ComputerGradesScreen - A screen that displays a list of computer literacy grade levels.
@@ -134,7 +136,7 @@ fun ComputerGradesScreen(
                     previousLesson = "Internet Basics"
                     currentLesson = "Progress"
                 },
-                viewModel = actualViewModel!!
+                viewModel = actualViewModel ?: viewModel()
             )
         }
         
@@ -204,8 +206,9 @@ private fun GradeListContent(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF4A90E2), // Primary Blue
-                        Color(0xFFA173FA)  // Vibrant Teal
+                    listOf(
+                        Color(0xFF4A90E2), // Primary Blue
+                        Color(0xFFA173FA)  // Vibrant Teal/Purple
                     )
                 )
             )
@@ -281,14 +284,11 @@ private fun GradeListContent(
 
         Column(
             modifier = Modifier
-                .fillMaxHeight()
+                .fillMaxSize()
                 .widthIn(max = 850.dp)
-                .fillMaxWidth()
                 .align(Alignment.TopCenter)
                 .padding(horizontal = 20.dp)
                 .zIndex(1f), // Ensure course cards are drawn above background animations
-                .fillMaxSize()
-                .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header: Back navigation
@@ -298,11 +298,26 @@ private fun GradeListContent(
                     .padding(top = 40.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onBackClick) {
+                Row(
+                    modifier = Modifier
+                        .background(Color.White, RoundedCornerShape(percent = 50))
+                        .clickable { onBackClick() }
+                        .padding(horizontal = 24.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Navigate back",
-                        tint = Color.White
+                        tint = Color(0xFFA173FA),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Back",
+                        fontFamily = Kavoon,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFA173FA)
                     )
                 }
             }
@@ -325,13 +340,11 @@ private fun GradeListContent(
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
-                    // Functionality customization: Clickable modifier for interaction
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                         .clickable {
-                            // Add custom functionality here (e.g., search, filter, or refresh)
+                            // Future enhancement: Sort courses
                         }
-                    modifier = Modifier.clickable { /* Future enhancement: Sort courses */ }
                 )
 
                 // Optional customization: decorative underline
@@ -356,7 +369,7 @@ private fun GradeListContent(
             val progressMap = remember(progressList) { progressList.associateBy { it.courseName } }
 
             val listState = rememberLazyListState()
-git
+
             LazyColumn(
                 state = listState,
                 contentPadding = PaddingValues(bottom = 32.dp),
@@ -402,16 +415,13 @@ git
 
                     val combinedProgress = entranceProgress.value * scrollAlpha
 
-                    GradeListItem(
-                itemsIndexed(grades) { index, grade ->
                     GradeItemCard(
                         grade = grade,
+                        index = index,
                         animProgress = combinedProgress,
                         isLocked = !isUnlocked,
                         isCompleted = isCompleted,
                         onClick = { if (isUnlocked) onGradeSelected(grade) }
-                        index = index,
-                        onGradeSelected = onGradeSelected
                     )
                 }
             }
@@ -425,16 +435,12 @@ git
 @Composable
 private fun GradeItemCard(
     grade: String,
+    index: Int,
     animProgress: Float,
     isLocked: Boolean,
     isCompleted: Boolean,
     onClick: () -> Unit
-    index: Int,
-    onGradeSelected: (String) -> Unit
 ) {
-    Surface(
-        onClick = onClick,
-        enabled = !isLocked,
     var isPressed by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.96f else 1f,
@@ -450,22 +456,19 @@ private fun GradeItemCard(
                 scaleX = scale
                 scaleY = scale
             }
-            .clickable {
+            .clickable(enabled = !isLocked) {
                 isPressed = true
-                onGradeSelected(grade)
+                onClick()
             },
         shape = RoundedCornerShape(12.dp),
-        color = Color.White,
-        border = BorderStroke(3.dp, if (isLocked) Color.LightGray else Color(0xFF6C5CE7)),
-        shadowElevation = if (isLocked) 0.dp else (4 * animProgress).dp
-        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+        border = BorderStroke(3.dp, if (isLocked) Color.LightGray else Color(0xFF6C5CE7)),
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isLocked) 0.dp else (6 * animProgress).dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 15.dp)
+                .padding(horizontal = 20.dp)
                 .graphicsLayer {
                     alpha = if (isLocked) 0.6f else 1f
                 },
@@ -477,12 +480,19 @@ private fun GradeItemCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
+                    text = "Level ${index + 1}",
+                    fontSize = 12.sp,
+                    color = Color(0xFF4A90E2),
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
                     text = grade,
                     fontFamily = Kavoon,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (isLocked) Color.Gray else Color(0xFF6C5CE7)
+                    color = if (isLocked) Color.Gray else Color(0xFF333333)
                 )
+                Spacer(modifier = Modifier.height(2.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.PlayArrow,
@@ -512,38 +522,22 @@ private fun GradeItemCard(
                     contentDescription = "Locked",
                     tint = Color.Gray,
                     modifier = Modifier.size(24.dp)
-                .padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Level ${index + 1}",
-                    fontSize = 12.sp,
-                    color = Color(0xFF4A90E2),
-                    fontWeight = FontWeight.Bold
                 )
-                Text(
-                    text = grade,
-                    fontSize = 18.sp,
-                    fontFamily = Kavoon,
-                    color = Color(0xFF333333)
-                )
-            }
-
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = Color(0xFF4A90E2).copy(alpha = 0.1f),
-                border = BorderStroke(1.dp, Color(0xFF4A90E2))
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = "Start Lesson",
-                    tint = Color(0xFF4A90E2),
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .size(24.dp)
-                )
+            } else {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color(0xFF4A90E2).copy(alpha = 0.1f),
+                    border = BorderStroke(1.dp, Color(0xFF4A90E2))
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Start Lesson",
+                        tint = Color(0xFF4A90E2),
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .size(24.dp)
+                    )
+                }
             }
         }
     }
