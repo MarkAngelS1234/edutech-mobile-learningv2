@@ -1,5 +1,8 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -7,7 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,8 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
+import kotlinx.coroutines.delay
 
 @Composable
 fun MainMenuScreen(
@@ -190,6 +196,9 @@ fun MainMenuView(
             }
 
             val spacing = 16.dp
+            val density = LocalDensity.current
+            val initialOffsetPx = with(density) { 30.dp.toPx() }
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(spacing),
@@ -198,15 +207,64 @@ fun MainMenuView(
                     .fillMaxWidth()
                     .weight(1f)
             ) {
-                items(menuItems, key = { it.title }) { entry ->
+                itemsIndexed(menuItems, key = { _, entry -> entry.title }) { index, entry ->
+                    val visible = remember { mutableStateOf(false) }
+                    val isClicked = remember { mutableStateOf(false) }
+
+                    LaunchedEffect(Unit) {
+                        delay(index * 100L)
+                        visible.value = true
+                    }
+
+                    // Click transition animations
+                    val clickScale by animateFloatAsState(
+                        targetValue = if (isClicked.value) 1.06f else 1.0f,
+                        animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing),
+                        label = "clickScale"
+                    )
+
+                    val clickAlpha by animateFloatAsState(
+                        targetValue = if (isClicked.value) 0.85f else 1.0f,
+                        animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing),
+                        label = "clickAlpha"
+                    )
+
+                    // Navigation logic triggered after the short animation
+                    LaunchedEffect(isClicked.value) {
+                        if (isClicked.value) {
+                            delay(250) // Wait for the transition to finish
+                            entry.onAction()
+                        }
+                    }
+
+                    val alpha by animateFloatAsState(
+                        targetValue = if (visible.value) 1f else 0f,
+                        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+                        label = "alpha"
+                    )
+
+                    val translationY by animateFloatAsState(
+                        targetValue = if (visible.value) 0f else initialOffsetPx,
+                        animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+                        label = "translationY"
+                    )
+
                     Image(
                         painter = painterResource(id = entry.imageRes),
                         contentDescription = entry.title,
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(185f / 180f)
+                            .graphicsLayer {
+                                this.alpha = alpha * clickAlpha
+                                this.translationY = translationY
+                                this.scaleX = clickScale
+                                this.scaleY = clickScale
+                            }
                             .clip(RoundedCornerShape(20.dp))
-                            .clickable { entry.onAction() },
+                            .clickable(enabled = !isClicked.value) {
+                                isClicked.value = true
+                            },
                         contentScale = ContentScale.FillBounds
                     )
                 }
