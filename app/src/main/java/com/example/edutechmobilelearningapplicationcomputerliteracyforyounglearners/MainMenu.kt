@@ -17,10 +17,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
@@ -133,7 +135,7 @@ fun MainMenuView(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .widthIn(max = 800.dp)
+                .widthIn(max = 700.dp) // Unified max width for visual balance
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
                 .padding(24.dp),
@@ -143,9 +145,11 @@ fun MainMenuView(
             
             Text(
                 text = "What would you like to learn today?",
-                fontSize = 24.sp,
+                fontSize = 30.sp,
+                fontFamily = Kavoon,
                 color = Color.White,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -155,70 +159,56 @@ fun MainMenuView(
                     MenuEntry(
                         "Courses",
                         R.drawable.pictur_e,
-                        onCoursesClick,
-                        width = 185.dp,
-                        height = 180.dp
+                        onCoursesClick
                     ),
                     MenuEntry(
                         "Games",
                         R.drawable.edgam_es,
-                        onGamesClick,
-                        width = 185.dp,
-                        height = 180.dp
+                        onGamesClick
                     ),
                     MenuEntry(
                         "Options",
                         R.drawable.se_t,
-                        onOptionsClick,
-                        width = 185.dp,
-                        height = 180.dp
+                        onOptionsClick
                     ),
                     MenuEntry(
                         "Progress",
                         R.drawable.p_rog,
-                        onProgressClick,
-                        width = 185.dp,
-                        height = 180.dp
+                        onProgressClick
                     ),
                     MenuEntry(
                         "Achievements",
                         R.drawable.a_ch,
-                        onAchievementsClick,
-                        width = 185.dp,
-                        height = 180.dp
+                        onAchievementsClick
                     ),
                     MenuEntry(
                         "About",
                         R.drawable.info_o,
-                        onAboutClick,
-                        width = 185.dp,
-                        height = 180.dp
+                        onAboutClick
                     )
                 )
             }
 
+            val spacing = 16.dp
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.spacedBy(spacing),
+                verticalArrangement = Arrangement.spacedBy(spacing),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             ) {
                 items(menuItems, key = { it.title }) { entry ->
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = entry.imageRes),
-                            contentDescription = entry.title,
-                            modifier = Modifier
-                                .width(entry.width)
-                                .height(entry.height)
-                                .clip(RoundedCornerShape(20.dp))
-                                .clickable { entry.onAction() },
-                            contentScale = ContentScale.FillBounds
-                        )
-                    }
+                    Image(
+                        painter = painterResource(id = entry.imageRes),
+                        contentDescription = entry.title,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(185f / 180f)
+                            .clip(RoundedCornerShape(20.dp))
+                            .clickable { entry.onAction() },
+                        contentScale = ContentScale.FillBounds
+                    )
                 }
             }
         }
@@ -228,9 +218,7 @@ fun MainMenuView(
 data class MenuEntry(
     val title: String,
     val imageRes: Int,
-    val onAction: () -> Unit,
-    val width: Dp,
-    val height: Dp
+    val onAction: () -> Unit
 )
 
 @Preview(showBackground = true)
