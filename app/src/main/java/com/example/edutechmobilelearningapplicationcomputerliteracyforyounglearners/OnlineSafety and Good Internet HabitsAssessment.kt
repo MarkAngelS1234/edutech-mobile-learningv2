@@ -38,7 +38,7 @@ val internetSafetyQuestions = listOf(
 )
 
 @Composable
-fun BasicInternetAwarenessAndSafetyAssessmentScreen(
+fun OnlineSafetyAndGoodInternetHabitsAssessmentScreen(
     onBackClick: () -> Unit,
     onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = null,
@@ -49,10 +49,10 @@ fun BasicInternetAwarenessAndSafetyAssessmentScreen(
         viewModel ?: viewModel()
     }
 
-    var currentQuestionIndex by remember { mutableIntStateOf(0) }
-    var selectedAnswerIndex by remember { mutableIntStateOf(-1) }
+    var currentQuestionIndex by remember { mutableStateOf(0) }
+    var selectedAnswerIndex by remember { mutableStateOf(-1) }
     var showFeedback by remember { mutableStateOf(false) }
-    var score by remember { mutableIntStateOf(scorePreview) }
+    var score by remember { mutableStateOf(scorePreview) }
     var isAssessmentFinished by remember { mutableStateOf(isFinishedPreview) }
     
     // BGM Management: Assessment Mode
@@ -267,7 +267,7 @@ fun BasicInternetAwarenessAndSafetyAssessmentScreen(
                         val isUserCorrect = selectedAnswerIndex == currentQuestion.correctAnswerIndex
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = if (isUserCorrect) "Correct! Well done! \uD83C\uDF1F" else "Not quite right! \u274C",
+                            text = if (isUserCorrect) "Correct! Well done! 🌟" else "Not quite right! ❌",
                             color = if (isUserCorrect) Color(0xFF2E7D32) else Color(0xFFC62828),
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
@@ -337,17 +337,17 @@ fun BasicInternetAwarenessAndSafetyAssessmentScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun BasicInternetAwarenessAndSafetyAssessmentPreview() {
+fun OnlineSafetyAndGoodInternetHabitsAssessmentPreview() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        BasicInternetAwarenessAndSafetyAssessmentScreen(onBackClick = {})
+        OnlineSafetyAndGoodInternetHabitsAssessmentScreen(onBackClick = {})
     }
 }
 
 @Preview(showBackground = true, name = "Assessment Result")
 @Composable
-fun BasicInternetAwarenessAndSafetyAssessmentResultPreview() {
+fun OnlineSafetyAndGoodInternetHabitsAssessmentResultPreview() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        BasicInternetAwarenessAndSafetyAssessmentScreen(
+        OnlineSafetyAndGoodInternetHabitsAssessmentScreen(
             onBackClick = {},
             isFinishedPreview = true,
             scorePreview = 5

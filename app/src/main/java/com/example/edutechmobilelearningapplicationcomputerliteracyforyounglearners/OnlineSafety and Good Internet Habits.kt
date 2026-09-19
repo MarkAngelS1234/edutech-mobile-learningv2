@@ -39,15 +39,15 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
 
 /**
- * BasicInternetAwarenessAndSafetyScreen - Detailed lesson content for "Basic Internet Awareness and Safety".
+ * OnlineSafety and Good Internet Habits - Main Screen implementation matching file name functionality.
  */
 @Composable
-fun BasicInternetAwarenessAndSafetyScreen(
+fun OnlineSafetyAndGoodInternetHabitsScreen(
     onBackClick: () -> Unit,
     onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = if (LocalInspectionMode.current) null else viewModel()
 ) {
-    BasicInternetAwarenessAndSafetyContent(
+    OnlineSafetyAndGoodInternetHabitsContent(
         onBackClick = onBackClick,
         onCheckProgressClick = onCheckProgressClick,
         onMarkCompleted = {
@@ -58,10 +58,10 @@ fun BasicInternetAwarenessAndSafetyScreen(
 }
 
 /**
- * BasicInternetAwarenessAndSafetyContent - Stateless version for previews and testing.
+ * OnlineSafetyAndGoodInternetHabitsContent - Stateless content screen.
  */
 @Composable
-fun BasicInternetAwarenessAndSafetyContent(
+fun OnlineSafetyAndGoodInternetHabitsContent(
     onBackClick: () -> Unit, 
     onCheckProgressClick: () -> Unit = {},
     onMarkCompleted: () -> Unit,
@@ -79,7 +79,7 @@ fun BasicInternetAwarenessAndSafetyContent(
     }
 
     if (showAssessment) {
-        BasicInternetAwarenessAndSafetyAssessmentScreen(
+        OnlineSafetyAndGoodInternetHabitsAssessmentScreen(
             onBackClick = { showAssessment = false },
             onCheckProgressClick = onCheckProgressClick,
             viewModel = viewModel
@@ -406,8 +406,8 @@ private fun SafetyLessonTopic(
 
 @Preview(showBackground = true)
 @Composable
-fun BasicInternetAwarenessAndSafetyPreview() {
+fun OnlineSafetyAndGoodInternetHabitsPreview() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        BasicInternetAwarenessAndSafetyContent(onBackClick = {}, onMarkCompleted = {})
+        OnlineSafetyAndGoodInternetHabitsContent(onBackClick = {}, onMarkCompleted = {})
     }
 }

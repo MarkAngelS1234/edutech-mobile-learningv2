@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
+import kotlin.math.PI
+import kotlin.math.sin
 
 @Composable
 fun GameBadgesScreen(onBackClick: () -> Unit, viewModel: CourseViewModel = viewModel()) {
@@ -185,8 +187,8 @@ fun GameBadgesContent(onBackClick: () -> Unit, gameProgressList: List<GameProgre
 
 @Composable
 fun GameBadgeItem(badge: Badge) {
-    val isCompleted = remember(badge) { badge.requiredPoints > 0 && badge.currentPoints >= badge.requiredPoints }
-    val isUnlockedOrCompleted = remember(badge, isCompleted) { badge.isUnlocked || isCompleted }
+    val isCompleted = remember(badge) { badge.isUnlocked }
+    val isUnlockedOrCompleted = remember(badge) { badge.isUnlocked }
     val displayedPoints = remember(badge, isCompleted) { if (isCompleted) badge.requiredPoints else badge.currentPoints }
 
     val themeColors = remember(badge.name) {
@@ -389,7 +391,7 @@ fun CartoonWavyProgressIndicator(
     
     val phase1 by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = 2f * Math.PI.toFloat(),
+        targetValue = 2f * PI.toFloat(),
         animationSpec = infiniteRepeatable(
             animation = tween(1200, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
@@ -424,7 +426,7 @@ fun CartoonWavyProgressIndicator(
                     
                     var x = 0f
                     while (x <= fillWidth) {
-                        val y = height * 0.3f + Math.sin((x / waveLength * 2 * Math.PI) + phase1).toFloat() * waveHeight
+                        val y = height * 0.3f + sin((x / waveLength * 2 * PI) + phase1).toFloat() * waveHeight
                         lineTo(x, y)
                         x += 1f
                     }

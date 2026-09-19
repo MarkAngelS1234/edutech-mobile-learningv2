@@ -238,7 +238,7 @@
                                 .offset(x = 12.dp, y = 12.dp)
                                 .background(
                                     brush = Brush.verticalGradient(
-                                        listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
+                                        listOf(Color(0xFFFFFFFF), Color(0xFFA173FA))
                                     ),
                                     shape = RoundedCornerShape(32.dp)
                                 )

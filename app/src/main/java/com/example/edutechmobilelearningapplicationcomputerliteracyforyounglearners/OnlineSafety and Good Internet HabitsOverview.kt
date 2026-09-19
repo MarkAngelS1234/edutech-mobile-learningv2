@@ -26,7 +26,7 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
 
 @Composable
-fun BasicInternetAwarenessAndSafetyOverviewScreen(
+fun OnlineSafetyAndGoodInternetHabitsOverviewScreen(
     onBackClick: () -> Unit,
     onStartLearningClick: () -> Unit,
 ) {
@@ -174,9 +174,9 @@ fun BasicInternetAwarenessAndSafetyOverviewScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun BasicInternetAwarenessAndSafetyOverviewPreview() {
+fun OnlineSafetyAndGoodInternetHabitsOverviewPreview() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        BasicInternetAwarenessAndSafetyOverviewScreen(
+        OnlineSafetyAndGoodInternetHabitsOverviewScreen(
             onBackClick = {},
             onStartLearningClick = {}
         )
