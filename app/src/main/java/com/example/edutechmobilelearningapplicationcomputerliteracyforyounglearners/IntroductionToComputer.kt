@@ -149,7 +149,6 @@ fun IntroductionToComputerContent(
                                 videoResId = R.raw.introductiontocomputer,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    onMarkCompleted()
                                 }
                             )
                         }

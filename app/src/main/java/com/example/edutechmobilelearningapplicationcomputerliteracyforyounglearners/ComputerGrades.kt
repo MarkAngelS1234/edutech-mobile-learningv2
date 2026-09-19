@@ -11,11 +11,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.airbnb.lottie.compose.*
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
@@ -45,9 +49,13 @@ import kotlin.math.min
 @Composable
 fun ComputerGradesScreen(
     onBackClick: () -> Unit,
-    onGradeClick: (String) -> Unit = {}
+    onGradeClick: (String) -> Unit = {},
+    viewModel: CourseViewModel? = null
 ) {
     val isPreview = LocalInspectionMode.current
+    val actualViewModel: CourseViewModel? = if (isPreview) null else {
+        viewModel ?: viewModel()
+    }
 
     // Internal state to manage which lesson is currently being displayed
     var currentLesson by remember { mutableStateOf<String?>(null) }
@@ -58,7 +66,8 @@ fun ComputerGradesScreen(
     when (currentLesson) {
         "Progress" -> {
             ProgressScreen(
-                onBackClick = { currentLesson = previousLesson }
+                onBackClick = { currentLesson = previousLesson },
+                viewModel = actualViewModel
             )
         }
         "Introduction to Computers Overview" -> {
@@ -73,7 +82,8 @@ fun ComputerGradesScreen(
                 onCheckProgressClick = { 
                     previousLesson = "Introduction to Computers"
                     currentLesson = "Progress" 
-                }
+                },
+                viewModel = actualViewModel
             )
         }
         
@@ -89,7 +99,8 @@ fun ComputerGradesScreen(
                onCheckProgressClick = {
                    previousLesson = "Computer Hardware"
                    currentLesson = "Progress"
-               }
+               },
+               viewModel = actualViewModel
            )
         }
         
@@ -105,7 +116,8 @@ fun ComputerGradesScreen(
                 onCheckProgressClick = {
                     previousLesson = "Computer Software"
                     currentLesson = "Progress"
-                }
+                },
+                viewModel = actualViewModel
             )
         }
         
@@ -121,7 +133,8 @@ fun ComputerGradesScreen(
                 onCheckProgressClick = {
                     previousLesson = "Internet Basics"
                     currentLesson = "Progress"
-                }
+                },
+                viewModel = actualViewModel!!
             )
         }
         
@@ -133,11 +146,12 @@ fun ComputerGradesScreen(
         }
         "Online Safety Awareness and Safety" -> {
             BasicInternetAwarenessAndSafetyScreen(
-                onBackClick = { currentLesson = "Online Safety Overview" },
+                onBackClick = { currentLesson = null },
                 onCheckProgressClick = {
                     previousLesson = "Online Safety Awareness and Safety"
                     currentLesson = "Progress"
-                }
+                },
+                viewModel = actualViewModel
             )
         }
         
@@ -148,14 +162,15 @@ fun ComputerGradesScreen(
                 onBackClick = onBackClick,
                 onGradeSelected = { grade ->
                     when (grade) {
-                        "Introduction to Computers" -> currentLesson = "Introduction to Computers Overview"
-                        "Computer Hardware" -> currentLesson = "Computer Hardware Overview"
-                        "Computer Software" -> currentLesson = "Computer Software Overview"
-                        "Internet Basics" -> currentLesson = "Internet Basics Overview"
-                        "Online Safety Awareness and Safety" -> currentLesson = "Online Safety Overview"
+                        ProgressTracker.COURSE_INTRO -> currentLesson = "Introduction to Computers Overview"
+                        ProgressTracker.COURSE_HARDWARE -> currentLesson = "Computer Hardware Overview"
+                        ProgressTracker.COURSE_SOFTWARE -> currentLesson = "Computer Software Overview"
+                        ProgressTracker.COURSE_INTERNET -> currentLesson = "Internet Basics Overview"
+                        ProgressTracker.COURSE_SAFETY -> currentLesson = "Online Safety Overview"
                     }
                     onGradeClick(grade)
-                }
+                },
+                viewModel = actualViewModel
             )
         }
     }
@@ -168,7 +183,8 @@ fun ComputerGradesScreen(
 private fun GradeListContent(
     isPreview: Boolean,
     onBackClick: () -> Unit,
-    onGradeSelected: (String) -> Unit
+    onGradeSelected: (String) -> Unit,
+    viewModel: CourseViewModel? = null
 ) {
     // Animation state for the header's entrance
     val headerProgress = remember { Animatable(if (isPreview) 1f else 0f) }
@@ -269,7 +285,8 @@ private fun GradeListContent(
                 .widthIn(max = 850.dp)
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 20.dp)
+                .zIndex(1f), // Ensure course cards are drawn above background animations
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Standardized Header
@@ -321,13 +338,15 @@ private fun GradeListContent(
             Spacer(modifier = Modifier.height(29.dp))
 
             // Scrollable list of Grade Levels
-            val grades = listOf(
-                "Introduction to Computers",
-                "Computer Hardware",
-                "Computer Software",
-                "Internet Basics",
-                "Online Safety Awareness and Good Internet Habits"
-            )
+            val grades = ProgressTracker.ALL_COURSES
+            
+            val progressList by if (isPreview) {
+                remember { mutableStateOf(emptyList<CourseProgress>()) }
+            } else {
+                viewModel!!.allProgress.collectAsState(initial = emptyList())
+            }
+            val progressMap = remember(progressList) { progressList.associateBy { it.courseName } }
+
             val listState = rememberLazyListState()
 
             LazyColumn(
@@ -337,6 +356,9 @@ private fun GradeListContent(
                 modifier = Modifier.fillMaxSize()
             ) {
                 itemsIndexed(grades, key = { _, grade -> grade }) { index, grade ->
+                    
+                    val isCompleted = progressMap[grade]?.isCompleted == true
+                    val isUnlocked = index == 0 || progressMap[grades[index - 1]]?.isCompleted == true
 
                     // Item entrance animation
                     val entranceProgress = remember { Animatable(if (isPreview) 1f else 0f) }
@@ -375,7 +397,9 @@ private fun GradeListContent(
                     GradeListItem(
                         grade = grade,
                         animProgress = combinedProgress,
-                        onClick = { onGradeSelected(grade) }
+                        isLocked = !isUnlocked,
+                        isCompleted = isCompleted,
+                        onClick = { if (isUnlocked) onGradeSelected(grade) }
                     )
                 }
             }
@@ -390,10 +414,13 @@ private fun GradeListContent(
 fun GradeListItem(
     grade: String,
     animProgress: Float,
+    isLocked: Boolean,
+    isCompleted: Boolean,
     onClick: () -> Unit
 ) {
     Surface(
         onClick = onClick,
+        enabled = !isLocked,
         modifier = Modifier
             .fillMaxWidth()
             .height(84.dp)
@@ -403,34 +430,59 @@ fun GradeListItem(
             },
         shape = RoundedCornerShape(12.dp),
         color = Color.White,
-        border = BorderStroke(3.dp, Color(0xFF6C5CE7)),
-        shadowElevation = (4 * animProgress).dp
+        border = BorderStroke(3.dp, if (isLocked) Color.LightGray else Color(0xFF6C5CE7)),
+        shadowElevation = if (isLocked) 0.dp else (4 * animProgress).dp
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 15.dp),
-            verticalArrangement = Arrangement.Center
+                .padding(horizontal = 15.dp)
+                .graphicsLayer {
+                    alpha = if (isLocked) 0.6f else 1f
+                },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = grade,
-                fontFamily = Kavoon,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF6C5CE7)
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = null,
-                    tint = Color(0xFF6C5CE7),
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(
-                    text = "+1 Multimedia",
-                    fontSize = 13.sp,
-                    color = Color.Gray
+                    text = grade,
+                    fontFamily = Kavoon,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (isLocked) Color.Gray else Color(0xFF6C5CE7)
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        tint = if (isLocked) Color.Gray else Color(0xFF6C5CE7),
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = if (isLocked) "Locked" else if (isCompleted) "Completed" else "Available",
+                        fontSize = 13.sp,
+                        color = if (isCompleted) Color(0xFF4CAF50) else Color.Gray
+                    )
+                }
+            }
+            
+            if (isCompleted) {
+                Icon(
+                    imageVector = Icons.Default.CheckCircle,
+                    contentDescription = "Completed",
+                    tint = Color(0xFF4CAF50),
+                    modifier = Modifier.size(32.dp)
+                )
+            } else if (isLocked) {
+                Icon(
+                    imageVector = Icons.Default.Lock,
+                    contentDescription = "Locked",
+                    tint = Color.Gray,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }

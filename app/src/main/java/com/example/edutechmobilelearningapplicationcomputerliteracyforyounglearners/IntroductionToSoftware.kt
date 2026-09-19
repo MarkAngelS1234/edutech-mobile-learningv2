@@ -134,7 +134,6 @@ fun IntroductionToSoftware(
                                 videoResId = R.raw.computersoftware,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    actualViewModel?.markCourseCompleted(ProgressTracker.COURSE_SOFTWARE)
                                 }
                             )
                         }

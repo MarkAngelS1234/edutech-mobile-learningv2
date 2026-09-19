@@ -147,7 +147,6 @@ fun InternetBasicsContent(
                                 videoResId = R.raw.internetbacis,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    onMarkCompleted()
                                 }
                             )
                         }

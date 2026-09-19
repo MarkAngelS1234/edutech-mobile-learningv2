@@ -149,7 +149,6 @@ fun ComputerHardwareContent(
                                 videoResId = R.raw.computerhardware,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    onMarkCompleted()
                                 }
                             )
                         }

@@ -152,7 +152,6 @@ fun BasicInternetAwarenessAndSafetyContent(
                                 videoResId = R.raw.onlinesafety,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
-                                    onMarkCompleted()
                                 }
                             )
                         }
