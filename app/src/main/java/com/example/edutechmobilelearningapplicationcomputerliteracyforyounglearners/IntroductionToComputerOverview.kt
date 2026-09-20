@@ -38,7 +38,7 @@ fun IntroductionToComputerOverviewScreen(
             .background(
                 Brush.verticalGradient(
                     listOf(
-                        Color(0xFF7B6FE8),
+                        Color(0xFF4A90E2),
                         Color(0xFFA173FA)
                     )
                 )
