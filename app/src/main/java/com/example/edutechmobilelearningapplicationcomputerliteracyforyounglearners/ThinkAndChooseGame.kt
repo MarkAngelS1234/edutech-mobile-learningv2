@@ -577,6 +577,7 @@ fun GameOverContent(score: Int, total: Int, onPlayAgain: () -> Unit, onExit: () 
 
         Text(
             text = "${animatedScore.value.roundToInt()} / $total",
+            fontFamily = Kavoon,
             fontSize = 64.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -614,9 +615,9 @@ fun GameOverContent(score: Int, total: Int, onPlayAgain: () -> Unit, onExit: () 
                         .fillMaxWidth(0.7f)
                         .height(56.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF2575FC))
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF9575CD))
                 ) {
-                    Text("Play Again", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text("Play Again", fontFamily = Kavoon, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedButton(
@@ -628,7 +629,7 @@ fun GameOverContent(score: Int, total: Int, onPlayAgain: () -> Unit, onExit: () 
                     border = BorderStroke(2.dp, Color.White),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
                 ) {
-                    Text("Exit to Menu", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text("Exit to Menu", fontFamily = Kavoon, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
