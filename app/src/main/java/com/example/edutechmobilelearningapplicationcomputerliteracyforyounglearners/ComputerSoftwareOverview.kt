@@ -3,6 +3,7 @@ package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglear
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -147,7 +148,12 @@ fun ComputerSoftwareOverviewScreen(
                         onClick = onStartLearningClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(64.dp),
+                            .height(64.dp)
+                            .border(
+                                width = 4.dp,
+                                color = Color(0xFF8E6CCB).copy(alpha = 0.3f), // Example: a lighter outer ring
+                                shape = RoundedCornerShape(32.dp)
+                            ),
                         shape = RoundedCornerShape(32.dp),
                         border = BorderStroke(2.dp, Color(0xFF8E6CCB)),
                         colors = ButtonDefaults.buttonColors(

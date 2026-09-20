@@ -119,7 +119,7 @@ fun ComputerHardwareOverviewScreen(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "In this lesson, you will learn about the physical parts of a computer that you can touch. We'll look at the system unit, monitor, keyboard, mouse, and other important parts that make the computer work.",
+                        text = "In this lesson, you will learn about the physical parts of a computer that you can touch. We'll look at the cpu, monitor, keyboard, mouse, and other important parts that make the computer work.",
                         fontSize = 16.sp,
                         color = Color(0xFF37474F),
                         textAlign = TextAlign.Center,
