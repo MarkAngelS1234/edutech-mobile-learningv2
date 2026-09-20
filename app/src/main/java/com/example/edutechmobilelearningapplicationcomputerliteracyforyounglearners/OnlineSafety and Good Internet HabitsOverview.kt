@@ -143,19 +143,14 @@ fun OnlineSafetyAndGoodInternetHabitsOverviewScreen(
                         onClick = onStartLearningClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
                             .height(64.dp),
                         shape = RoundedCornerShape(32.dp),
-                        border = BorderStroke(
-                            2.dp,
-                            Color(0xFF8E6CCB)
-                        ),
+                        border = BorderStroke(2.dp, Color(0xFF8E6CCB)),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.White
+                            containerColor = Color.White,
+                            contentColor = Color(0xFF8E6CCB)
                         ),
-                        elevation = ButtonDefaults.buttonElevation(
-                            defaultElevation = 4.dp
-                        )
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                     ) {
                         Text(
                             text = "START LEARNING",

@@ -1,5 +1,6 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -148,11 +149,12 @@ fun ComputerSoftwareOverviewScreen(
                             .fillMaxWidth()
                             .height(64.dp),
                         shape = RoundedCornerShape(32.dp),
+                        border = BorderStroke(2.dp, Color(0xFF8E6CCB)),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
                             contentColor = Color(0xFF8E6CCB)
                         ),
-                        border = ButtonDefaults.outlinedButtonBorder(enabled = true)
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                     ) {
                         Text(
                             text = "START LEARNING",
