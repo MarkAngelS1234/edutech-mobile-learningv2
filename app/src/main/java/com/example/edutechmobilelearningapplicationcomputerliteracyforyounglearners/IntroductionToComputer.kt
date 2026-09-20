@@ -44,11 +44,13 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun IntroductionToComputerScreen(
     onBackClick: () -> Unit,
+    onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = if (LocalInspectionMode.current) null else viewModel()
 ) {
     IntroductionToComputerContent(
         onBackClick = onBackClick,
+        onCloseAssessment = onCloseAssessment,
         onCheckProgressClick = onCheckProgressClick,
         onMarkCompleted = {
             viewModel?.markCourseCompleted(ProgressTracker.COURSE_INTRO)
@@ -63,6 +65,7 @@ fun IntroductionToComputerScreen(
 @Composable
 fun IntroductionToComputerContent(
     onBackClick: () -> Unit, 
+    onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     onMarkCompleted: () -> Unit,
     viewModel: CourseViewModel? = null
@@ -81,6 +84,7 @@ fun IntroductionToComputerContent(
     if (showAssessment) {
         IntroductionToComputerAssessmentScreen(
             onBackClick = { showAssessment = false },
+            onCloseAssessment = onCloseAssessment,
             onCheckProgressClick = onCheckProgressClick,
             viewModel = viewModel
         )

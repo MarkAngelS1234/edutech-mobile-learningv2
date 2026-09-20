@@ -44,6 +44,7 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun IntroductionToSoftware(
     onBackClick: () -> Unit,
+    onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = null
 ) {
@@ -68,6 +69,7 @@ fun IntroductionToSoftware(
     if (showAssessment) {
         IntroductionToSoftwareAssessmentScreen(
             onBackClick = { showAssessment = false },
+            onCloseAssessment = onCloseAssessment,
             onCheckProgressClick = onCheckProgressClick,
             viewModel = actualViewModel
         )

@@ -1,8 +1,11 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,11 +25,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
+import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.R
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,11 +46,30 @@ fun MainMenuScreen(
     onBgmVolumeChange: (Float) -> Unit = {},
     onCoursesClick: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     var showGames by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
     var showProgress by remember { mutableStateOf(false) }
     var showAbout by remember { mutableStateOf(false) }
     var showAchievements by remember { mutableStateOf(false) }
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    val isTopLevel = !showGames && !showOptions && !showProgress && !showAbout && !showAchievements
+
+    // Handle System Back Button
+    BackHandler(enabled = isTopLevel) {
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        ExitConfirmationDialog(
+            onConfirm = {
+                showExitDialog = false
+                (context as? Activity)?.finish()
+            },
+            onDismiss = { showExitDialog = false }
+        )
+    }
 
     when {
         showGames -> GamesScreen(onBackClick = { showGames = false })
@@ -63,6 +89,113 @@ fun MainMenuScreen(
             onAboutClick = { showAbout = true },
             onAchievementsClick = { showAchievements = true }
         )
+    }
+}
+
+@Composable
+fun ExitConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(enabled = false) { }, // Prevent clicks from going through
+            contentAlignment = Alignment.Center
+        ) {
+            Surface(
+                modifier = Modifier
+                    .widthIn(max = 500.dp)
+                    .fillMaxWidth(0.85f)
+                    .padding(24.dp),
+                shape = RoundedCornerShape(32.dp),
+                color = Color.White,
+                tonalElevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Mascot/Icon
+                    Image(
+                        painter = painterResource(id = R.drawable.orbb_y),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(RoundedCornerShape(20.dp)),
+                        contentScale = ContentScale.Fit
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Are You Sure You\nWant to Exit?",
+                        fontFamily = Kavoon,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4A90E2),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 34.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Come back soon to learn more!",
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        // Stay Button
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(56.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF4A90E2)
+                            ),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Text(
+                                text = "Stay",
+                                fontFamily = Kavoon,
+                                fontSize = 18.sp,
+                                color = Color.White
+                            )
+                        }
+
+                        // Exit Button
+                        OutlinedButton(
+                            onClick = onConfirm,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(56.dp),
+                            border = BorderStroke(2.dp, Color(0xFFA173FA)),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                contentColor = Color(0xFFA173FA)
+                            )
+                        ) {
+                            Text(
+                                text = "Exit",
+                                fontFamily = Kavoon,
+                                fontSize = 18.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -43,6 +43,7 @@ val hardwareQuestions = listOf(
 @Composable
 fun ComputerHardwareAssessmentScreen(
     onBackClick: () -> Unit,
+    onCloseAssessment: () -> Unit = onBackClick,
     onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = null,
     isFinishedPreview: Boolean = false,
@@ -137,7 +138,7 @@ fun ComputerHardwareAssessmentScreen(
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                     Button(
-                        onClick = onBackClick,
+                        onClick = onCloseAssessment,
                         colors = ButtonDefaults.buttonColors(containerColor = primaryPurple),
                         shape = RoundedCornerShape(25.dp),
                         modifier = Modifier

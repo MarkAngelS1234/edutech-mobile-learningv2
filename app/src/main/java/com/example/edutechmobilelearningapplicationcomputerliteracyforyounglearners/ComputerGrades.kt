@@ -11,6 +11,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Lock
@@ -81,6 +84,7 @@ fun ComputerGradesScreen(
         "Introduction to Computers" -> {
             IntroductionToComputerScreen(
                 onBackClick = { currentLesson = "Introduction to Computers Overview" },
+                onCloseAssessment = { currentLesson = null },
                 onCheckProgressClick = { 
                     previousLesson = "Introduction to Computers"
                     currentLesson = "Progress" 
@@ -98,6 +102,7 @@ fun ComputerGradesScreen(
         "Computer Hardware" -> {
            ComputerHardware(
                onBackClick = { currentLesson = "Computer Hardware Overview" },
+               onCloseAssessment = { currentLesson = null },
                onCheckProgressClick = {
                    previousLesson = "Computer Hardware"
                    currentLesson = "Progress"
@@ -115,6 +120,7 @@ fun ComputerGradesScreen(
         "Computer Software" -> {
             IntroductionToSoftware(
                 onBackClick = { currentLesson = "Computer Software Overview" },
+                onCloseAssessment = { currentLesson = null },
                 onCheckProgressClick = {
                     previousLesson = "Computer Software"
                     currentLesson = "Progress"
@@ -132,6 +138,7 @@ fun ComputerGradesScreen(
         "Internet Basics" -> {
             InternetBasicsScreen(
                 onBackClick = { currentLesson = "Internet Basics Overview" },
+                onCloseAssessment = { currentLesson = null },
                 onCheckProgressClick = {
                     previousLesson = "Internet Basics"
                     currentLesson = "Progress"
@@ -149,6 +156,7 @@ fun ComputerGradesScreen(
         "Online Safety Awareness and Safety" -> {
             OnlineSafetyAndGoodInternetHabitsScreen(
                 onBackClick = { currentLesson = "Online Safety Overview" },
+                onCloseAssessment = { currentLesson = null },
                 onCheckProgressClick = {
                     previousLesson = "Online Safety Awareness and Safety"
                     currentLesson = "Progress"
@@ -448,6 +456,16 @@ private fun GradeItemCard(
         label = "scale"
     )
 
+    // Image mapping logic
+    val backgroundImage = when (grade) {
+        ProgressTracker.COURSE_INTRO -> R.drawable.cc_itc
+        ProgressTracker.COURSE_HARDWARE -> R.drawable.cc_ch
+        ProgressTracker.COURSE_SOFTWARE -> R.drawable.cc_cs
+        ProgressTracker.COURSE_INTERNET -> R.drawable.cc_ib
+        ProgressTracker.COURSE_SAFETY -> R.drawable.cc_osagih
+        else -> null
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -465,78 +483,111 @@ private fun GradeItemCard(
         border = BorderStroke(3.dp, if (isLocked) Color.LightGray else Color(0xFF6C5CE7)),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isLocked) 0.dp else (6 * animProgress).dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp)
-                .graphicsLayer {
-                    alpha = if (isLocked) 0.6f else 1f
-                },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Level ${index + 1}",
-                    fontSize = 12.sp,
-                    color = Color(0xFF4A90E2),
-                    fontWeight = FontWeight.Bold
+        Box(modifier = Modifier.fillMaxSize()) {
+            // 1. Background Image
+            if (backgroundImage != null) {
+                Image(
+                    painter = painterResource(id = backgroundImage),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
-                Text(
-                    text = grade,
-                    fontFamily = Kavoon,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = if (isLocked) Color.Gray else Color(0xFF333333)
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.PlayArrow,
-                        contentDescription = null,
-                        tint = if (isLocked) Color.Gray else Color(0xFF6C5CE7),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (isLocked) "Locked" else if (isCompleted) "Completed" else "Available",
-                        fontSize = 13.sp,
-                        color = if (isCompleted) Color(0xFF4CAF50) else Color.Gray
-                    )
-                }
             }
 
-            if (isCompleted) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Completed",
-                    tint = Color(0xFF4CAF50),
-                    modifier = Modifier.size(32.dp)
-                )
-            } else if (isLocked) {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = "Locked",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(24.dp)
-                )
-            } else {
-                Surface(
-                    shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFF4A90E2).copy(alpha = 0.1f),
-                    border = BorderStroke(1.dp, Color(0xFF4A90E2))
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Start Lesson",
-                        tint = Color(0xFF4A90E2),
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .size(24.dp)
+            // 2. Translucent Overlay/Gradient for readability
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(
+                                (if (isLocked) Color.Black else Color(0xFF1A237E)).copy(alpha = 0.85f),
+                                Color.Transparent
+                            ),
+                            startX = 0f,
+                            endX = 800f // Balanced dark area behind text for both phone and tablet
+                        )
                     )
+                    .then(
+                        if (isLocked) Modifier.background(Color.Black.copy(alpha = 0.4f)) 
+                        else Modifier
+                    )
+            )
+
+            // 3. Existing Content
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
+                    .graphicsLayer {
+                        alpha = if (isLocked) 0.6f else 1f
+                    },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Level ${index + 1}",
+                        fontSize = 12.sp,
+                        color = if (isLocked) Color.LightGray else Color(0xFF4A90E2),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = grade,
+                        fontFamily = Kavoon,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White // Changed to white for better visibility on image
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            tint = if (isLocked) Color.LightGray else Color(0xFF6C5CE7),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (isLocked) "Locked" else if (isCompleted) "Completed" else "Available",
+                            fontSize = 13.sp,
+                            color = if (isCompleted) Color(0xFF66BB6A) else if (isLocked) Color.LightGray else Color.White
+                        )
+                    }
+                }
+
+                if (isCompleted) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "Completed",
+                        tint = Color(0xFF66BB6A),
+                        modifier = Modifier.size(32.dp)
+                    )
+                } else if (isLocked) {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "Locked",
+                        tint = Color.LightGray,
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color.White.copy(alpha = 0.2f),
+                        border = BorderStroke(1.dp, Color.White)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Start Lesson",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .size(24.dp)
+                        )
+                    }
                 }
             }
         }

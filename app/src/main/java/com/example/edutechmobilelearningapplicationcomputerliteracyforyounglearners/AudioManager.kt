@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.R
 
 /**
  * BGMManager - Singleton to handle Background Music playback, playlist, and volume.

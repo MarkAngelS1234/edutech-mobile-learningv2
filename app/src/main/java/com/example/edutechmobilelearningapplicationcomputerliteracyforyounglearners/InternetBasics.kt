@@ -44,11 +44,13 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun InternetBasicsScreen(
     onBackClick: () -> Unit, 
+    onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel = viewModel()
 ) {
     InternetBasicsContent(
         onBackClick = onBackClick,
+        onCloseAssessment = onCloseAssessment,
         onCheckProgressClick = onCheckProgressClick,
         onMarkCompleted = {
             viewModel.markCourseCompleted(ProgressTracker.COURSE_INTERNET)
@@ -63,6 +65,7 @@ fun InternetBasicsScreen(
 @Composable
 fun InternetBasicsContent(
     onBackClick: () -> Unit, 
+    onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     onMarkCompleted: () -> Unit,
     viewModel: CourseViewModel? = null
@@ -81,6 +84,7 @@ fun InternetBasicsContent(
     if (showAssessment) {
         InternetBasicsAssessmentScreen(
             onBackClick = { showAssessment = false },
+            onCloseAssessment = onCloseAssessment,
             onCheckProgressClick = onCheckProgressClick,
             viewModel = viewModel
         )

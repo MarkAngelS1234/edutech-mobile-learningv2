@@ -44,11 +44,13 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun OnlineSafetyAndGoodInternetHabitsScreen(
     onBackClick: () -> Unit,
+    onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = if (LocalInspectionMode.current) null else viewModel()
 ) {
     OnlineSafetyAndGoodInternetHabitsContent(
         onBackClick = onBackClick,
+        onCloseAssessment = onCloseAssessment,
         onCheckProgressClick = onCheckProgressClick,
         onMarkCompleted = {
             viewModel?.markCourseCompleted(ProgressTracker.COURSE_SAFETY)
@@ -63,6 +65,7 @@ fun OnlineSafetyAndGoodInternetHabitsScreen(
 @Composable
 fun OnlineSafetyAndGoodInternetHabitsContent(
     onBackClick: () -> Unit, 
+    onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     onMarkCompleted: () -> Unit,
     viewModel: CourseViewModel? = null
@@ -81,6 +84,7 @@ fun OnlineSafetyAndGoodInternetHabitsContent(
     if (showAssessment) {
         OnlineSafetyAndGoodInternetHabitsAssessmentScreen(
             onBackClick = { showAssessment = false },
+            onCloseAssessment = onCloseAssessment,
             onCheckProgressClick = onCheckProgressClick,
             viewModel = viewModel
         )

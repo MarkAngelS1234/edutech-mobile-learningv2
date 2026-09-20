@@ -44,11 +44,13 @@ import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearn
 @Composable
 fun ComputerHardware(
     onBackClick: () -> Unit,
+    onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     viewModel: CourseViewModel? = if (LocalInspectionMode.current) null else viewModel()
 ) {
     ComputerHardwareContent(
         onBackClick = onBackClick,
+        onCloseAssessment = onCloseAssessment,
         onCheckProgressClick = onCheckProgressClick,
         onMarkCompleted = {
             viewModel?.markCourseCompleted(ProgressTracker.COURSE_HARDWARE)
@@ -63,6 +65,7 @@ fun ComputerHardware(
 @Composable
 fun ComputerHardwareContent(
     onBackClick: () -> Unit, 
+    onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     onMarkCompleted: () -> Unit,
     viewModel: CourseViewModel? = null
@@ -81,6 +84,7 @@ fun ComputerHardwareContent(
     if (showAssessment) {
         ComputerHardwareAssessmentScreen(
             onBackClick = { showAssessment = false },
+            onCloseAssessment = onCloseAssessment,
             onCheckProgressClick = onCheckProgressClick,
             viewModel = viewModel
         )
