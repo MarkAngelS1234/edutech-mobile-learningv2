@@ -344,8 +344,10 @@ fun ThinkAndChooseGameScreen(
                                         .height(56.dp),
                                     shape = RoundedCornerShape(16.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.White,
-                                        contentColor = Color(0xFFFFFFFF)
+                                        containerColor = Color(0xFF673AB7), // High-contrast Deep Purple
+                                        contentColor = Color.White,        // Explicit White Text
+                                        disabledContainerColor = Color(0xFF673AB7).copy(alpha = 0.5f),
+                                        disabledContentColor = Color.White.copy(alpha = 0.5f)
                                     ),
                                     enabled = if (!showFeedback) selectedOption != null else true
                                 ) {
@@ -353,7 +355,8 @@ fun ThinkAndChooseGameScreen(
                                         text = if (!showFeedback) "Submit Answer" else if (currentIndex < questions.size - 1) "Next Question" else "Finish",
                                         fontSize = 18.sp,
                                         fontFamily = Kavoon,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White // Reinforce explicit text color
                                     )
                                 }
                             }
