@@ -179,7 +179,7 @@ fun DifficultySelectionScreen(onBackClick: () -> Unit, onSelect: (Difficulty) ->
                 text = "Word Scramble",
                 color = Color.White,
                 fontFamily = Kavoon,
-                fontSize = 57.sp,
+                fontSize = 54.sp,
                 lineHeight = 48.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,

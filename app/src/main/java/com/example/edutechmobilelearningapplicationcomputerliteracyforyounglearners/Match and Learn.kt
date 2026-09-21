@@ -1,11 +1,3 @@
-// ============================================================================
-// Match and Learn.kt
-// A two-phase matching mini-game ("Line Matching" then "Drag & Drop") that
-// teaches young learners the names and uses of common computer hardware and
-// software. The whole screen is built with Jetpack Compose, runs in forced
-// landscape orientation, and scales its layout with a single scaleFactor so
-// it looks consistent across different tablet/phone sizes.
-// ============================================================================
 
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
@@ -550,7 +542,7 @@ fun CartoonScrollBar(
             .width((12 * scaleFactor).dp)
             .padding(vertical = (16 * scaleFactor).dp)
     ) {
-        // Bail out early (draw nothing) if there's nothing to scroll or we have no size yet.
+        // Bail out early (draw nothing) if there's nothing to scroll, or we have no size yet.
         if (!hasOverflow || size.height <= 0f) return@Canvas
 
         val trackWidth = size.width

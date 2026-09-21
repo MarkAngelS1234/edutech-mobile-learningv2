@@ -198,7 +198,7 @@ fun ThinkAndChooseGameScreen(
         // Decorations
         CloudDecoration(Modifier.align(Alignment.TopStart).offset(x = (-30).dp, y = 20.dp))
         CloudDecoration(Modifier.align(Alignment.TopEnd).offset(x = 40.dp, y = (-10).dp))
-        
+
         Column(
             modifier = Modifier
                 .fillMaxHeight()
@@ -224,7 +224,7 @@ fun ThinkAndChooseGameScreen(
                     text = "Find the Right One",
                     color = Color.White,
                     fontFamily = Kavoon,
-                    fontSize = 24.sp, // Adjusted to fit better in header row
+                    fontSize = 34.sp, // Adjusted to fit better in header row
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.Center)
@@ -428,7 +428,7 @@ fun InstructionContent(onStartClick: () -> Unit) {
                     )
                 }
             }
-            
+
             // Title pill overlay
             Box(
                 modifier = Modifier
@@ -584,7 +584,7 @@ fun GameOverContent(score: Int, total: Int, onPlayAgain: () -> Unit, onExit: () 
                 scaleY = wellDoneScale
             }
         )
-        
+
         AnimatedVisibility(
             visible = startAnimations && animatedScore.value >= score.toFloat() * 0.3f,
             enter = fadeIn(tween(800)) + expandVertically()
@@ -598,9 +598,9 @@ fun GameOverContent(score: Int, total: Int, onPlayAgain: () -> Unit, onExit: () 
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
             )
         }
-        
+
         Spacer(modifier = Modifier.height(32.dp))
-        
+
         AnimatedVisibility(
             visible = startAnimations && animatedScore.value >= score.toFloat() * 0.9f,
             enter = fadeIn(tween(1000)) + slideInVertically(initialOffsetY = { it / 2 })
