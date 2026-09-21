@@ -10,6 +10,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -98,99 +99,109 @@ fun ExitConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
+        // Dimmed backdrop — unchanged behavior, blocks clicks from passing through
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.5f))
-                .clickable(enabled = false) { }, // Prevent clicks from going through
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { },
             contentAlignment = Alignment.Center
         ) {
+            // Fixed-size card so it never stretches or looks oversized on large/small screens
             Surface(
                 modifier = Modifier
-                    .widthIn(max = 500.dp)
-                    .fillMaxWidth(0.85f)
-                    .padding(24.dp),
+                    .width(320.dp)
+                    .wrapContentHeight(),
                 shape = RoundedCornerShape(32.dp),
-                color = Color(0xFFFFFFFF),Color(0xFF4A90E2),
-                tonalElevation = 8.dp
+                color = Color.Transparent,
+                shadowElevation = 12.dp
             ) {
                 Column(
-                    modifier = Modifier.padding(24.dp),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(32.dp))
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color(0xFF4A90E2), Color(0xFFA173FA))
+                            )
+                        )
+                        .padding(horizontal = 24.dp, vertical = 28.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Mascot/Icon
                     Image(
                         painter = painterResource(id = R.drawable.orbb_y),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(100.dp)
-                            .clip(RoundedCornerShape(20.dp)),
+                            .size(92.dp)
+                            .clip(RoundedCornerShape(18.dp)),
                         contentScale = ContentScale.Fit
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
                         text = "Are You Sure You\nWant to Exit?",
                         fontFamily = Kavoon,
-                        fontSize = 28.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFA173FA),
+                        color = Color.White,
                         textAlign = TextAlign.Center,
-                        lineHeight = 34.sp
+                        lineHeight = 30.sp
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
                         text = "Come back soon to learn more!",
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontFamily = Kavoon,
-                        color = Color.LightGray,
+                        color = Color.White.copy(alpha = 0.9f),
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(28.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // Stay Button
+                        // Stay — solid white pill, strongest contrast option (default/expected action)
                         Button(
                             onClick = onDismiss,
                             modifier = Modifier
                                 .weight(1f)
-                                .height(56.dp),
+                                .height(52.dp),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF4A90E2)
+                                containerColor = Color.White,
+                                contentColor = Color(0xFF4A90E2)
                             ),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Text(
                                 text = "Stay",
                                 fontFamily = Kavoon,
-                                fontSize = 18.sp,
-                                color = Color.White
+                                fontSize = 16.sp
                             )
                         }
 
-                        // Exit Button
+                        // Exit — outlined, white border/text reads clearly on the gradient
                         OutlinedButton(
                             onClick = onConfirm,
                             modifier = Modifier
                                 .weight(1f)
-                                .height(56.dp),
-                            border = BorderStroke(2.dp, Color(0xFFA173FA)),
+                                .height(52.dp),
+                            border = BorderStroke(2.dp, Color.White),
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = Color(0xFFA173FA)
+                                contentColor = Color.White
                             )
                         ) {
                             Text(
                                 text = "Exit",
                                 fontFamily = Kavoon,
-                                fontSize = 18.sp
+                                fontSize = 16.sp
                             )
                         }
                     }
@@ -282,7 +293,7 @@ fun MainMenuView(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(40.dp))
-            
+
             Text(
                 text = "What would you like to learn today?",
                 fontSize = 30.sp,

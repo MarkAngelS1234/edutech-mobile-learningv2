@@ -1,4 +1,3 @@
-
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
 // --- Android framework imports (Activity lookup, orientation, video playback) ---
@@ -744,6 +743,16 @@ fun LineMatchingPhase(questions: List<GameQuestion>, onComplete: (Int) -> Unit, 
  * its matching purpose button to "draw a line" connecting them. Each question
  * has a 10-second timer; a wrong match or a timeout both advance to the next
  * question after a short feedback flash.
+ *
+ * LAYOUT NOTE: the width/height-constrained gameplay `Column` below (capped at
+ * 1100dp wide, matching Phase 2's DragDropView) is only for the cards/canvas/
+ * header. The `FeedbackDisplay` overlay is intentionally emitted as a SIBLING
+ * of that Column, not nested inside it or inside the inner play-area Box, so
+ * it lands directly in the same fillMaxSize() Box that AnimatedContent uses
+ * for every game state (see ConnectThePairsGameScreen). This mirrors
+ * DragDropView exactly and is what makes the Phase 1 "Wrong!"/"Time's up!"
+ * overlay cover the *entire* screen — same size, alignment and spacing as
+ * Phase 2 — instead of being confined to the header-minus, width-capped block.
  */
 @Composable
 fun LineMatchingView(
@@ -973,11 +982,15 @@ fun LineMatchingView(
                     }
                 }
             }
-
-            // Full-screen "Wrong!"/"Time's up!" overlay, shown only for negative feedback.
-            feedback?.let { (msg, color) -> if (msg == "Wrong!" || msg == "Time's up!") FeedbackDisplay(msg, color, scaleFactor) }
         }
     }
+    // Full-screen "Wrong!"/"Time's up!" overlay, shown only for negative feedback.
+    // Placed OUTSIDE (as a sibling of) the width/height-constrained gameplay Column above,
+    // exactly like Phase 2's DragDropView, so FeedbackDisplay's own fillMaxSize() expands
+    // into the same top-level fillMaxSize() Box that every game state shares — giving Phase 1
+    // feedback the identical full-screen size, alignment and spacing as Phase 2's feedback,
+    // instead of being confined to the header-minus, 1100dp-capped play area.
+    feedback?.let { (msg, color) -> if (msg == "Wrong!" || msg == "Time's up!") FeedbackDisplay(msg, color, scaleFactor) }
 }
 
 /**
