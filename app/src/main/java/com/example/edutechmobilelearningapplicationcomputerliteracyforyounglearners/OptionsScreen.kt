@@ -98,7 +98,7 @@ fun OptionsScreen(
                 )
 
                 Text(
-                    text = "Options",
+                    text = "Settings",
                     style = TextStyle(
                         fontFamily = Kavoon,
                         fontSize = 32.sp, // Slightly adjusted to fit better in header row
@@ -120,7 +120,7 @@ fun OptionsScreen(
             // BGM Section - Cartoonized
             Column(modifier = Modifier.padding(horizontal = 8.dp)) {
                 Text(
-                    text = "BGM",
+                    text = "BGM(Background Music)",
                     style = TextStyle(
                         fontFamily = Kavoon,
                         fontSize = 28.sp,

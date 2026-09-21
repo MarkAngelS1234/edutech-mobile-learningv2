@@ -1,5 +1,6 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -25,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -33,8 +35,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.airbnb.lottie.compose.*
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
 import kotlinx.coroutines.delay
@@ -103,21 +107,27 @@ fun DashboardAppNavigator() {
 
 /* ---------------- ENTRANCE SCREEN ---------------- */
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun DashboardEntranceScreen(
     loadingTime: Long = 4000L,
+    initialLoading: Boolean = true,
     onStartClick: () -> Unit
 ) {
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()
+    )
+    {
         val screenWidth = maxWidth
+        val screenHeight = maxHeight
         // Proportional scaling factor based on a reference width
         val scaleFactor = (screenWidth / 800.dp).coerceIn(1f, 1.5f)
 
         // Requirement 2: Integrate local loading state
-        var isLoading by remember { mutableStateOf(true) }
-        var progress by remember { mutableStateOf(0f) }
+        var isLoading by remember { mutableStateOf(initialLoading) }
+        var progress by remember { mutableStateOf(if (initialLoading) 0f else 1f) }
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(initialLoading) {
+            if (!initialLoading) return@LaunchedEffect
             val totalSteps = 100
             val delayPerStep = loadingTime / totalSteps
             for (i in 1..totalSteps) {
@@ -180,6 +190,27 @@ fun DashboardEntranceScreen(
             label = "press"
         )
 
+        // Lottie Character Animation Setup (@or_byyy.json)
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.or_byyy))
+        val lottieProgress by animateLottieCompositionAsState(
+            composition = composition,
+            iterations = LottieConstants.IterateForever
+        )
+
+        // Character entrance animation from BOTTOM-LEFT
+        // Start position: Off-screen to the left and bottom
+        // End position: Settled at bottom-left corner, behind/below the main UI content
+        val characterOffsetX by animateDpAsState(
+            targetValue = if (isLoading) (-screenWidth - 100.dp) else (-100 * scaleFactor).dp,
+            animationSpec = tween(2500, easing = FastOutSlowInEasing),
+            label = "characterSlideX"
+        )
+        val characterOffsetY by animateDpAsState(
+            targetValue = if (isLoading) (screenHeight + 70.dp) else (70 * scaleFactor).dp,
+            animationSpec = tween(2500, easing = FastOutSlowInEasing),
+            label = "characterSlideY"
+        )
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -190,6 +221,19 @@ fun DashboardEntranceScreen(
                 ),
             contentAlignment = Alignment.Center
         ) {
+            // Layer 1: Character @orbby_yy.json (Placed before Column to be behind in Z-order)
+            LottieAnimation(
+                composition = composition,
+                progress = { lottieProgress },
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .offset(x = characterOffsetX, y = characterOffsetY)
+                    .size((380 * scaleFactor).dp) // Large and clearly visible
+                    .zIndex(0f), // Set behind Layer 2
+                contentScale = ContentScale.Fit
+            )
+
+            // Layer 2: Main UI (Logo, Title, Button)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -198,7 +242,8 @@ fun DashboardEntranceScreen(
                     .fillMaxWidth()
                     .align(Alignment.Center)
                     .padding((32 * scaleFactor).dp)
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(rememberScrollState())
+                    .zIndex(1f), // Higher zIndex ensures button is on top and clickable
                 verticalArrangement = Arrangement.Center
             ) {
                 // Main Title Area with Icons behind the text
@@ -316,7 +361,7 @@ fun DashboardEntranceScreen(
                                     val phase = borderRotation * perimeter
                                     drawRoundRect(
                                         brush = Brush.linearGradient(
-                                            colors = listOf(Color(0xFF4A90E2), Color(0xFF50E3C2)),
+                                            colors = listOf(Color(0xFF4A90E2), Color(0xFFA173FA)),
                                             start = Offset.Zero,
                                             end = Offset(size.width, size.height)
                                         ),
@@ -374,10 +419,18 @@ fun DashboardEntranceScreen(
 
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Loading Screen")
 @Composable
-fun PreviewEntrance() {
+fun PreviewEntranceLoading() {
     EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
-        DashboardEntranceScreen(onStartClick = {})
+        DashboardEntranceScreen(initialLoading = true, onStartClick = {})
+    }
+}
+
+@Preview(showBackground = true, name = "Press to Start Screen")
+@Composable
+fun PreviewEntranceStartButton() {
+    EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme {
+        DashboardEntranceScreen(initialLoading = false, onStartClick = {})
     }
 }

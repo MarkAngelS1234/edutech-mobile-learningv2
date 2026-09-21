@@ -6,9 +6,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
 import android.graphics.BitmapFactory
-import android.graphics.DashPathEffect
 import android.graphics.Paint
-import android.graphics.Typeface
 import android.graphics.pdf.PdfDocument
 import android.os.Build
 import android.os.Environment
@@ -29,26 +27,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -491,35 +483,33 @@ fun ECertificateContent(
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Image(
-                        painter = painterResource(id = R.drawable.ecertt_t),
+                        painter = painterResource(id = R.drawable.ec_ert),
                         contentDescription = "Certificate Background",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.FillBounds
                     )
 
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Spacer(modifier = Modifier.height(60.dp))
-                        Text(
-                            text = userName.ifBlank { "Learner's Name" },
-                            fontFamily = Kavoon,
-                            fontSize = 48.sp,
-                            color = namePurple,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                        )
-                        Spacer(modifier = Modifier.height(80.dp))
-                        Text(
-                            text = currentDate,
-                            fontFamily = Kavoon,
-                            fontSize = 16.sp,
-                            color = Color.DarkGray,
-                            modifier = Modifier.offset(x = (-120).dp, y = 80.dp)
-                        )
-                    }
+                    // Position Name at exactly 42.5% Y height, horizontally centered
+                    Text(
+                        text = userName.ifBlank { "Learner's Name" },
+                        fontFamily = Kavoon,
+                        fontSize = 48.sp,
+                        color = namePurple,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .align(BiasAlignment(0f, -0.12f))
+                            .fillMaxWidth(0.8f)
+                    )
+
+                    // Position Date at exactly 88% Y height and 29.1% X width, perfectly aligning on top of "Date Completed" line
+                    Text(
+                        text = currentDate,
+                        fontFamily = Kavoon,
+                        fontSize = 16.sp,
+                        color = Color.DarkGray,
+                        modifier = Modifier.align(BiasAlignment(-0.6f, 0.63f))
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(28.dp))
@@ -557,27 +547,46 @@ fun saveCertificateAsPdf(context: Context, name: String, date: String) {
     val namePurpleInt = 0xFF5E35B1.toInt()
 
     // Load the background image
-    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.ecertt_t)
+    val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.ec_ert)
     if (bitmap != null) {
         val destRect = android.graphics.Rect(0, 0, pageWidth, pageHeight)
         canvas.drawBitmap(bitmap, null, destRect, paint)
     }
 
-    // Draw Name
+    // 1. Draw Name with fixed coordinate position, horizontally centered, and auto-scaled if too long
+    val nameText = name.ifBlank { "Learner" }
+    val fixedNameCenterX = pageWidth / 2f
+    val fixedNameBaselineY = 290f  // Adjusted upward to match the visual design and prevent downward positioning
+    val maxNameWidth = 550f
+
     paint.typeface = kavoonTypeface
     paint.color = namePurpleInt
     paint.textSize = 60f
     paint.isFakeBoldText = true
     paint.textAlign = Paint.Align.CENTER
-    canvas.drawText(name.ifBlank { "Learner" }, pageWidth / 2f, pageHeight / 2f + 20f, paint)
 
-    // Draw Date
+    // Adjust text size proportionally if name exceeds max width
+    var nameWidth = paint.measureText(nameText)
+    if (nameWidth > maxNameWidth) {
+        paint.textSize = 60f * (maxNameWidth / nameWidth)
+    }
+
+    canvas.drawText(nameText, fixedNameCenterX, fixedNameBaselineY, paint)
+
+    // 2. Draw Date with fixed coordinate position, centered directly under 'Date Completed'
+    val fixedDateCenterX = 220f
+    val fixedDateBaselineY = pageHeight - 107f
+
     paint.typeface = kavoonTypeface
     paint.color = android.graphics.Color.DKGRAY
     paint.textSize = 20f
     paint.isFakeBoldText = false
-    paint.textAlign = Paint.Align.LEFT
-    canvas.drawText(date, 145f, pageHeight - 70f, paint)
+    paint.textAlign = Paint.Align.CENTER
+
+    // Measure date width (as required for centering validation)
+    val dateWidth = paint.measureText(date)
+
+    canvas.drawText(date, fixedDateCenterX, fixedDateBaselineY, paint)
 
     pdfDocument.finishPage(page)
     val fileName = "Certificate_${name.replace(" ", "_")}.pdf"

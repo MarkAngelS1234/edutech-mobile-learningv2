@@ -126,10 +126,10 @@ fun AchievementsScreenContent(
             ),
             Badge(
                 name = "Pair Pro",
-                description = "Score 25 pts in Connect the Pairs",
+                description = "Score 25 pts in Match and Learn",
                 icon = "🔗",
-                isUnlocked = gameProgressMap["Connect the Pairs"]?.isUnlocked ?: false,
-                currentPoints = gameProgressMap["Connect the Pairs"]?.score ?: 0,
+                isUnlocked = gameProgressMap["Match and Learn"]?.isUnlocked ?: false,
+                currentPoints = gameProgressMap["Match and Learn"]?.score ?: 0,
                 requiredPoints = 25
             )
         )

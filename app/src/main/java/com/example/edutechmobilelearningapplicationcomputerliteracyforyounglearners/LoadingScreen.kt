@@ -36,7 +36,7 @@ fun LoadingComponent(progress: Float, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(12.dp),
-            color = Color(0xFFA173FA),
+            color = Color(0xFFFFFFFF),
             trackColor = Color.White.copy(alpha = 0.3f)
         )
     }

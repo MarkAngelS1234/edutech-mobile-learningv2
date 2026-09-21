@@ -12,8 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,7 +21,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -536,7 +533,6 @@ fun GameOverContent(score: Int, total: Int, onPlayAgain: () -> Unit, onExit: () 
 
     // Refactored dynamic response based on score percentage
     val (resultTitle, resultMessage) = when {
-        score == total -> "PERFECT! 🏆" to "Fantastic! You're a software expert! \uD83D\uDC4F"
         score >= total * 0.8 -> "EXCELLENT! 🌟" to "Great job! You know your software! \uD83D\uDC4F"
         score >= total * 0.5 -> "WELL DONE! 👍" to "Good effort! Keep practicing! \uD83D\uDC4F"
         else -> "KEEP TRYING! 📚" to "Don't give up!"
@@ -568,6 +564,7 @@ fun GameOverContent(score: Int, total: Int, onPlayAgain: () -> Unit, onExit: () 
 
         Text(
             text = "Your Score",
+            fontFamily = Kavoon,
             fontSize = 20.sp,
             color = Color.White.copy(alpha = 0.8f),
             modifier = Modifier.graphicsLayer {

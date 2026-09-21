@@ -115,12 +115,12 @@ fun OnlineSafetyAndGoodInternetHabitsOverviewScreen(
                         Spacer(modifier = Modifier.height(32.dp))
 
                         Text(
-                            text = "Online Safety Awareness",
+                            text = "Online Safety and Good Internet Habits",
                             fontSize = 22.sp,
                             fontFamily = Kavoon,
                             fontWeight = FontWeight.Bold,
                             color = Color(0xFF8E6CCB),
-                            textAlign = TextAlign.Start,
+                            textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )
 

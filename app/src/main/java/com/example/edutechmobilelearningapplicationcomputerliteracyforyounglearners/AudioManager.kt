@@ -15,9 +15,9 @@ object BGMManager {
     private var mediaPlayer: MediaPlayer? = null
     
     // --- TRACK LIST ---
-    private val track1Res = R.raw.wreckitralph
+    private val track1Res = R.raw.classicsoundquizziz
     private val track2Res = R.raw.takeyouhometonightt // TEMPORARY PLACEHOLDER for takeyouhometonightt
-    private val track3Res = R.raw.classicsoundquizziz
+    private val track3Res = R.raw.wreckitralph
     private val track4Res = R.raw.celestial
     private val playlist = listOf(track1Res, track2Res, track3Res,track4Res,)
     private var currentTrackIndex = 0

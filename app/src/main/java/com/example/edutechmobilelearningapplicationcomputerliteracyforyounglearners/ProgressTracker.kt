@@ -5,7 +5,7 @@ object ProgressTracker {
     const val COURSE_HARDWARE = "Computer Hardware"
     const val COURSE_SOFTWARE = "Computer Software"
     const val COURSE_INTERNET = "Internet Basics"
-    const val COURSE_SAFETY = "Online Safety Awareness and Good Internet Habits"
+    const val COURSE_SAFETY = "Online Safety and Good Internet Habits"
     
     val ALL_COURSES = listOf(
         COURSE_INTRO,

@@ -119,7 +119,7 @@ fun OnlineSafetyAndGoodInternetHabitsContent(
                         modifier = Modifier.align(Alignment.CenterStart)
                     )
                     Text(
-                        text = "Internet Awareness & Safety",
+                        text = "Online Safety and Good Internet Habits",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontFamily = Kavoon,
@@ -161,7 +161,7 @@ fun OnlineSafetyAndGoodInternetHabitsContent(
                             contentAlignment = Alignment.Center
                         ) {
                             SafetyVideoPlayer(
-                                videoResId = R.raw.onlinesafety,
+                                videoResId = R.raw.safetyonline,
                                 onVideoFinished = { 
                                     isVideoFinished = true 
                                 }
