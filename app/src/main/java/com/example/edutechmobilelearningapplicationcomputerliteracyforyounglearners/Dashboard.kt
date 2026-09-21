@@ -5,6 +5,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -18,7 +19,7 @@ import androidx.compose.runtime.setValue
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
@@ -139,15 +140,6 @@ fun DashboardEntranceScreen(
         }
 
         val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-        val pulseScale by infiniteTransition.animateFloat(
-            initialValue = 1f,
-            targetValue = 1.05f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(1200, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            ),
-            label = "pulse"
-        )
 
         // Border circulating animation
         val borderRotation by infiniteTransition.animateFloat(
@@ -180,14 +172,6 @@ fun DashboardEntranceScreen(
                 repeatMode = RepeatMode.Restart
             ),
             label = "rotationBackward"
-        )
-
-        val interactionSource = remember { MutableInteractionSource() }
-        val isPressed by interactionSource.collectIsPressedAsState()
-        val pressedScale by animateFloatAsState(
-            targetValue = if (isPressed) 0.95f else 1f,
-            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-            label = "press"
         )
 
         // Lottie Character Animation Setup (@or_byyy.json)
@@ -340,58 +324,14 @@ fun DashboardEntranceScreen(
                                 .height((110 * scaleFactor).dp) // Maintain consistent height to avoid jumps
                         )
                     } else {
-                        Button(
-                            onClick = onStartClick,
-                            interactionSource = interactionSource,
-                            modifier = Modifier
-                                .scale(pulseScale * pressedScale)
-                                .height((60 * scaleFactor).dp) // Scaled and increased base from 55
-                                .widthIn(max = (350 * scaleFactor).dp) // Scaled and increased base from 320
-                                .fillMaxWidth(0.8f)
-                                .drawWithContent {
-                                    drawContent()
-                                    val strokeWidth = 3.dp.toPx()
-                                    val cornerRadiusPx = 30.dp.toPx()
-                                    val inset = strokeWidth / 2
-                                    val drawSize = Size(size.width - strokeWidth, size.height - strokeWidth)
-                                    val actualRadius = cornerRadiusPx - inset
-                                    val perimeter = 2 * (drawSize.width + drawSize.height) + (2 * PI.toFloat() - 8) * actualRadius
-                                    val gapLength = 100f
-                                    val dashLength = perimeter - gapLength
-                                    val phase = borderRotation * perimeter
-                                    drawRoundRect(
-                                        brush = Brush.linearGradient(
-                                            colors = listOf(Color(0xFF4A90E2), Color(0xFFA173FA)),
-                                            start = Offset.Zero,
-                                            end = Offset(size.width, size.height)
-                                        ),
-                                        topLeft = Offset(inset, inset),
-                                        size = drawSize,
-                                        cornerRadius = CornerRadius(actualRadius),
-                                        style = Stroke(
-                                            width = strokeWidth,
-                                            cap = StrokeCap.Round,
-                                            join = StrokeJoin.Round,
-                                            pathEffect = PathEffect.dashPathEffect(
-                                                floatArrayOf(dashLength, gapLength),
-                                                phase
-                                            )
-                                        )
-                                    )
-                                },
-                            shape = RoundedCornerShape(30.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = Color(0xFF4A90E2)
-                            )
-                        ) {
-                            Text(
-                                text = "Press to Start!",
-                                fontSize = (20 * scaleFactor).sp, // Scaled and increased base from 18
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = Kavoon
-                            )
-                        }
+                        // Button entrance + idle pulse are handled entirely inside
+                        // PressToStartButton, with the text layer isolated from the
+                        // scaled background/container.
+                        PressToStartButton(
+                            scaleFactor = scaleFactor,
+                            borderRotation = borderRotation,
+                            onStartClick = onStartClick
+                        )
                     }
                 }
                 Spacer(modifier = Modifier.height((32 * scaleFactor).dp)) // Tightened from 48
@@ -400,24 +340,141 @@ fun DashboardEntranceScreen(
     }
 }
 
+/* ---------------- PRESS TO START BUTTON ---------------- */
 
+/**
+ * The "Press to Start!" button, split into two independent layers:
+ *
+ *  1. A background/container layer (white rounded shape + animated dashed
+ *     gradient border) that carries the shrink/pulse scale animation.
+ *  2. A text layer ("Press to Start!") that is a sibling of the background,
+ *     NOT nested inside it, so the scale animation applied to the
+ *     background can never affect the text's size, position, or shape.
+ *
+ * The idle shrink/pulse animation only starts once hasAppeared becomes
+ * true, which happens after the entrance transition (fade + slide, 600ms)
+ * has had time to fully complete. This guarantees the complete button
+ * (background, border, and text) is visibly established before any
+ * pulsing begins - satisfying "no cut off / no partial reveal during
+ * entrance, then smooth pulsing afterward".
+ */
+@Composable
+private fun PressToStartButton(
+    scaleFactor: Float,
+    borderRotation: Float,
+    onStartClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
 
+    // Gate for the idle pulse: stays false until the entrance animation
+    // (fadeIn + slideInVertically, 600ms) has fully finished.
+    var hasAppeared by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(650L) // slightly longer than the 600ms entrance transition
+        hasAppeared = true
+    }
 
+    // Idle pulse lives on its own Animatable, starting from 1f (the exact
+    // scale the button entered at) so there is no visible jump when the
+    // pulse loop kicks in.
+    val idlePulseScale = remember { Animatable(1f) }
+    LaunchedEffect(hasAppeared) {
+        if (hasAppeared) {
+            while (true) {
+                idlePulseScale.animateTo(
+                    targetValue = 1.05f,
+                    animationSpec = tween(1200, easing = FastOutSlowInEasing)
+                )
+                idlePulseScale.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(1200, easing = FastOutSlowInEasing)
+                )
+            }
+        }
+    }
 
+    // Press feedback is independent of the idle pulse and still applies
+    // immediately on tap/release, only to the background layer.
+    val pressedScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "press"
+    )
 
+    val containerScale = idlePulseScale.value * pressedScale
 
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .height((60 * scaleFactor).dp)
+            .widthIn(max = (350 * scaleFactor).dp)
+            .fillMaxWidth(0.8f)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onStartClick
+            )
+    ) {
+        // --- Layer 1: animated background/container ONLY ---
+        // Scale is applied here and here alone.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .scale(containerScale)
+                .drawBehind {
+                    val cornerRadiusPx = 30.dp.toPx()
 
+                    // White rounded-rect fill
+                    drawRoundRect(
+                        color = Color.White,
+                        cornerRadius = CornerRadius(cornerRadiusPx)
+                    )
 
+                    // Animated dashed gradient border
+                    val strokeWidth = 3.dp.toPx()
+                    val inset = strokeWidth / 2
+                    val drawSize = Size(size.width - strokeWidth, size.height - strokeWidth)
+                    val actualRadius = cornerRadiusPx - inset
+                    val perimeter =
+                        2 * (drawSize.width + drawSize.height) + (2 * PI.toFloat() - 8) * actualRadius
+                    val gapLength = 100f
+                    val dashLength = perimeter - gapLength
+                    val phase = borderRotation * perimeter
+                    drawRoundRect(
+                        brush = Brush.linearGradient(
+                            colors = listOf(Color(0xFF4A90E2), Color(0xFFA173FA)),
+                            start = Offset.Zero,
+                            end = Offset(size.width, size.height)
+                        ),
+                        topLeft = Offset(inset, inset),
+                        size = drawSize,
+                        cornerRadius = CornerRadius(actualRadius),
+                        style = Stroke(
+                            width = strokeWidth,
+                            cap = StrokeCap.Round,
+                            join = StrokeJoin.Round,
+                            pathEffect = PathEffect.dashPathEffect(
+                                floatArrayOf(dashLength, gapLength),
+                                phase
+                            )
+                        )
+                    )
+                }
+        )
 
-
-
-
-
-
-
-
-
-
+        // --- Layer 2: text ONLY ---
+        // Sibling of the scaled background, never a child of it, so it is
+        // never scaled, clipped, repositioned, or distorted.
+        Text(
+            text = "Press to Start!",
+            fontSize = (20 * scaleFactor).sp,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = Kavoon,
+            color = Color(0xFF4A90E2)
+        )
+    }
+}
 
 @Preview(showBackground = true, name = "Loading Screen")
 @Composable

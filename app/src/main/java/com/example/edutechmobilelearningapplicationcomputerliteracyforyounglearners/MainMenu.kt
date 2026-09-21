@@ -111,7 +111,7 @@ fun ExitConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
                     .fillMaxWidth(0.85f)
                     .padding(24.dp),
                 shape = RoundedCornerShape(32.dp),
-                color = Color.White,
+                color = Color(0xFFFFFFFF),Color(0xFF4A90E2),
                 tonalElevation = 8.dp
             ) {
                 Column(
@@ -135,7 +135,7 @@ fun ExitConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
                         fontFamily = Kavoon,
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4A90E2),
+                        color = Color(0xFFA173FA),
                         textAlign = TextAlign.Center,
                         lineHeight = 34.sp
                     )
@@ -145,7 +145,8 @@ fun ExitConfirmationDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
                     Text(
                         text = "Come back soon to learn more!",
                         fontSize = 16.sp,
-                        color = Color.Gray,
+                        fontFamily = Kavoon,
+                        color = Color.LightGray,
                         textAlign = TextAlign.Center
                     )
 

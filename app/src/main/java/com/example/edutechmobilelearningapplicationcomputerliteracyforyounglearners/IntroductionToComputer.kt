@@ -2,6 +2,7 @@ package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglear
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -20,6 +21,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -29,11 +35,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.annotation.OptIn
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.EduTechMobileLearningApplicationComputerLiteracyForYoungLearnersTheme
 import com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners.ui.theme.Kavoon
@@ -64,7 +75,7 @@ fun IntroductionToComputerScreen(
  */
 @Composable
 fun IntroductionToComputerContent(
-    onBackClick: () -> Unit, 
+    onBackClick: () -> Unit,
     onCloseAssessment: () -> Unit = {},
     onCheckProgressClick: () -> Unit = {},
     onMarkCompleted: () -> Unit,
@@ -159,8 +170,8 @@ fun IntroductionToComputerContent(
                         ) {
                             VideoPlayer(
                                 videoResId = R.raw.introductiontocomputer,
-                                onVideoFinished = { 
-                                    isVideoFinished = true 
+                                onVideoFinished = {
+                                    isVideoFinished = true
                                 }
                             )
                         }
@@ -223,43 +234,24 @@ fun IntroductionToComputerContent(
 }
 
 /**
- * A reusable Video Player component using Media3 ExoPlayer with landscape fullscreen support.
+ * A reusable Video Player component using Media3 ExoPlayer.
+ *
+ * Fullscreen is rendered in its own Dialog window so it is not constrained by the
+ * parent's width/padding/scroll layout (that was why "fullscreen" previously looked
+ * like a small centered block instead of truly filling the screen).
+ *
+ * Playback is tied to the host lifecycle and to this composable's presence in the
+ * composition, so navigating away (or the app going to background) reliably stops
+ * audio instead of leaving it playing in the background.
  */
 @Composable
 fun VideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
     val context = LocalContext.current
     val isInspectionMode = LocalInspectionMode.current
     val currentOnVideoFinished by rememberUpdatedState(onVideoFinished)
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     var isFullscreen by remember { mutableStateOf(false) }
-
-    // Orientation and system UI logic
-    DisposableEffect(isFullscreen) {
-        val activity = context as? Activity
-        val window = activity?.window
-        if (activity != null && window != null) {
-            val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-            if (isFullscreen) {
-                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                insetsController.hide(WindowInsetsCompat.Type.systemBars())
-                insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            } else {
-                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-                insetsController.show(WindowInsetsCompat.Type.systemBars())
-            }
-        }
-        onDispose {
-            if (isFullscreen) {
-                val activityDispose = context as? Activity
-                val windowDispose = activityDispose?.window
-                activityDispose?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-                if (windowDispose != null) {
-                    WindowCompat.getInsetsController(windowDispose, windowDispose.decorView)
-                        .show(WindowInsetsCompat.Type.systemBars())
-                }
-            }
-        }
-    }
 
     if (isInspectionMode) {
         Box(
@@ -299,16 +291,33 @@ fun VideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
         }
     }
 
-    // BGM Management: Video Playback & Fullscreen
     val isPlaying = remember { mutableStateOf(false) }
-    
+
+    // Pause playback whenever the host Activity/screen goes into the background
+    // (app backgrounded, screen turned off, etc.) so audio never keeps running silently.
+    DisposableEffect(lifecycleOwner, exoPlayer) {
+        val lifecycleObserver = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
+                exoPlayer.pause()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+        }
+    }
+
+    // Player listener + guaranteed stop/release when this composable leaves the
+    // composition (i.e. the user navigates away from this lesson screen). This is
+    // what fixes audio continuing to play after leaving the tab, and also ensures a
+    // fresh player is created (no duplicate/overlapping audio) if the lesson is reopened.
     DisposableEffect(exoPlayer) {
         val listener = object : Player.Listener {
             override fun onIsPlayingChanged(playing: Boolean) {
                 isPlaying.value = playing
                 BGMManager.setForcedSilence(playing || isFullscreen)
             }
-            
+
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
                     currentOnVideoFinished()
@@ -318,6 +327,9 @@ fun VideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
         exoPlayer.addListener(listener)
         onDispose {
             exoPlayer.removeListener(listener)
+            exoPlayer.pause()
+            exoPlayer.stop()
+            exoPlayer.clearMediaItems()
             exoPlayer.release()
             BGMManager.setForcedSilence(false)
         }
@@ -327,39 +339,140 @@ fun VideoPlayer(videoResId: Int, onVideoFinished: () -> Unit) {
         BGMManager.setForcedSilence(isPlaying.value || isFullscreen)
     }
 
-    Box(
-        modifier = if (isFullscreen) {
-            Modifier.fillMaxSize().background(Color.Black)
-        } else {
-            Modifier.widthIn(max = 750.dp).fillMaxWidth().aspectRatio(16 / 9f).clip(RoundedCornerShape(12.dp))
+    // Orientation + system bars for fullscreen, applied to the underlying Activity window
+    // (the fullscreen Dialog sits above it, but hiding bars here keeps them hidden while
+    // the dialog is open and restores them correctly when it closes).
+    DisposableEffect(isFullscreen) {
+        val activity = context as? Activity
+        val window = activity?.window
+        if (activity != null && window != null) {
+            val insetsController = WindowCompat.getInsetsController(window, window.decorView)
+            if (isFullscreen) {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                insetsController.hide(WindowInsetsCompat.Type.systemBars())
+                insetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            } else {
+                activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                insetsController.show(WindowInsetsCompat.Type.systemBars())
+            }
         }
-    ) {
-        AndroidView(
-            factory = {
-                PlayerView(context).apply {
-                    player = exoPlayer
-                    useController = true
-                    setBackgroundColor(android.graphics.Color.BLACK)
+        onDispose {
+            if (isFullscreen) {
+                val activityDispose = context as? Activity
+                val windowDispose = activityDispose?.window
+                activityDispose?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+                if (windowDispose != null) {
+                    WindowCompat.getInsetsController(windowDispose, windowDispose.decorView)
+                        .show(WindowInsetsCompat.Type.systemBars())
                 }
-            },
-            modifier = Modifier.fillMaxSize()
-        )
-
-        IconButton(
-            onClick = { isFullscreen = !isFullscreen },
-            modifier = Modifier.align(Alignment.TopEnd).padding(if (isFullscreen) 16.dp else 8.dp)
-        ) {
-            Icon(
-                imageVector = if (isFullscreen) {
-                    Icons.Default.FullscreenExit
-                } else {
-                    Icons.Default.Fullscreen
-                },
-                contentDescription = if (isFullscreen) "Exit Fullscreen" else "Enter Fullscreen",
-                tint = Color.White
-            )
+            }
         }
     }
+
+    // --- Inline (non-fullscreen) player, same size/position as before ---
+    if (!isFullscreen) {
+        Box(
+            modifier = Modifier
+                .widthIn(max = 750.dp)
+                .fillMaxWidth()
+                .aspectRatio(16 / 9f)
+                .clip(RoundedCornerShape(12.dp))
+        ) {
+            PlayerSurface(
+                exoPlayer = exoPlayer,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            IconButton(
+                onClick = { isFullscreen = true },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Fullscreen,
+                    contentDescription = "Enter Fullscreen",
+                    tint = Color.White
+                )
+            }
+        }
+    }
+
+    // --- True fullscreen player, rendered in its own full-screen Dialog window so it
+    // is never constrained by the lesson layout's max width, padding, or scroll container ---
+    if (isFullscreen) {
+        Dialog(
+            onDismissRequest = { isFullscreen = false },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false
+            )
+        ) {
+            val dialogWindow = (LocalView.current.parent as? DialogWindowProvider)?.window
+            SideEffect {
+                dialogWindow?.let { window ->
+                    window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                    WindowCompat.setDecorFitsSystemWindows(window, false)
+                    val controller = WindowCompat.getInsetsController(window, window.decorView)
+                    controller.hide(WindowInsetsCompat.Type.systemBars())
+                    controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                // fillMaxSize + RESIZE_MODE_FIT letterboxes instead of stretching/cropping,
+                // so the video's real aspect ratio is preserved edge-to-edge.
+                PlayerSurface(
+                    exoPlayer = exoPlayer,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                IconButton(
+                    onClick = { isFullscreen = false },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.FullscreenExit,
+                        contentDescription = "Exit Fullscreen",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Thin AndroidView wrapper around PlayerView, shared by the inline and fullscreen
+ * layouts so both attach to the same single ExoPlayer instance (no duplicate players,
+ * no overlapping audio).
+ */
+@OptIn(markerClass = [UnstableApi::class])
+@Composable
+private fun PlayerSurface(exoPlayer: ExoPlayer, modifier: Modifier = Modifier) {
+    AndroidView(
+        factory = { ctx ->
+            PlayerView(ctx).apply {
+                player = exoPlayer
+                useController = true
+                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT
+                setBackgroundColor(android.graphics.Color.BLACK)
+            }
+        },
+        update = { view ->
+            view.player = exoPlayer
+        },
+        onRelease = { view ->
+            view.player = null
+        },
+        modifier = modifier
+    )
 }
 
 @Composable
