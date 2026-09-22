@@ -97,9 +97,9 @@ fun DashboardAppNavigator() {
             "main_menu" -> MainMenuScreen(
                 bgmVolume = BGMManager.baseVolume,
                 onBgmVolumeChange = { BGMManager.baseVolume = it; BGMManager.applyVolume() },
-                onCoursesClick = { screenState = "computer_grades" }
+                onCoursesClick = { screenState = "Course" }
             )
-            "computer_grades" -> ComputerGradesScreen(
+            "Course" -> ComputerGradesScreen(
                 onBackClick = { screenState = "main_menu" }
             )
         }

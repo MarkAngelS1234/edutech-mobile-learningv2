@@ -145,6 +145,13 @@ fun GameBackground(content: @Composable BoxScope.() -> Unit) {
  * of the game, and computes a single [scaleFactor] used to proportionally scale
  * every child composable's sizing so the layout adapts to different screen widths.
  *
+ * `totalScore` is the single source of truth for the player's running score for
+ * the entire game session. It is only ever reset to 0 when a brand-new game is
+ * started (either from the intro screen's "Start Game" button, or by pressing
+ * "Play Again" on the Game Over screen) — it is threaded through both phases as
+ * a `startingScore` and never reset when moving between questions, sub-screens,
+ * or phases.
+ *
  * @param onBackClick        Called when the player backs out of the game entirely.
  * @param viewModel          Optional course view model used to persist the final score.
  * @param initialState       Which game state to start in (mainly used by @Preview functions).
@@ -163,7 +170,9 @@ fun ConnectThePairsGameScreen(
     val context = LocalContext.current
     // gameState drives which phase/screen is currently shown; survives process death via rememberSaveable.
     var gameState by rememberSaveable { mutableStateOf(initialState) }
-    // totalScore accumulates points across both phases.
+    // totalScore accumulates points across both phases and every sub-screen. This is the ONLY
+    // place the score is ever reset to 0 (starting a brand-new game) — every phase/sub-screen
+    // below only ever adds to it, it never resets it on its own.
     var totalScore by rememberSaveable { mutableIntStateOf(initialScore) }
 
     // Android Studio's @Preview renderer can't provide a real ViewModel, so we skip it in inspection mode.
@@ -180,7 +189,7 @@ fun ConnectThePairsGameScreen(
             GameQuestion(3, "Mouse", "POINT & CLICK", 1),
             GameQuestion(4, "Speakers", "HEAR", 1),
             GameQuestion(5, "Printer", "PRINT", 1),
-            GameQuestion(6, "CPU", "PROCESS", 1),
+            GameQuestion(6, "CPU", "BRAIN", 1),
         )
     }
 
@@ -246,7 +255,8 @@ fun ConnectThePairsGameScreen(
                         // --- Intro screen: title, "How to Play" panel, Back/Start buttons ---
                         "intro" -> GameIntro(
                             onStart = {
-                                // Re-shuffle both pools and reset score every time a new game starts.
+                                // Re-shuffle both pools and reset score every time a NEW game starts.
+                                // This is the only place score is reset outside of "Play Again".
                                 randomizedP1 = phase1FullPool.shuffled()
                                 randomizedP2 = phase2FullPool.shuffled()
                                 totalScore = 0
@@ -258,8 +268,11 @@ fun ConnectThePairsGameScreen(
                         // --- Phase 1: draw a line from each picture to its matching purpose ---
                         "line_matching" -> LineMatchingPhase(
                             questions = randomizedP1,
-                            onComplete = { score ->
-                                totalScore += score
+                            startingScore = totalScore,
+                            onComplete = { newScore ->
+                                // newScore is the full running total (startingScore + everything earned
+                                // in Phase 1) — never a delta — so we can just store it directly.
+                                totalScore = newScore
                                 gameState = "drag_drop"
                             },
                             initialScreenIndex = initialScreenIndex,
@@ -268,10 +281,10 @@ fun ConnectThePairsGameScreen(
                         // --- Phase 2: drag each app icon onto its matching usage box ---
                         "drag_drop" -> DragDropPhase(
                             questions = randomizedP2,
-                            onComplete = { score ->
-                                // Phase 2 completion grants a flat +1 bonus point on top of the raw score.
-                                val phase2ScoreWithBonus = score + 1
-                                totalScore += phase2ScoreWithBonus
+                            startingScore = totalScore,
+                            onComplete = { newScore ->
+                                // Phase 2 completion grants a flat +1 bonus point on top of the running total.
+                                totalScore = newScore + 1
                                 // Persist the final score back to the hosting course/view model.
                                 realViewModel?.updateGameScore("Match and Learn", totalScore)
                                 gameState = "game_over"
@@ -283,6 +296,8 @@ fun ConnectThePairsGameScreen(
                         "game_over" -> GameOverScreen(
                             score = totalScore,
                             onRestart = {
+                                // Starting a brand-new game: this is the only other place the
+                                // score is reset to 0.
                                 totalScore = 0
                                 gameState = "intro"
                             },
@@ -374,108 +389,172 @@ fun InstructionExpandableButton(scaleFactor: Float = 1f) {
     // Tracks the scroll position of the expanded content (instructions + divider + video).
     val expandedScrollState = rememberScrollState()
 
-    Surface(
-        onClick = { expanded = !expanded },
-        shape = RoundedCornerShape((24 * scaleFactor).dp),
-        color = Color.White.copy(alpha = 0.95f),
-        border = BorderStroke((4 * scaleFactor).dp, Color(0xFF9575CD)), // Golden cartoon border
-        modifier = Modifier
-            .fillMaxWidth(0.85f)
-            // Smoothly animates the Surface's own height as it expands/collapses.
-            .animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
-        shadowElevation = 0.dp
+    // Outer Box is sized to exactly match the button's own footprint (same fillMaxWidth(0.85f)
+    // the Surface always had), so the button's own size/position within its parent is completely
+    // unchanged. The "Tap!" hint is rendered as a sibling of the Surface, aligned to its right
+    // edge and then pushed further out via .offset(), which does not affect layout sizing — so
+    // it sits outside the button without shifting the button itself in any way.
+    Box(
+        modifier = Modifier.fillMaxWidth(0.85f),
+        contentAlignment = Alignment.CenterEnd
     ) {
-        Column(
-            modifier = Modifier.padding((20 * scaleFactor).dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Surface(
+            onClick = { expanded = !expanded },
+            shape = RoundedCornerShape((24 * scaleFactor).dp),
+            color = Color.White.copy(alpha = 0.95f),
+            border = BorderStroke((4 * scaleFactor).dp, Color(0xFF9575CD)), // Golden cartoon border
+            modifier = Modifier
+                .fillMaxWidth()
+                // Smoothly animates the Surface's own height as it expands/collapses.
+                .animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)),
+            shadowElevation = 0.dp
         ) {
-            // The always-visible header/toggle row ("How to Play? 💡" <-> "Got it! 👍").
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+            Column(
+                modifier = Modifier.padding((20 * scaleFactor).dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = if (expanded) "Got it! 👍" else "How to Play? 💡",
-                    fontFamily = Kavoon,
-                    fontSize = (24 * scaleFactor).sp,
-                    color = Color(0xFF9575CD)
-                )
-            }
-
-            if (expanded) {
-                // Scrolling is isolated to this row: the header above, the Back / Start Game
-                // buttons below and every other screen stay exactly where they are.
+                // The always-visible header/toggle row ("How to Play? 💡" <-> "Got it! 👍").
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = maxExpandedHeight),
-                    verticalAlignment = Alignment.Top
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    // Box lets us overlay the "Scroll Down" cue on top of the scrollable column below.
-                    Box(modifier = Modifier.weight(1f)) {
-                        // The actual scrollable content: instruction rows -> divider -> video.
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .verticalScroll(expandedScrollState),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
-                            // Three instruction rows explaining the two phases and scoring.
+                    Text(
+                        text = if (expanded) "Got it! 👍" else "How to Play? 💡",
+                        fontFamily = Kavoon,
+                        fontSize = (24 * scaleFactor).sp,
+                        color = Color(0xFF9575CD)
+                    )
+                }
+
+                if (expanded) {
+                    // Scrolling is isolated to this row: the header above, the Back / Start Game
+                    // buttons below and every other screen stay exactly where they are.
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = maxExpandedHeight),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        // Box lets us overlay the "Scroll Down" cue on top of the scrollable column below.
+                        Box(modifier = Modifier.weight(1f)) {
+                            // The actual scrollable content: instruction rows -> divider -> video.
                             Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy((12 * scaleFactor).dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .verticalScroll(expandedScrollState),
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                InstructionRow("✏️", "1: Match Lines", "Draw lines from the object to its purpose!", scaleFactor)
-                                InstructionRow("🎯", "2: Drag & Drop", "Drag the app icon to the correct usage box!", scaleFactor)
-                                InstructionRow("✨", "Score Big!", "2 points for every correct match + 1 Bonus points!", scaleFactor)
+                                Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
+                                // Three instruction rows explaining the two phases and scoring.
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy((12 * scaleFactor).dp)
+                                ) {
+                                    InstructionRow("✏️", "1: Match Lines", "Draw lines from the object to its purpose!", scaleFactor)
+                                    InstructionRow("🎯", "2: Drag & Drop", "Drag the app icon to the correct usage box!", scaleFactor)
+                                    InstructionRow("✨", "Score Big & Finish the Game!", "2 points for every correct match + 1 Bonus points!", scaleFactor)
+                                }
+
+                                // Divider directly below the instruction text
+                                Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
+                                HorizontalDivider(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    thickness = (2 * scaleFactor).dp,
+                                    color = Color(0xFF9575CD).copy(alpha = 0.3f)
+                                )
+
+                                // Instruction video directly below the divider, centered
+                                Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
+                                InstructionVideoPlayer(scaleFactor = scaleFactor)
+                                // Extra bottom breathing room so the bouncing cue never sits on top of the video
+                                Spacer(modifier = Modifier.height((44 * scaleFactor).dp))
                             }
 
-                            // Divider directly below the instruction text
-                            Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
-                            HorizontalDivider(
-                                modifier = Modifier.fillMaxWidth(),
-                                thickness = (2 * scaleFactor).dp,
-                                color = Color(0xFF9575CD).copy(alpha = 0.3f)
-                            )
-
-                            // Instruction video directly below the divider, centered
-                            Spacer(modifier = Modifier.height((16 * scaleFactor).dp))
-                            InstructionVideoPlayer(scaleFactor = scaleFactor)
-                            // Extra bottom breathing room so the bouncing cue never sits on top of the video
-                            Spacer(modifier = Modifier.height((44 * scaleFactor).dp))
+                            // Bouncing "Scroll Down" cue: only shown while the content is still
+                            // at (or very near) the top. As soon as the user scrolls toward the
+                            // video it fades out, and it fades back in if they scroll back up.
+                            val nearTopThresholdPx = with(LocalDensity.current) { (24 * scaleFactor).dp.toPx() }
+                            val isNearTop = expandedScrollState.maxValue > 0 &&
+                                    expandedScrollState.value <= nearTopThresholdPx
+                            // Fully-qualified to avoid ambiguity with the RowScope.AnimatedVisibility
+                            // overload that is also in scope because this Box sits inside a Row.
+                            androidx.compose.animation.AnimatedVisibility(
+                                visible = isNearTop,
+                                enter = fadeIn(animationSpec = tween(300)),
+                                exit = fadeOut(animationSpec = tween(300)),
+                                modifier = Modifier.align(Alignment.BottomCenter)
+                            ) {
+                                ScrollDownCue(scaleFactor = scaleFactor)
+                            }
                         }
 
-                        // Bouncing "Scroll Down" cue: only shown while the content is still
-                        // at (or very near) the top. As soon as the user scrolls toward the
-                        // video it fades out, and it fades back in if they scroll back up.
-                        val nearTopThresholdPx = with(LocalDensity.current) { (24 * scaleFactor).dp.toPx() }
-                        val isNearTop = expandedScrollState.maxValue > 0 &&
-                                expandedScrollState.value <= nearTopThresholdPx
-                        // Fully-qualified to avoid ambiguity with the RowScope.AnimatedVisibility
-                        // overload that is also in scope because this Box sits inside a Row.
-                        androidx.compose.animation.AnimatedVisibility(
-                            visible = isNearTop,
-                            enter = fadeIn(animationSpec = tween(300)),
-                            exit = fadeOut(animationSpec = tween(300)),
-                            modifier = Modifier.align(Alignment.BottomCenter)
-                        ) {
-                            ScrollDownCue(scaleFactor = scaleFactor)
-                        }
+                        Spacer(modifier = Modifier.width((10 * scaleFactor).dp))
+
+                        // Thin cartoon-styled scrollbar showing scroll position within the panel.
+                        CartoonScrollBar(
+                            scrollState = expandedScrollState,
+                            scaleFactor = scaleFactor,
+                            modifier = Modifier.fillMaxHeight()
+                        )
                     }
-
-                    Spacer(modifier = Modifier.width((10 * scaleFactor).dp))
-
-                    // Thin cartoon-styled scrollbar showing scroll position within the panel.
-                    CartoonScrollBar(
-                        scrollState = expandedScrollState,
-                        scaleFactor = scaleFactor,
-                        modifier = Modifier.fillMaxHeight()
-                    )
                 }
             }
         }
+
+        // "Tap!" hint: sits outside the button (a sibling of the Surface, not inside it), so it
+        // cannot receive clicks and cannot affect the button's onClick, size, style, or position
+        // in any way. Shown only while the panel is collapsed — once expanded there's nothing
+        // left to prompt the player to tap. Fades in while drifting upward, fades out, and loops
+        // continuously and smoothly for as long as the panel stays collapsed.
+        if (!expanded) {
+            TapHintText(
+                scaleFactor = scaleFactor,
+                modifier = Modifier.offset(x = (28 * scaleFactor).dp)
+            )
+        }
     }
+}
+
+/**
+ * A small looping "Tap!" hint shown just outside the right edge of the "How to
+ * Play?" button, nudging the player to tap it. Continuously fades in while
+ * drifting upward, fades back out, then repeats — a single smooth cycle with
+ * no discontinuity, since the text is fully transparent at both the start and
+ * end of each loop. Purely decorative: it is not part of the button itself,
+ * has no click handling, and never touches the button's own state or layout.
+ */
+@Composable
+fun TapHintText(scaleFactor: Float = 1f, modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition(label = "tapHint")
+    // A single 0f->1f cycle drives both the fade and the upward drift together:
+    // alpha rises then falls (peaking at the midpoint) while translation climbs
+    // steadily upward, so the hint is invisible at both ends of the loop and the
+    // repeat is seamless.
+    val cycle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1600, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "tapHintCycle"
+    )
+    // Fade in over the first half of the cycle, fade out over the second half.
+    val hintAlpha = if (cycle < 0.5f) cycle / 0.5f else 1f - (cycle - 0.5f) / 0.5f
+    // Drifts steadily upward for the whole cycle.
+    val hintTranslateY = -(18 * scaleFactor) * cycle
+
+    Text(
+        text = "Tap!",
+        fontFamily = Kavoon,
+        fontWeight = FontWeight.Bold,
+        fontSize = (16 * scaleFactor).sp,
+        color = Color.Yellow,
+        modifier = modifier.graphicsLayer {
+            alpha = hintAlpha
+            translationY = hintTranslateY
+        }
+    )
 }
 
 /**
@@ -701,15 +780,29 @@ fun InstructionRow(emoji: String, title: String, desc: String, scaleFactor: Floa
 
 /**
  * Wraps [LineMatchingView] and manages progression across Phase 1's two
- * sub-screens (3 questions each), accumulating the phase's total score before
- * calling [onComplete].
+ * sub-screens (3 questions each).
+ *
+ * `startingScore` is the running total the whole game session already has when
+ * this phase begins (e.g. 0 for a fresh game). Each sub-screen's [LineMatchingView]
+ * starts its own on-screen score counter from that running total, and
+ * `onScreenComplete` always hands back the NEW running total (never a per-screen
+ * delta) — this phase just forwards that total along as sub-screens advance and
+ * reports it to [onComplete] once both sub-screens are done. The score is never
+ * reset here.
  */
 @Composable
-fun LineMatchingPhase(questions: List<GameQuestion>, onComplete: (Int) -> Unit, initialScreenIndex: Int = 0, scaleFactor: Float = 1f) {
+fun LineMatchingPhase(
+    questions: List<GameQuestion>,
+    startingScore: Int,
+    onComplete: (Int) -> Unit,
+    initialScreenIndex: Int = 0,
+    scaleFactor: Float = 1f
+) {
     // Which of the two 3-question sub-screens is currently active (0 or 1).
     var screenIndex by remember { mutableIntStateOf(initialScreenIndex) }
-    // Running total across both sub-screens of this phase.
-    var totalScoreP1 by remember { mutableIntStateOf(0) }
+    // The running total score for the whole game, carried across sub-screens.
+    // Starts from whatever the game's total already was when this phase began.
+    var runningScore by remember { mutableIntStateOf(startingScore) }
 
     // Slice out the 3 questions belonging to the current sub-screen.
     val currentBatch = remember(screenIndex, questions) {
@@ -717,19 +810,24 @@ fun LineMatchingPhase(questions: List<GameQuestion>, onComplete: (Int) -> Unit, 
         questions.subList(start, (start + 3).coerceAtMost(questions.size))
     }
 
-    // `key(currentBatch)` forces LineMatchingView to fully reset its internal state
-    // (active index, timer, matched pairs, etc.) whenever the batch of questions changes.
+    // `key(currentBatch)` forces LineMatchingView to fully reset its internal gameplay state
+    // (active index, timer, matched pairs, etc.) whenever the batch of questions changes —
+    // but its displayed score still starts from `runningScore`, so the score itself is
+    // never reset when moving to the next sub-screen.
     key(currentBatch) {
         LineMatchingView(
             questions = currentBatch,
             screenTitle = "Phase 1: Line Matching (${screenIndex + 1}/2)",
-            onScreenComplete = { score ->
-                totalScoreP1 += score
+            startingScore = runningScore,
+            onScreenComplete = { newScore ->
+                // newScore already includes everything earned so far (it started at
+                // runningScore), so it IS the new running total.
+                runningScore = newScore
                 if ((screenIndex + 1) * 3 >= questions.size) {
-                    // All sub-screens finished: report the phase's total score.
-                    onComplete(totalScoreP1)
+                    // All sub-screens finished: report the running total to the phase's caller.
+                    onComplete(runningScore)
                 } else {
-                    // Advance to the next 3-question sub-screen.
+                    // Advance to the next 3-question sub-screen; score carries over untouched.
                     screenIndex++
                 }
             },
@@ -741,8 +839,14 @@ fun LineMatchingPhase(questions: List<GameQuestion>, onComplete: (Int) -> Unit, 
 /**
  * Phase 1 gameplay screen: the player drags a finger from a picture card to
  * its matching purpose button to "draw a line" connecting them. Each question
- * has a 10-second timer; a wrong match or a timeout both advance to the next
+ * has a 30-second timer; a wrong match or a timeout both advance to the next
  * question after a short feedback flash.
+ *
+ * `startingScore` seeds the on-screen `score` counter so it continues counting
+ * up from the game's existing running total instead of restarting at 0 every
+ * time this composable is recreated for a new sub-screen — `score` is only ever
+ * incremented from there, never reset, and `onScreenComplete` reports it back
+ * as the new running total.
  *
  * LAYOUT NOTE: the width/height-constrained gameplay `Column` below (capped at
  * 1100dp wide, matching Phase 2's DragDropView) is only for the cards/canvas/
@@ -753,21 +857,35 @@ fun LineMatchingPhase(questions: List<GameQuestion>, onComplete: (Int) -> Unit, 
  * DragDropView exactly and is what makes the Phase 1 "Wrong!"/"Time's up!"
  * overlay cover the *entire* screen — same size, alignment and spacing as
  * Phase 2 — instead of being confined to the header-minus, width-capped block.
+ *
+ * CONCURRENCY NOTE: `feedback` doubles as a simple mutual-exclusion flag
+ * between two coroutines that can both try to "finish" the active question:
+ * (1) the per-question countdown timer below, and (2) the drag gesture's
+ * `onDragEnd` callback. Both only act when `feedback == null`, and both are
+ * responsible for eventually setting it back to null after their own delay.
+ * Without this guard, a drag that completes correctly in the brief window
+ * after the timer has already fired "Time's up!" would advance `activeIdx`
+ * itself; since the timer's own coroutine is keyed on `activeIdx`, that
+ * change cancels it mid-`delay()`, before it ever resets `feedback` to null
+ * — leaving the "Time's up!" overlay stuck on screen forever (the timer text
+ * frozen, and no further drag able to start), with no way to exit the phase.
  */
 @Composable
 fun LineMatchingView(
     questions: List<GameQuestion>,
     screenTitle: String,
+    startingScore: Int = 0,
     onScreenComplete: (Int) -> Unit,
     isTimerEnabled: Boolean = !LocalInspectionMode.current,
     scaleFactor: Float = 1f
 ) {
     // Index of the question currently being answered.
     var activeIdx by remember { mutableIntStateOf(0) }
-    // Countdown timer (seconds) for the active question.
-    var timeLeft by remember { mutableIntStateOf(10) }
-    // Running score for this sub-screen.
-    var score by remember { mutableIntStateOf(0) }
+    // Countdown timer (seconds) for the active question. 30 seconds per question.
+    var timeLeft by remember { mutableIntStateOf(30) }
+    // Running score, seeded from the game's existing total and only ever added to —
+    // never reset except when a whole new game starts (handled at the top level).
+    var score by remember { mutableIntStateOf(startingScore) }
     // Transient feedback message + color (e.g. "Wrong!" in red), shown briefly then cleared.
     var feedback by remember { mutableStateOf<Pair<String, Color>?>(null) }
     val scope = rememberCoroutineScope()
@@ -813,7 +931,7 @@ fun LineMatchingView(
     // Per-question countdown timer. Restarts whenever `activeIdx` (or the question set) changes.
     LaunchedEffect(activeIdx, questions) {
         if (!isTimerEnabled) return@LaunchedEffect
-        timeLeft = 10
+        timeLeft = 30
         while (timeLeft > 0) {
             delay(1000)
             if (feedback == null) timeLeft--
@@ -822,6 +940,10 @@ fun LineMatchingView(
             // Ran out of time: mark this question wrong and move on after a short pause.
             feedback = "Time's up!" to Color.Gray
             results[activeIdx] = false
+            // Cancel any drag that's still in progress so it can't be completed after the
+            // fact (see the CONCURRENCY NOTE above) and so the dashed line doesn't linger.
+            startPos = null
+            currentDragPos = null
             delay(1000)
             feedback = null
             if (activeIdx < questions.size - 1) activeIdx++ else onScreenComplete(score)
@@ -873,8 +995,12 @@ fun LineMatchingView(
                     }
                 },
                 onDragEnd = {
-                    // On release, find the nearest target within range and check if it's correct.
-                    if (startPos != null && currentDragPos != null) {
+                    // Only score/advance the question if nothing has already resolved it (e.g.
+                    // the timer firing "Time's up!" while this drag was still in flight). If we
+                    // let this proceed after that, it would race with the timeout coroutine's
+                    // own advance and could leave `feedback` stuck non-null forever, freezing
+                    // the screen with no way to exit. See the CONCURRENCY NOTE on this function.
+                    if (feedback == null && startPos != null && currentDragPos != null) {
                         var foundTargetIdx: Int? = null
                         var closestDist = Float.MAX_VALUE
                         val threshold = with(density) { 95.dp.toPx() * scaleFactor }
@@ -889,7 +1015,8 @@ fun LineMatchingView(
                         if (foundTargetIdx != null) {
                             val targetIdx = foundTargetIdx!!
                             if (targets[targetIdx] == questions[activeIdx].target) {
-                                // Correct match: award points, record the permanent line, advance.
+                                // Correct match: award points (added to the running score, never
+                                // reset), record the permanent line, advance.
                                 score += 2
                                 results[activeIdx] = true
                                 matchedPairs.add(activeIdx to targetIdx)
@@ -900,6 +1027,7 @@ fun LineMatchingView(
                                 }
                             } else {
                                 // Wrong match: flash feedback, mark wrong, advance after a short delay.
+                                // Score is untouched — it never decreases and never resets on a wrong answer.
                                 feedback = "Wrong!" to Color(0xFFEF5350)
                                 results[activeIdx] = false
                                 scope.launch {
@@ -995,15 +1123,25 @@ fun LineMatchingView(
 
 /**
  * Wraps [DragDropView] and manages progression across Phase 2's two
- * sub-screens (3 questions each), accumulating the phase's total score before
- * calling [onComplete].
+ * sub-screens (3 questions each).
+ *
+ * Same running-total contract as [LineMatchingPhase]: `startingScore` is the
+ * game's existing total when Phase 2 begins, every sub-screen's on-screen score
+ * counts up from there, and `onComplete` reports the final running total — the
+ * score itself is never reset here.
  */
 @Composable
-fun DragDropPhase(questions: List<GameQuestion>, onComplete: (Int) -> Unit, initialScreenIndex: Int = 0, scaleFactor: Float = 1f) {
+fun DragDropPhase(
+    questions: List<GameQuestion>,
+    startingScore: Int,
+    onComplete: (Int) -> Unit,
+    initialScreenIndex: Int = 0,
+    scaleFactor: Float = 1f
+) {
     // Which of the two 3-question sub-screens is currently active (0 or 1).
     var screenIndex by remember { mutableIntStateOf(initialScreenIndex) }
-    // Running total across both sub-screens of this phase.
-    var totalScoreP2 by remember { mutableIntStateOf(0) }
+    // The running total score for the whole game, carried across sub-screens.
+    var runningScore by remember { mutableIntStateOf(startingScore) }
 
     // Slice out the 3 questions belonging to the current sub-screen.
     val currentBatch = remember(screenIndex, questions) {
@@ -1011,19 +1149,21 @@ fun DragDropPhase(questions: List<GameQuestion>, onComplete: (Int) -> Unit, init
         questions.subList(start, (start + 3).coerceAtMost(questions.size))
     }
 
-    // `key(currentBatch)` forces DragDropView to fully reset its internal state whenever
-    // the batch of questions changes (new sub-screen).
+    // `key(currentBatch)` forces DragDropView to fully reset its internal gameplay state
+    // whenever the batch of questions changes (new sub-screen) — but its score still
+    // starts from `runningScore`, so the score itself carries over unchanged.
     key(currentBatch) {
         DragDropView(
             questions = currentBatch,
             screenTitle = "Phase 2: Drag and Drop (${screenIndex + 1}/2)",
-            onScreenComplete = { score ->
-                totalScoreP2 += score
+            startingScore = runningScore,
+            onScreenComplete = { newScore ->
+                runningScore = newScore
                 if ((screenIndex + 1) * 3 >= questions.size) {
-                    // All sub-screens finished: report the phase's total score.
-                    onComplete(totalScoreP2)
+                    // All sub-screens finished: report the running total to the phase's caller.
+                    onComplete(runningScore)
                 } else {
-                    // Advance to the next 3-question sub-screen.
+                    // Advance to the next 3-question sub-screen; score carries over untouched.
                     screenIndex++
                 }
             },
@@ -1034,24 +1174,34 @@ fun DragDropPhase(questions: List<GameQuestion>, onComplete: (Int) -> Unit, init
 
 /**
  * Phase 2 gameplay screen: the player physically drags an app-icon card onto
- * its matching usage box. Each question has a 10-second timer, mirroring
+ * its matching usage box. Each question has a 30-second timer, mirroring
  * [LineMatchingView]'s timing/feedback rules but with a real draggable card
  * instead of a drawn line.
+ *
+ * `startingScore` seeds the on-screen `score` counter the same way as
+ * [LineMatchingView] — it continues counting up from the game's existing
+ * running total and is only ever incremented, never reset.
+ *
+ * CONCURRENCY NOTE: same guard as [LineMatchingView] — `feedback` acts as a
+ * mutual-exclusion flag between the countdown timer and the card's drop
+ * callback, so a drop that completes right as time runs out can't race the
+ * timer's own advance-to-next-question logic and leave `feedback` stuck.
  */
 @Composable
 fun DragDropView(
     questions: List<GameQuestion>,
     screenTitle: String,
+    startingScore: Int = 0,
     onScreenComplete: (Int) -> Unit,
     isTimerEnabled: Boolean = !LocalInspectionMode.current,
     scaleFactor: Float = 1f
 ) {
     // Index of the question currently being answered.
     var activeIdx by remember { mutableIntStateOf(0) }
-    // Countdown timer (seconds) for the active question.
-    var timeLeft by remember { mutableIntStateOf(10) }
-    // Running score for this sub-screen.
-    var score by remember { mutableIntStateOf(0) }
+    // Countdown timer (seconds) for the active question. 30 seconds per question.
+    var timeLeft by remember { mutableIntStateOf(30) }
+    // Running score, seeded from the game's existing total and only ever added to.
+    var score by remember { mutableIntStateOf(startingScore) }
     // Transient feedback message + color (e.g. "Wrong!" in red).
     var feedback by remember { mutableStateOf<Pair<String, Color>?>(null) }
     val scope = rememberCoroutineScope()
@@ -1092,7 +1242,7 @@ fun DragDropView(
     // Per-question countdown timer. Restarts whenever `activeIdx` (or the question set) changes.
     LaunchedEffect(activeIdx, questions) {
         if (!isTimerEnabled) return@LaunchedEffect
-        timeLeft = 10
+        timeLeft = 30
         while (timeLeft > 0) {
             delay(1000)
             if (feedback == null) timeLeft--
@@ -1101,6 +1251,9 @@ fun DragDropView(
             // Ran out of time: mark this question wrong and move on after a short pause.
             feedback = "Time's up!" to Color.Gray
             results[activeIdx] = false
+            // Clear any live drag-hover state so nothing lingers once the card's gesture
+            // handling is guarded off below (see the CONCURRENCY NOTE on this function).
+            currentDragCenter = null
             delay(1000)
             feedback = null
             if (activeIdx < questions.size - 1) activeIdx++ else onScreenComplete(score)
@@ -1152,38 +1305,49 @@ fun DragDropView(
                                 idx == activeIdx -> {
                                     DraggableCard(q.item, containerPos, feedback != null, scaleFactor = scaleFactor, onDragMove = { currentDragCenter = it }) { dropCenter ->
                                         currentDragCenter = null
-                                        var closestIdx: Int? = null
-                                        var closestDist = Float.MAX_VALUE
-                                        val threshold = with(density) { 100.dp.toPx() * scaleFactor }
+                                        // Ignore the drop entirely if something has already resolved
+                                        // this question (e.g. the timer fired "Time's up!" while this
+                                        // drag was still in flight). Otherwise this can race with the
+                                        // timeout coroutine's own advance and leave `feedback` stuck
+                                        // non-null forever, freezing the screen. See CONCURRENCY NOTE.
+                                        if (feedback != null) {
+                                            false
+                                        } else {
+                                            var closestIdx: Int? = null
+                                            var closestDist = Float.MAX_VALUE
+                                            val threshold = with(density) { 100.dp.toPx() * scaleFactor }
 
-                                        // Find the nearest target within snapping distance of the drop point.
-                                        targetCenters.forEach { (tIdx, center) ->
-                                            val dist = (dropCenter - center).getDistance()
-                                            if (dist < threshold && dist < closestDist) {
-                                                closestDist = dist
-                                                closestIdx = tIdx
-                                            }
-                                        }
-
-                                        closestIdx?.let { tIdx ->
-                                            if (targets[tIdx] == q.target) {
-                                                // Correct drop: award points, mark the target matched, advance.
-                                                score += 2
-                                                results[idx] = true
-                                                matchedTargets.add(tIdx)
-                                                if (activeIdx < questions.size - 1) activeIdx++ else onScreenComplete(score)
-                                            } else {
-                                                // Wrong drop: flash feedback, mark wrong, advance after a short delay.
-                                                feedback = "Wrong!" to Color(0xFFEF5350)
-                                                results[idx] = false
-                                                scope.launch {
-                                                    delay(800)
-                                                    feedback = null
-                                                    if (activeIdx < questions.size - 1) activeIdx++ else onScreenComplete(score)
+                                            // Find the nearest target within snapping distance of the drop point.
+                                            targetCenters.forEach { (tIdx, center) ->
+                                                val dist = (dropCenter - center).getDistance()
+                                                if (dist < threshold && dist < closestDist) {
+                                                    closestDist = dist
+                                                    closestIdx = tIdx
                                                 }
                                             }
-                                            true // Consumed the drop; DraggableCard won't spring back.
-                                        } ?: false // No target found near the drop point; card springs back to origin.
+
+                                            closestIdx?.let { tIdx ->
+                                                if (targets[tIdx] == q.target) {
+                                                    // Correct drop: award points (added to the running score,
+                                                    // never reset), mark the target matched, advance.
+                                                    score += 2
+                                                    results[idx] = true
+                                                    matchedTargets.add(tIdx)
+                                                    if (activeIdx < questions.size - 1) activeIdx++ else onScreenComplete(score)
+                                                } else {
+                                                    // Wrong drop: flash feedback, mark wrong, advance after a short delay.
+                                                    // Score is untouched — it never decreases on a wrong answer.
+                                                    feedback = "Wrong!" to Color(0xFFEF5350)
+                                                    results[idx] = false
+                                                    scope.launch {
+                                                        delay(800)
+                                                        feedback = null
+                                                        if (activeIdx < questions.size - 1) activeIdx++ else onScreenComplete(score)
+                                                    }
+                                                }
+                                                true // Consumed the drop; DraggableCard won't spring back.
+                                            } ?: false // No target found near the drop point; card springs back to origin.
+                                        }
                                     }
                                 }
                                 // Already-answered question: show a static green (correct) or red (wrong) card.

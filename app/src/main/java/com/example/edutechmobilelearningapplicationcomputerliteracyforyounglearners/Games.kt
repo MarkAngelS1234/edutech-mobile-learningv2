@@ -57,7 +57,7 @@
             }
 
             "Find the Right One" -> {
-                ThinkAndChooseGameScreen(onBackClick = { activeGame = null })
+                FindTheRightOneGameScreen(onBackClick = { activeGame = null })
             }
 
             else -> {

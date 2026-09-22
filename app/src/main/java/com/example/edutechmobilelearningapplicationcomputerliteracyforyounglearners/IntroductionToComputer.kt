@@ -169,7 +169,7 @@ fun IntroductionToComputerContent(
                             contentAlignment = Alignment.Center
                         ) {
                             VideoPlayer(
-                                videoResId = R.raw.introductiontocomputer,
+                                videoResId = R.raw.introtocomputer,
                                 onVideoFinished = {
                                     isVideoFinished = true
                                 }
@@ -182,6 +182,7 @@ fun IntroductionToComputerContent(
                         Button(
                             onClick = { showAssessment = true },
                             enabled = isVideoFinished,
+
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFF48E6CCB),
                                 disabledContainerColor = Color(0xFFB0BEC5)

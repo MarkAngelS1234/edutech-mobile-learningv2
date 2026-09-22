@@ -76,7 +76,7 @@ private object ScrambleRepository {
     private val hard = listOf(
         ScrambleQuestion("COMPUTER", "RETUPMOC"),
         ScrambleQuestion("SMARTPHONE", "EPHONSMART"),
-        ScrambleQuestion("CENTRAL", "LARTCEN"),
+        ScrambleQuestion("PROCESS", "ROCESSP"),
         ScrambleQuestion("SYSTEM", "MYSTES"),
         ScrambleQuestion("MICROSOFT", "OSMICROFT"),
         ScrambleQuestion("CHROME", "MORCHE"),

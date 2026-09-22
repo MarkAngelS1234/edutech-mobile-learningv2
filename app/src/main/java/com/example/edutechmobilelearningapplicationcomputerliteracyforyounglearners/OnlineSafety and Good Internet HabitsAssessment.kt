@@ -1,5 +1,6 @@
 package com.example.edutechmobilelearningapplicationcomputerliteracyforyounglearners
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,7 +58,7 @@ fun OnlineSafetyAndGoodInternetHabitsAssessmentScreen(
     var showFeedback by remember { mutableStateOf(false) }
     var score by remember { mutableStateOf(scorePreview) }
     var isAssessmentFinished by remember { mutableStateOf(isFinishedPreview) }
-    
+
     // BGM Management: Assessment Mode
     DisposableEffect(Unit) {
         BGMManager.setForcedSilence(true)
@@ -64,6 +66,11 @@ fun OnlineSafetyAndGoodInternetHabitsAssessmentScreen(
             BGMManager.setForcedSilence(false)
         }
     }
+
+    // Orientation check — used only to nudge the "Check Answer" button upward
+    // in portrait mode. Landscape layout is intentionally left untouched.
+    val configuration = LocalConfiguration.current
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 
     val currentQuestion = internetSafetyQuestions[currentQuestionIndex]
 
@@ -118,235 +125,246 @@ fun OnlineSafetyAndGoodInternetHabitsAssessmentScreen(
             ) {
                 Box(modifier = Modifier.widthIn(max = 850.dp).fillMaxWidth().fillMaxHeight()) {
                     if (isAssessmentFinished) {
-                    LaunchedEffect(Unit) {
-                        realViewModel?.updateAssessmentScore(
-                            ProgressTracker.COURSE_SAFETY,
-                            score,
-                            internetSafetyQuestions.size
-                        )
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "Assessment Completed!",
-                            fontSize = 24.sp,
-                            fontFamily = Kavoon,
-                            color = primaryPurple,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "Your Score: $score / ${internetSafetyQuestions.size}",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(32.dp))
-                        Button(
-                            onClick = onCloseAssessment,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = primaryPurple,
-                                contentColor = Color.White
-                            ),
-                            shape = RoundedCornerShape(25.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp)
-                        ) {
-                            Text(text = "Back to Lesson", fontFamily = Kavoon, color = Color.White, fontSize = 18.sp)
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        OutlinedButton(
-                            onClick = onCheckProgressClick,
-                            border = BorderStroke(2.dp, primaryPurple),
-                            shape = RoundedCornerShape(25.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = primaryPurple)
-                        ) {
-                            Text(text = "Check Progress", fontFamily = Kavoon, color = primaryPurple, fontSize = 18.sp)
-                        }
-                    }
-                } else {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(horizontal = 24.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(60.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(Color(0xFFEBEBFF)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = null,
-                                    tint = primaryPurple,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
-
-                            Surface(
-                                shape = RoundedCornerShape(20.dp),
-                                color = Color(0xFFF0F0F7),
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            ) {
-                                Text(
-                                    text = "${currentQuestionIndex + 1}/${internetSafetyQuestions.size}",
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        Text(
-                            text = currentQuestion.question,
-                            fontSize = 24.sp,
-                            fontFamily = Kavoon,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2D3436)
-                        )
-
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        currentQuestion.options.forEachIndexed { index, option ->
-                            val isSelected = index == selectedAnswerIndex
-                            val isCorrect = index == currentQuestion.correctAnswerIndex
-                            
-                            val borderColor = when {
-                                showFeedback && isCorrect -> Color(0xFF4CAF50)
-                                showFeedback && isSelected && !isCorrect -> Color(0xFFF44336)
-                                isSelected -> primaryPurple
-                                else -> Color(0xFFE0E0E0)
-                            }
-                            
-                            val bgColor = when {
-                                showFeedback && isCorrect -> Color(0xFFE8F5E9)
-                                showFeedback && isSelected && !isCorrect -> Color(0xFFFFEBEE)
-                                isSelected -> optionSelectedColor
-                                else -> Color.White
-                            }
-
-                            Surface(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 8.dp)
-                                    .clickable(enabled = !showFeedback) {
-                                        selectedAnswerIndex = index
-                                    },
-                                shape = RoundedCornerShape(16.dp),
-                                color = bgColor,
-                                border = BorderStroke(2.dp, borderColor),
-                                shadowElevation = 2.dp
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                            .border(2.dp, borderColor, CircleShape)
-                                            .padding(4.dp)
-                                            .clip(CircleShape)
-                                            .background(if (isSelected) borderColor else Color.Transparent)
-                                    )
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                    Text(
-                                        text = option,
-                                        fontSize = 18.sp,
-                                        color = Color(0xFF37474F),
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
-                                    )
-                                }
-                            }
-                        }
-                        
-                        if (showFeedback) {
-                            val isUserCorrect = selectedAnswerIndex == currentQuestion.correctAnswerIndex
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = if (isUserCorrect) "Correct! Well done! 🌟" else "Not quite right! ❌",
-                                color = if (isUserCorrect) Color(0xFF2E7D32) else Color(0xFFC62828),
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
+                        LaunchedEffect(Unit) {
+                            realViewModel?.updateAssessmentScore(
+                                ProgressTracker.COURSE_SAFETY,
+                                score,
+                                internetSafetyQuestions.size
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(120.dp))
-                    }
-                }
-
-                if (!isAssessmentFinished) {
-                    Surface(
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                        color = lightBackground,
-                        shadowElevation = 8.dp
-                    ) {
-                        Box(
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp)
+                                .fillMaxSize()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
+                            Text(
+                                text = "Assessment Completed!",
+                                fontSize = 24.sp,
+                                fontFamily = Kavoon,
+                                color = primaryPurple,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "Your Score: $score / ${internetSafetyQuestions.size}",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(32.dp))
                             Button(
-                                onClick = {
-                                    if (!showFeedback) {
-                                        if (selectedAnswerIndex != -1) {
-                                            showFeedback = true
-                                            if (selectedAnswerIndex == currentQuestion.correctAnswerIndex) {
-                                                score++
-                                            }
-                                        }
-                                    } else {
-                                        if (currentQuestionIndex < internetSafetyQuestions.size - 1) {
-                                            currentQuestionIndex++
-                                            selectedAnswerIndex = -1
-                                            showFeedback = false
-                                        } else {
-                                            isAssessmentFinished = true
-                                        }
-                                    }
-                                },
-                                enabled = selectedAnswerIndex != -1,
+                                onClick = onCloseAssessment,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = primaryPurple,
+                                    contentColor = Color.White
+                                ),
+                                shape = RoundedCornerShape(25.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp)
+                            ) {
+                                Text(text = "Back to Lesson", fontFamily = Kavoon, color = Color.White, fontSize = 18.sp)
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            OutlinedButton(
+                                onClick = onCheckProgressClick,
+                                border = BorderStroke(2.dp, primaryPurple),
+                                shape = RoundedCornerShape(25.dp),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(56.dp),
-                                shape = RoundedCornerShape(20.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = primaryPurple,
-                                    contentColor = Color.White,
-                                    disabledContainerColor = disabledPurple,
-                                    disabledContentColor = Color.White.copy(alpha = 0.6f)
-                                )
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = primaryPurple)
                             ) {
+                                Text(text = "Check Progress", fontFamily = Kavoon, color = primaryPurple, fontSize = 18.sp)
+                            }
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                                .padding(horizontal = 24.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(60.dp)
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(Color(0xFFEBEBFF)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = null,
+                                        tint = primaryPurple,
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+
+                                Surface(
+                                    shape = RoundedCornerShape(20.dp),
+                                    color = Color(0xFFF0F0F7),
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                ) {
+                                    Text(
+                                        text = "${currentQuestionIndex + 1}/${internetSafetyQuestions.size}",
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            Text(
+                                text = currentQuestion.question,
+                                fontSize = 24.sp,
+                                fontFamily = Kavoon,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF2D3436)
+                            )
+
+                            Spacer(modifier = Modifier.height(24.dp))
+
+                            currentQuestion.options.forEachIndexed { index, option ->
+                                val isSelected = index == selectedAnswerIndex
+                                val isCorrect = index == currentQuestion.correctAnswerIndex
+
+                                val borderColor = when {
+                                    showFeedback && isCorrect -> Color(0xFF4CAF50)
+                                    showFeedback && isSelected && !isCorrect -> Color(0xFFF44336)
+                                    isSelected -> primaryPurple
+                                    else -> Color(0xFFE0E0E0)
+                                }
+
+                                val bgColor = when {
+                                    showFeedback && isCorrect -> Color(0xFFE8F5E9)
+                                    showFeedback && isSelected && !isCorrect -> Color(0xFFFFEBEE)
+                                    isSelected -> optionSelectedColor
+                                    else -> Color.White
+                                }
+
+                                Surface(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                        .clickable(enabled = !showFeedback) {
+                                            selectedAnswerIndex = index
+                                        },
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = bgColor,
+                                    border = BorderStroke(2.dp, borderColor),
+                                    shadowElevation = 2.dp
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .border(2.dp, borderColor, CircleShape)
+                                                .padding(4.dp)
+                                                .clip(CircleShape)
+                                                .background(if (isSelected) borderColor else Color.Transparent)
+                                        )
+                                        Spacer(modifier = Modifier.width(16.dp))
+                                        Text(
+                                            text = option,
+                                            fontSize = 18.sp,
+                                            color = Color(0xFF37474F),
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                    }
+                                }
+                            }
+
+                            if (showFeedback) {
+                                val isUserCorrect = selectedAnswerIndex == currentQuestion.correctAnswerIndex
+                                Spacer(modifier = Modifier.height(16.dp))
                                 Text(
-                                    text = if (showFeedback) "Next" else "Check Answer",
+                                    text = if (isUserCorrect) "Correct! Well done! 🌟" else "Not quite right! ❌",
+                                    color = if (isUserCorrect) Color(0xFF2E7D32) else Color(0xFFC62828),
                                     fontSize = 18.sp,
-                                    fontFamily = Kavoon,
-                                    color = Color.White
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth()
                                 )
+                            }
+
+                            Spacer(modifier = Modifier.height(120.dp))
+                        }
+                    }
+
+                    if (!isAssessmentFinished) {
+                        Surface(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                // Only nudge the button upward in portrait orientation.
+                                // Landscape keeps its original bottom-anchored position.
+                                .then(
+                                    if (isPortrait) {
+                                        Modifier.padding(bottom = 80.dp)
+                                    } else {
+                                        Modifier
+                                    }
+                                ),
+                            color = lightBackground,
+                            shadowElevation = 8.dp
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp)
+                            ) {
+                                Button(
+                                    onClick = {
+                                        if (!showFeedback) {
+                                            if (selectedAnswerIndex != -1) {
+                                                showFeedback = true
+                                                if (selectedAnswerIndex == currentQuestion.correctAnswerIndex) {
+                                                    score++
+                                                }
+                                            }
+                                        } else {
+                                            if (currentQuestionIndex < internetSafetyQuestions.size - 1) {
+                                                currentQuestionIndex++
+                                                selectedAnswerIndex = -1
+                                                showFeedback = false
+                                            } else {
+                                                isAssessmentFinished = true
+                                            }
+                                        }
+                                    },
+                                    enabled = selectedAnswerIndex != -1,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(56.dp),
+                                    shape = RoundedCornerShape(20.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = primaryPurple,
+                                        contentColor = Color.White,
+                                        disabledContainerColor = disabledPurple,
+                                        disabledContentColor = Color.White.copy(alpha = 0.6f)
+                                    )
+                                ) {
+                                    Text(
+                                        text = if (showFeedback) "Next" else "Check Answer",
+                                        fontSize = 18.sp,
+                                        fontFamily = Kavoon,
+                                        color = Color.White
+                                    )
+                                }
                             }
                         }
                     }
@@ -354,7 +372,6 @@ fun OnlineSafetyAndGoodInternetHabitsAssessmentScreen(
             }
         }
     }
-}
 }
 
 @Preview(showBackground = true)
